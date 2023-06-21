@@ -1,0 +1,12 @@
+{% include 'header.html' %}
+
+<h2>List People</h2>
+Total: {{ count }}
+
+<ul>
+{% for person in usuarios %}
+  <li><a href="/api/person/{{ person.id }}">{{ person.name }}</a></li>
+{% endfor %}
+</ul>
+
+{% include 'footer.html' %}
