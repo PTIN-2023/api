@@ -121,22 +121,22 @@ def list_orders_to_send_cars():
     return jsonify(response)
 
 
-def send_order_cars():
-    data = request.get_json()
-    value = checktoken(data['session_token'])
-    if value['valid'] !='ok' or value['type']!='internal':
-        return jsonify({'result': 'tu no pots man'})
-    for cotxe in data['assignations']:
+# def send_order_cars():
+#     data = request.get_json()
+#     value = checktoken(data['session_token'])
+#     if value['valid'] !='ok' or value['type']!='internal':
+#         return jsonify({'result': 'tu no pots man'})
+# #     for cotxe in data['assignations']:
+# 
+#         id_car = cotxe['id_car']
+#         id_route = cotxe['route']['id_route']
 
-        id_car = cotxe['id_car']
-        id_route = cotxe['route']['id_route']
+#         coordinates = routes.find({'id_route' : id_route})
 
-        coordinates = routes.find({'id_route' : id_route})
-
-        send_car(id_car, coordinates)
+#         send_car(id_car, coordinates)
 
         #Enviar por mqtt a todos los coches el id, las coordenadas, y todo lo necesario que esta dentro de la variable cotxe
-        pass
+#         pass
 
 
 

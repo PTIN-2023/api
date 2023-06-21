@@ -1,2 +1,7 @@
 controllers/controller_paypal.py
 controllers/__pycache__/controller_paypal.cpython-311.pyc
+environment_variables/environment_variables_cloud.env
+environment_variables/environment_variables_edge0.env
+environment_variables/environment_variables_edge1.env
+environment_variables/environment_variables_edge2.env
+environment_variables

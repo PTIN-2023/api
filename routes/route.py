@@ -47,7 +47,7 @@ def routes_cotxes(app):
     app.route("/api/cars_pos_info", methods=['POST'])(car_pos_info)
     app.route("/api/list_available_cars", methods=['POST'])(list_available_cars)
     app.route("/api/update_order_cars", methods=['POST'])(update_order_cars)
-    app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)
+    #app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)#############################Ya está en rutas
     app.route("/api/list_orders_to_send_cars", methods=['POST'])(list_orders_to_send_cars)
     app.route("/api/prova_list_available_cars", methods=['GET','POST'])(prova_list_available_cars)
 
@@ -75,4 +75,6 @@ def routes_mqtt(app):
 def routes_paypal(app):
     app.route("/api/create_payment", methods=['POST'])(create_payment)
     app.route("/api/execute_payment", methods=['GET'])(execute_payment)
-    
+ 
+def routes_proves(app):
+    app.route("/api/list_orders_to_send_cars", methods=['POST'])(proves)   
