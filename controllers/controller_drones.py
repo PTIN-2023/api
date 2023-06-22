@@ -34,7 +34,7 @@ def drons_full_info():
 
     }for doc in drones])
         return jsonify({'result':'ok','drons':res})
-     else:
+    else:
         return jsonify(response)
 
 
@@ -43,20 +43,20 @@ def drons_full_info():
 def drons_pos_info():
     if is_local == 0:
         return jsonify({'result':'error, funcio no disponible al cloud'})
-     data = request.get_json()
-     value = checktoken(data['session_token'])
-     response = {'value': value['valid']}
+    
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    response = {'value': value['valid']}
 
-     if value['valid'] == 'ok':
+    if value['valid'] == 'ok':
         drones = drons.find()
         res=([{
              'id_dron': doc['id_dron'],
              'latitude': doc['location_in']['latitude'],
              'longitud': doc['location_in']['longitude'],
-
-    }for doc in drones])
+        }for doc in drones])
         return jsonify({'result':'ok','drons':res})
-     else:
+    else:
         return jsonify(response)
 
 def send_order_drones():

@@ -20,7 +20,7 @@ def doctor_create_prescription():
                         sort=[("prescription_identifier", -1)],
         )
         if max_recipe:
-            prescription_identifier = str(int(max_recipe["prescription_identifier"])+1))
+            prescription_identifier = str(int(max_recipe["prescription_identifier"])+1)
         else:
             prescription_identifier = "1"
         entry = {
