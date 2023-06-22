@@ -20,6 +20,7 @@ def routes_user(app):
     
 def routes_meds(app):
     app.route("/api/list_available_medicines", methods=['POST'])(search_farmacs)
+    app.route("/api/get_meds_prescription", methods=['POST'])(get_meds_prescription)
     
 def routes_pacients(app):
     app.route("/api/has_prescription", methods=['POST'])(has_prescription)
@@ -29,7 +30,10 @@ def routes_pacients(app):
     app.route("/api/num_pages_patient_orders", methods=['POST'])(num_pages_patient_orders)
     app.route("/api/make_order",methods=['POST'])(make_order)
     app.route("/api/cancel_patient_order", methods=['POST'])(cancel_order)
-    
+
+def routes_prescriptions(app):
+    app.route("/api/doctor_create_prescription", methods=['POST'])(doctor_create_prescription)
+    app.route("/api/get_patient_prescription_history", methods=['POST'])(get_patient_prescription_history)
 
 def routes_orders(app):
     app.route("/api/doctor_confirm_order",methods=['POST'])(doctor_confirm_order)
@@ -40,6 +44,7 @@ def routes_orders(app):
     app.route("/api/check_order",methods=['POST'])(check_order)
     app.route("/api/num_pages_doctor_pending_confirmations",methods=['POST'])(num_pending_confirmations)
     app.route("/api/num_pages_doctor_approved_confirmations",methods=['POST'])(num_approved_confirmations)
+    app.route("/api/info_clients_for_doctor",methods=['POST'])(info_clients_for_doctor)
 
 
 def routes_cotxes(app):
@@ -57,7 +62,10 @@ def routes_drones(app):
     app.route("/api/send_order_drones", methods=['POST'])(send_order_drones)
     app.route("/api/list_order_to_set_drones", methods=['POST'])(list_order_to_set_drones)
     app.route("/api/list_available_drones", methods=['POST'])(list_available_drones)
+
+def routes_colmenes(app):
     app.route("/api/beehives_local", methods=['POST'])(beehives_local)
+    app.route("/api/beehives_global", methods=['POST'])(beehives_global)
 
 def routes_routes(app):
     app.route("/api/store_route", methods=['POST'])(store_route)

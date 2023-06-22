@@ -7,6 +7,7 @@ from models.models import *
 from utils.utils import checktoken , check_token_doctor
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def doctor_confirm_order():
     data = request.get_json()
     token = data['session_token']

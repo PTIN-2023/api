@@ -110,10 +110,6 @@ def send_order_cars():
 
     
 def general_storage_pos():
-     if is_local == 1:
-        data['session_token'] = 'internal'
-        url = cloud_api+"/api/general_storage_pos"
-        return requests.post(url, json=data).json()
     response = {    
         'result'    : 'ok', 
         'latitude'  : "41.221583", 

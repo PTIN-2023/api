@@ -2,7 +2,7 @@ from flask import jsonify, request
 from datetime import timedelta, datetime
 import jwt
 from models.models import *
-from utils.utils import checktoken
+from utils.utils import checktoken, check_token_doctor
 import logging
 from pymongo import UpdateOne
     
@@ -195,6 +195,21 @@ def get_user_info():
         response = {'result': 'error', 'message': check['valid']}
     return jsonify(response)
 
+def info_clients_for_doctor():
+    data = request.get_json()
+    token = data['token']
+    check = check_token_doctor(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/user_info"
+            return requests.post(url, json=data).json()
+        doc = users.find_one({'user_full_name': data['user_full_name']})
+        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_full_name': doc['user_full_name'], 'user_email': doc['user_email'], 'user_phone': doc['user_phone'], 'user_city': doc['user_city'], 'user_address': doc['user_address'], 'user_picture': "No tenim imatge", 'user_token': token}
+        return jsonify(response)
+    else:
+        response = {'result': 'error', 'message': check['valid']}
+    return jsonify(response)
 
 def check_token():
     data = request.get_json()

@@ -65,6 +65,36 @@ def search_farmacs():
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
         return jsonify(response)
+    
+def get_meds_prescription():
+    data = request.get_json()
+    token = data['session_token']
+    logging.info(token)
+    check = checktoken(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_available_medicines"
+            return requests.post(url, json=data).json()
+        medicine_list = recipes.find_one({'prescription_identifier': data['prescription_identifier']})['meds_list']
+        list = []
+        for doc in medicine_list:
+            medicament = farmacs.find_one({'national_code': doc})
+            list.append({
+                'medicine_identifier': medicament['medicine_identifier'],
+                'medicine_image_url': medicament['medicine_image_url'],
+                'medicine_name': medicament['med_name'],
+                'excipient': medicament['excipients'],
+                'pvp': medicament['pvp'],
+                'contents': medicament['contents'],
+                'prescription_needed': medicament['prescription_needed'],
+                'form': medicament['form'],
+                'type_of_administration': medicament['type_of_administration'],
+            })
+        response = {'result': 'ok', 'medicine_list': list}
+    else:
+        response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
+    return jsonify(response)
 
 
 #ESTA PARA PROBAR DEJARLO
