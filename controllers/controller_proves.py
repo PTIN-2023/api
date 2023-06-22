@@ -12,6 +12,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 import requests
 
 def proves():
+    if is_local == 1:
+        return jsonify({'result':'error, funcio no disponible al edge'})
     drons = drones.find()
     cotxes = camions.find()
 

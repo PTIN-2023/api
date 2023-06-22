@@ -9,6 +9,10 @@ import json
 import paho.mqtt.client as mqtt
 
 START_ROUTE = 1
+###########################################Igual seria conveniente que todo lo de drones se hga solo en los edges no en el cloud, se arreglaría pponiendo esta comanda en cada funcion
+#
+#    if is_local == 0:
+#        return jsonify({'result':'error, funcio no disponible al cloud'})
 
 def drons_full_info():
      data = request.get_json()

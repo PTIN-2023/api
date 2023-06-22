@@ -1,23 +1,30 @@
 import pymongo
+import os
+import requests
+
+cloud_api = os.environ.get('CLOUD_API')
+mongo_host = os.environ.get('DB_HOST')
+mongo_port = os.environ.get('DB_PORT')
+is_local = os.environ.get('IS_LOCAL')
 
 config = {
     "username": "root",
     "password": "root",
-    "host": "mongo",
-    "port": 27017
+    "host": mongo_host,
+    "port": mongo_port
 }
 
 connector = "mongodb://{username}:{password}@{host}:{port}/?authSource=admin".format(**config)
 client = pymongo.MongoClient(connector)
 db = client["PTIN"]
-users = db["UsersA4"]
-farmacs = db["MedsA4"]
-sessio = db["sessio"]
-camions = db['Camions']
-orders = db['Orders']
-drons = db['Drones']
-routes = db['Routes']
-recipes = db['Recipes']
 colmenas = db['colmena']
-
-
+routes = db['Routes']
+orders = db['Orders']
+sessio = db["sessio"]
+if is_local == 0:
+    camions = db['Camions']
+    users = db["UsersA4"]
+    farmacs = db["MedsA4"]
+    recipes = db['Recipes']
+else:
+    drons = db['Drones']

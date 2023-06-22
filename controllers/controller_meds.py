@@ -11,6 +11,10 @@ def search_farmacs():
     logging.info(token)
     check = checktoken(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_available_medicines"
+            return requests.post(url, json=data).json()
         query = {}
         if 'filter' in data:
             try:

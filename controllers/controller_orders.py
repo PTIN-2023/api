@@ -12,6 +12,10 @@ def doctor_confirm_order():
     token = data['session_token']
     check = check_token_doctor(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/doctor_confirm_order"
+            return requests.post(url, json=data).json()
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
@@ -35,6 +39,10 @@ def list_doctor_approved_confirmations():
     token = data['session_token']
     check = check_token_doctor(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_doctor_approved_confirmations"
+            return requests.post(url, json=data).json()
         medNum = int(data['confirmations_per_page'])
         page = int(data['page'])
         limit_inf = (page - 1) * medNum
@@ -55,6 +63,10 @@ def list_doctor_pending_confirmations():
     token = data['session_token']
     check = check_token_doctor(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_doctor_pending_confirmations"
+            return requests.post(url, json=data).json()
         medNum = int(data['confirmations_per_page'])
         page = int(data['page'])
         limit_inf = (page - 1) * medNum
@@ -75,6 +87,10 @@ def confirm_patient_order():
     token = data['session_token']
     check = checktoken(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/confirm_patient_order"
+            return requests.post(url, json=data).json()
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
@@ -95,6 +111,10 @@ def cancel_patient_order():
     token = data['session_token']
     check = checktoken(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/cancel_patient_order"
+            return requests.post(url, json=data).json()
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
@@ -114,6 +134,10 @@ def check_order(): #mirar a través del qr
     data = request.get_json()
     value = checktoken(data['session_token']) 
     if value['valid'] == 'ok': 
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/check_order"
+            return requests.post(url, json=data).json()
         order_identifier = data['order_identifier']
         query = {'order_identifier': data['order_identifier']} #buscar si existe el pedido
         order = orders.find_one(query) 
@@ -134,6 +158,10 @@ def num_pending_confirmations():
     data = request.get_json()
     value = checktoken(data['session_token']) 
     if value['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/num_pages_doctor_pending_confirmations"
+            return requests.post(url, json=data).json()
         medNum = int(data['confirmations_per_page'])      
         #orders que faltan para aprobar de ese doctor
         pending_orders_count = orders.count_documents({'approved': ''}) 
@@ -148,6 +176,10 @@ def num_approved_confirmations():
     data = request.get_json()
     value = checktoken(data['session_token']) 
     if value['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/num_pages_doctor_approved_confirmations"
+            return requests.post(url, json=data).json()
         medNum = int(data['confirmations_per_page'])      
         #orders que ya estan aprobadas ese doctor
         approved_orders_count = orders.count_documents({'doctor_identifier': value['email'], 'approved': 'yes'})

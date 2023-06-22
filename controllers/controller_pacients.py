@@ -21,6 +21,10 @@ def has_prescription():
     data = request.get_json()
     value = checktoken(data['session_token'])
     if value['valid'] == 'ok': #entro si la persona que esta en la web tiene token
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/has_prescription"
+            return requests.post(url, json=data).json()
         medicine_identifier = data['medicine_identifier']
         query = {'national_code': medicine_identifier}
         med_exists = farmacs.find_one(query) #checkeo que el medicamento existe
@@ -54,6 +58,10 @@ def get_prescription_meds():
     data = request.get_json()
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/get_prescription_meds"
+            return requests.post(url, json=data).json()
         #busco si existe receta para el valor importado
         prescription_identifier = data['prescription_identifier']
         query = {'prescription_identifier': prescription_identifier}
@@ -85,10 +93,13 @@ def get_prescription_meds():
 def list_patient_orders():
     data = request.get_json()
     orders_per_page = data['orders_per_page']
-    logging.info("##################################" + data['session_token'] + "#########################")
     page = data['page']
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_patient_orders"
+            return requests.post(url, json=data).json()
         patient_email = value['email'] #cojo el mail de la persona 
         te_orders = orders.find({'patient_email': patient_email}) #miro si tiene alguna receta //comprobar si hay mas de una
         if te_orders:
@@ -125,10 +136,13 @@ def list_patient_orders():
 def list_all_orders():
     data = request.get_json()
     orders_per_page = data['orders_per_page']
-    logging.info("##################################" + data['session_token'] + "#########################")
     page = data['page']
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_all_orders"
+            return requests.post(url, json=data).json()
         user_email = value['email']
         es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
@@ -171,9 +185,12 @@ def list_all_orders():
 def num_pages_patient_orders():
     data = request.get_json()
     orders_per_page = data['orders_per_page']
-    logging.info("##################################" + data['session_token'] + "#########################")
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/num_pages_patient_orders"
+            return requests.post(url, json=data).json()
         patient_email = value['email'] #cojo el mail de la persona 
         te_orders = orders.find({'patient_email': patient_email}) #miro si tiene alguna receta //comprobar si hay mas de una
         if te_orders:
@@ -226,6 +243,10 @@ def make_order():
     data = request.get_json()
     value = checktoken(data['session_token'])
     if value['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/make_order"
+            return requests.post(url, json=data).json()
         meds_list = data['medicine_identifiers']
         patient_identifier = value['email'] #cojo el mail de la persona
         meds_final = []
@@ -319,6 +340,10 @@ def cancel_order():
     value = checktoken(data['session_token'])
     response = {'value': value['valid']}
     if value['valid'] == 'ok': 
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/cancel_patient_order"
+            return requests.post(url, json=data).json()
         order = data['order_identifier']
     response = {'result': ''}
     return jsonify(response)

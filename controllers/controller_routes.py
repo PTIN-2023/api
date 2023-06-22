@@ -14,6 +14,10 @@ def store_route():
     token = data['session_token']
     check = checktoken(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/store_route"
+            return requests.post(url, json=data).json()
         new_route = {
             'id_route': data['id_route'],
             'coordinates': data['coordinates']
@@ -32,6 +36,10 @@ def get_route():
     token = data['session_token']
     check = checktoken(token)
     if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/get_route"
+            return requests.post(url, json=data).json()
         route = routes.find_one({'id_route': data['id_route']})
         if route is None:
             response = {'valid': 'error', 'description': 'Route not found'}
@@ -65,6 +73,10 @@ def send_order_cars():
     value = checktoken(data['session_token'])
     if value['valid'] !='ok' or value['type']!='internal':
         return jsonify({'result': 'tu no pots man'})
+    if is_local == 1:
+        data['session_token'] = 'internal'
+        url = cloud_api+"/api/send_order_cars"
+        return requests.post(url, json=data).json()
     # Crea un objeto cliente MQTT
     client = mqtt.Client()
 
@@ -98,6 +110,10 @@ def send_order_cars():
 
     
 def general_storage_pos():
+     if is_local == 1:
+        data['session_token'] = 'internal'
+        url = cloud_api+"/api/general_storage_pos"
+        return requests.post(url, json=data).json()
     response = {    
         'result'    : 'ok', 
         'latitude'  : "41.221583", 
