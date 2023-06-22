@@ -1,11 +1,15 @@
 import datetime
 from flask import jsonify, redirect, request
 import paypalrestsdk
-from utils.paypal_configuration import configure
 from models.models import *
 from utils.utils import checktoken
+import os
 
-configure(paypalrestsdk)
+paypalrestsdk.configure({
+    "mode": "sandbox",
+    "client_id": os.environ.get('PAYPAL_CLIENT_ID'),
+    "client_secret":os.environ.get('PAYPAL_SECRET')
+})
 
 # Crear un pago y obtener la URL de aprobación
 def create_payment():
