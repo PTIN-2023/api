@@ -13,5 +13,5 @@ ENV TZ=Europe/Madrid
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 ENV FLASK_APP=app
-ENV FLASK_DEBUG=1
+ENV FLASK_DEBUG=0
 CMD  ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
