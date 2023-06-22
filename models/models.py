@@ -5,7 +5,7 @@ import requests
 cloud_api = os.environ.get('CLOUD_API')
 mongo_host = os.environ.get('DB_HOST')
 mongo_port = os.environ.get('DB_PORT')
-is_local = os.environ.get('IS_LOCAL')
+is_local = int(os.environ.get('IS_LOCAL'))
 
 config = {
     "username": "root",
