@@ -9,17 +9,14 @@ import json
 import paho.mqtt.client as mqtt
 
 START_ROUTE = 1
-###########################################Igual seria conveniente que todo lo de drones se hga solo en los edges no en el cloud, se arreglaría pponiendo esta comanda en cada funcion
-#
-#    if is_local == 0:
-#        return jsonify({'result':'error, funcio no disponible al cloud'})
 
 def drons_full_info():
-     data = request.get_json()
-     value = checktoken(data['session_token'])
-     response = {'value': value['valid']}
-    
-     if value['valid'] == 'ok':
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    response = {'value': value['valid']}
+    if value['valid'] == 'ok':
         drones = drons.find()
         res=([{
             'id_dron': doc['id_dron'],
@@ -44,6 +41,8 @@ def drons_full_info():
 
 
 def drons_pos_info():
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
      data = request.get_json()
      value = checktoken(data['session_token'])
      response = {'value': value['valid']}
@@ -61,6 +60,8 @@ def drons_pos_info():
         return jsonify(response)
 
 def send_order_drones():
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
     data = request.get_json()
     value = checktoken(data['session_token'])
     assignations = data['assignations'] 
@@ -85,6 +86,8 @@ def send_order_drones():
 
 
 def send_dron(id_dron, order, coordinates):
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
     
     client = mqtt.Client()
     client.connect("mosquitto", 1883, 60)
@@ -102,6 +105,8 @@ def send_dron(id_dron, order, coordinates):
 
 #Faltan edges y mapa bien
 def list_order_to_set_drones():
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
     data = request.get_json()
     value = checktoken(data['session_token']) 
     if value['valid'] == 'ok':
@@ -112,6 +117,8 @@ def list_order_to_set_drones():
     return jsonify(response)
 
 def list_available_drones():
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
     data = request.get_json()
     value = checktoken(data['session_token'])
     response = {'result': value['valid']}
@@ -143,6 +150,8 @@ def list_available_drones():
 #         return jsonify(response)
         
 def beehives_local():
+    if is_local == 0:
+        return jsonify({'result':'error, funcio no disponible al cloud'})
     data = request.get_json()
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token

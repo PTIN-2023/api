@@ -13,7 +13,7 @@ def login():
     data = request.get_json()
     user_email = data['user_email']
     if is_local == 1:
-        url = cloud_api+"/api/store_route"
+        url = cloud_api+"/api/login"
         response = requests.post(url, json=data).json()
         if response['result' != 'ok']:
             return response
@@ -59,14 +59,31 @@ def logout():
 
 def register():
     data = request.get_json()
+    user_email = data['user_email']
     if is_local == 1:
-        url = cloud_api+"/api/store_route"
-        return requests.post(url, json=data).json()
+        url = cloud_api+"/api/register"
+        response = requests.post(url, json=data).json()
+        if response['result' != 'ok']:
+            return response
+        url = cloud_api+"/api/logout"
+        data2 = {
+            'session_token': response['session_token']
+        }
+        requests.post(url, json=data2).json()
+        token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
+        response['session_token'] = token
+        entry = {
+            "token": token,
+            "data": datetime.now().isoformat(),
+            "user_email": user_email,
+        }
+        sessio.insert_one(entry)
+        return response
     entry = {
         "user_full_name": data['user_full_name'],
         "user_given_name": data['user_given_name'],
         "user_role": "patient",
-        "user_email": data['user_email'],
+        "user_email": user_email,
         "user_phone": data['user_phone'],
         "user_city": data['user_city'],
         "user_address": data['user_address'],
@@ -90,9 +107,26 @@ def register():
 
 def register_premium():
     data = request.get_json()
+    user_email = data['user_email']
     if is_local == 1:
-        url = cloud_api+"/api/store_route"
-        return requests.post(url, json=data).json()
+        url = cloud_api+"/api/manager_create_account"
+        response = requests.post(url, json=data).json()
+        if response['result' != 'ok']:
+            return response
+        url = cloud_api+"/api/logout"
+        data2 = {
+            'session_token': response['session_token']
+        }
+        requests.post(url, json=data2).json()
+        token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
+        response['session_token'] = token
+        entry = {
+            "token": token,
+            "data": datetime.now().isoformat(),
+            "user_email": user_email,
+        }
+        sessio.insert_one(entry)
+        return response
     entry = {
         "user_full_name": data['user_full_name'],
         "user_given_name": data['user_given_name'],
@@ -152,7 +186,7 @@ def get_user_info():
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/store_route"
+            url = cloud_api+"/api/user_info"
             return requests.post(url, json=data).json()
         doc = users.find_one({'user_email': check['email']})
         response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_full_name': doc['user_full_name'], 'user_email': doc['user_email'], 'user_phone': doc['user_phone'], 'user_city': doc['user_city'], 'user_address': doc['user_address'], 'user_picture': "No tenim imatge", 'user_token': token}
@@ -176,7 +210,7 @@ def set_user_info():
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/store_route"
+            url = cloud_api+"/api/set_user_info"
             return requests.post(url, json=data).json()
         # Obtain values
         user_email = check['email']
