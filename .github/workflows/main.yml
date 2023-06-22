@@ -29,3 +29,21 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/trans-med-api-ptin:latest
+      -
+        name: Pull cloud instance
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT_CLOUD }}
+          script: ${{ secrets.SSH_COMMAND_UPDATE_API_CLOUD }}
+      -
+        name: Reload cloud instance
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT_CLOUD }}
+          script: ${{ secrets.SSH_COMMAND_RELOAD_API_CLOUD }}
