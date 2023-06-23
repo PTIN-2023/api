@@ -317,9 +317,7 @@ def make_order():
             "state_num": 1,
             "meds_list": meds_list
         }
-        
-        send_car()
-        
+                
         try:
             id = orders.insert_one(entry).inserted_id
             response = {'result': 'ok'}
