@@ -68,42 +68,19 @@ def get_route():
 #        response = {'result': 'error', 'description': check['valid']}
 #    return jsonify(response)
 
-def send_order_cars():
+def update_order_cars():
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
+    
     if value['valid'] !='ok' or value['type']!='internal':
         return jsonify({'result': 'tu no pots man'})
-    if is_local == 1:
+    
+    if is_local == 0:
         data['session_token'] = 'internal'
-        url = cloud_api+"/api/send_order_cars"
+        url = cloud_api+"/api/update_order_cars"
         return requests.post(url, json=data).json()
-    # Crea un objeto cliente MQTT
-    client = mqtt.Client()
 
-    # Conecta al servidor MQTT
-    client.connect("mosquitto", 1883, 60)
-
-    for i in data["assignations"]:
-        orders = []
-        for j in i["cargo"]:
-            orders.append(int(j["order_identifier"]))
-        # Crea un mensaje JSON
-        mensaje = {    "id_car":     i["id_car"],
-                    "order":     orders,
-                    "route":    i["route"]["coordinates"]}
-        
-        camions.update_one({"id_car": i["id_car"]} , {'$set': {'location_in': {"latitude":i["route"]["coordinates"][0][1],"longitude":i["route"]["coordinates"][0][0]}}})
-        camions.update_one({"id_car": i["id_car"]} , {'$set': {'location_in': {"latitude":i["route"]["coordinates"][-1][1],"longitude":i["route"]["coordinates"][-1][0]}}})
-        camions.update_one({"id_car": i["id_car"]} , {'$set': {'id_route': i["route"]["id_route"]}})
-        
-        # Codifica el mensaje JSON a una cadena
-        mensaje_json = json.dumps(mensaje)
-        logging.info(mensaje)
-        # Publica el mensaje en el topic "PTIN2023/A1/CAR"
-        client.publish("PTIN2023/CAR/STARTROUTE", mensaje_json)
-
-    # Cierra la conexión MQTT
-    client.disconnect()
     return jsonify({'result':'ok'})
 
 

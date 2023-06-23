@@ -51,8 +51,7 @@ def routes_cotxes(app):
     app.route("/api/cars_full_info", methods=['POST'])(cars_full_info)
     app.route("/api/cars_pos_info", methods=['POST'])(car_pos_info)
     app.route("/api/list_available_cars", methods=['POST'])(list_available_cars)
-    app.route("/api/update_order_cars", methods=['POST'])(update_order_cars)
-    #app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)#############################Ya está en rutas
+    app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)
     app.route("/api/list_orders_to_send_cars", methods=['POST'])(list_orders_to_send_cars)
     app.route("/api/prova_list_available_cars", methods=['GET','POST'])(prova_list_available_cars)
 
@@ -71,7 +70,7 @@ def routes_routes(app):
     app.route("/api/store_route", methods=['POST'])(store_route)
     app.route("/api/get_route", methods=['POST'])(get_route)
     app.route("/api/general_storage_pos", methods=['POST'])(general_storage_pos)
-    app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)
+    app.route("/api/update_order_cars", methods=['POST'])(update_order_cars)
     
 def routes_mqtt(app):
     app.route("/api/mqtt", methods=['POST'])(mqtt)

@@ -1,12 +1,23 @@
-import json
+import json, jwt
+import paho.mqtt.client as mqtt
 from flask import jsonify, request
+
 import datetime
 from datetime import timedelta
-import jwt
-import paho.mqtt.client as mqtt
-import json
+
 from models.models import *
 from utils.utils import checktoken
+
+import logging
+logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(levelname)s - %(message)s')
+
+OK = 'ok'
+INTERNAL = 'internal'
+
+RES_OK  = { 'value': "ok" }
+FAILED  = { 'value': "failed" }
+
+CAR_START_ROUTE = 1
 
 def cars_full_info():
     if is_local == 1:
@@ -86,30 +97,38 @@ def prova_list_available_cars():
 
 
 def list_orders_to_send_cars():
+    
     if is_local == 1:
         return jsonify({'result':'error, funcio no disponible al edge'})
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
     if value['valid'] =='ok':
         orderss = orders.find({'state':"ordered"})
         ordersss = []
         for doc in orderss:
-            colmena_random_cursor = colmenas.aggregate([{ "$sample": { "size": 1 } }])
-            colmena_random = next(colmena_random_cursor, None)
-            #colmena_random = colmenas.find_one()
+            # colmena_random_cursor = colmenas.aggregate([{ "$sample": { "size": 1 } }])
+            # colmena_random = next(colmena_random_cursor, None)
+            # colmena_random = colmenas.find_one()
+
+            # De momento ponemos esta 
+            colmena_random = colmenas.find_one({
+                'zip_code' : '08880'
+            })
             ordersss.append({
                 'order_identifier': doc['order_identifier'],
                 'beehive_coords_destiny': {
-                    'id_beehive': colmena_random['id_beehive'],
-                    'latitude': colmena_random['location_end']['latitude'],
-                    'longitude': colmena_random['location_end']['longitude']
+                    'id_beehive'    :   colmena_random['id_beehive'],
+                    'latitude'      :   colmena_random['location_end']['latitude'],
+                    'longitude'     :   colmena_random['location_end']['longitude']
                 },
                 'medicine_list': [{
                     'medicine_identifier': medicine
                 } for medicine in doc['meds_list']],
-                'date': doc['date'],
-                'state': doc['state'],
+                'date'  : doc['date'],
+                'state' : doc['state'],
             })
+
         return jsonify({
             'result': value['valid'],
             'orders': ordersss})
@@ -131,85 +150,55 @@ def list_orders_to_send_cars():
     return jsonify(response)
 
 
-# def send_order_cars():
-#     data = request.get_json()
-#     value = checktoken(data['session_token'])
-#     if value['valid'] !='ok' or value['type']!='internal':
-#         return jsonify({'result': 'tu no pots man'})
-# #     for cotxe in data['assignations']:
-# 
-#         id_car = cotxe['id_car']
-#         id_route = cotxe['route']['id_route']
+def send_order_cars():
+    
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    
+    if value['valid'] != OK or value['type'] != INTERNAL:
+        return jsonify(FAILED)
+    
+    for car in data['assignations']:
 
-#         coordinates = routes.find({'id_route' : id_route})
+        id_car   = car['id_car']
+        id_route = car['route']['id_route']
+        coordinates = routes.find_one({'id_route' : id_route})
 
-#         send_car(id_car, coordinates)
+        packages = []        
+        [ packages.append({ 'order_identifier' : order['order_identifier']}) for order in car['cargo'] ]
 
-        #Enviar por mqtt a todos los coches el id, las coordenadas, y todo lo necesario que esta dentro de la variable cotxe
-#         pass
+        update_fields = { 
+            'id_route'  : id_route,
+            'packages'  : packages
+        }
+        result = camions.update_one(
+            {'id_car'   : id_car }, 
+            {'$set'     : update_fields }
+        )
+
+        if result.modified_count > 0:
+            send_car(id_car, coordinates['coordinates'])
+
+        else:
+            logging.info("CARS | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
+            return jsonify(FAILED), 404
+
+    return jsonify(RES_OK)
 
 
 
 def send_car(id_car, route):
-    if is_local == 1:
-        return jsonify({'result':'error, funcio no disponible al edge'})
-    # Crea un objeto cliente MQTT
+   
     client = mqtt.Client()
-
-    # Conecta al servidor MQTT
     client.connect("mosquitto", 1883, 60)
 
-    # Crea un mensaje JSON
-    mensaje = {    
-        "id_car":     id_car,
-        "order":     1,
-        "route":    0
+    msg = {    
+        "id_car"    :   id_car,
+        "order"     :   CAR_START_ROUTE,
+        "route"     :   str(route)
     }
+    message = json.dumps(msg)
+    logging.info(message)
 
-    mensaje["route"] = route["coordinates"]
-
-    # Codifica el mensaje JSON a una cadena
-    mensaje_json = json.dumps(mensaje)
-
-    # Publica el mensaje en el topic "PTIN2023/A1/CAR"
-    client.publish("PTIN2023/CAR/STARTROUTE", mensaje_json)
-
-    # Cierra la conexión MQTT
+    client.publish("PTIN2023/CAR/STARTROUTE", message)
     client.disconnect()
-
-
-def update_order_cars():
-    if is_local == 1:
-        return jsonify({'result':'error, funcio no disponible al edge'})
-    data = request.get_json()
-    value = checktoken(data['session_token'])
-    if value['valid'] !='ok' or value['type']!='internal':
-        return jsonify({'result': 'tu no pots man'})
-    
-    # Crea un objeto cliente MQTT
-    client = mqtt.Client()
-
-    # Conecta al servidor MQTT
-    client.connect("mosquitto", 1883, 60)
-
-    # Crea un mensaje JSON
-    mensaje = {    "id_car":     1,
-                "order":     1,
-                "route":    0}
-
-    # recibido de mapas
-    route = {"coordinates" :    "[[1.729895,41.220972],[1.730095,41.220594],[1.730957,41.220821],[1.730341,41.222103],[1.732058,41.222625],[1.732593,41.222967],[1.732913,41.223435],[1.733119,41.224977],[1.733229,41.225046],[1.733257,41.225324],[1.733531,41.225684],[1.73421,41.226188],[1.737807,41.22931],[1.738258,41.229572],[1.738483,41.229682],[1.738329,41.229879],[1.738106,41.229798],[1.738094,41.22967],[1.737657,41.22918],[1.737265,41.228995],[1.736156,41.228027],[1.735887,41.227883],[1.735424,41.228285]]",
-            "type":            "LineString"}
-
-    mensaje["route"] = route["coordinates"]
-    logging.info()
-    # Codifica el mensaje JSON a una cadena
-    mensaje_json = json.dumps(mensaje)
-
-    # Publica el mensaje en el topic "PTIN2023/A1/CAR"
-    client.publish("PTIN2023/DRON/STARTROUTE", mensaje_json)
-
-    # Cierra la conexión MQTT
-    client.disconnect()
-    return jsonify({'result':'ok'})
-
