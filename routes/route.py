@@ -34,6 +34,7 @@ def routes_pacients(app):
 def routes_managers(app):
     app.route("/api/list_all_orders", methods=['POST'])(list_all_orders)
     app.route("/api/manager_list_doctors", methods=['POST'])(manager_list_doctors)
+    # app.route("/api/list_assigned_doctors", methods=['POST'])(list_assigned_doctors)
     # app.route("/api/manager_assign_doctors", methods=['POST'])(manager_assign_doctors)
     # app.route("/api/stats", methods=['POST'])(stats)
 

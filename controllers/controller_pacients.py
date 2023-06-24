@@ -119,7 +119,7 @@ def list_patient_orders():
             response = {'result': 'success', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
         
         else:
-            response = {'result': 'Aquest pacient no té cap ordre'}
+            response = {'result': 'Aquest pacient no te cap ordre'}
     else:
         response = {'result': 'No tienes token para poder comprobar esto, espabila'}
         
@@ -165,7 +165,7 @@ def num_pages_patient_orders():
             response = {'result': 'ok', 'data': paginated_response, 'number_of_pages': number_of_pages}
         
         else:
-            response = {'result': 'Aquest pacient no té cap ordre'}
+            response = {'result': 'Aquest pacient no te cap ordre'}
     else:
         response = {'result': 'Invalid token'}
         
@@ -212,7 +212,7 @@ def make_order():
                         meds_final.append(med_result)
                         conReceta = True
                     else:
-                        response = {'result': 'No ho pot fer, no té recepta per un dels medicaments', 'medicament del qual no té recepta': med_nationalCode}
+                        response = {'result': 'No ho pot fer, no te recepta per un dels medicaments', 'medicament del qual no te recepta': med_nationalCode}
                         return jsonify(response)
                 else: #el medicamento no necesita receta
                     meds_final.append(med_result)
@@ -221,14 +221,15 @@ def make_order():
                 response = {'result': 'El input no son medicamentos'}
                 return jsonify(response)
         
-        #order_identifier empieza con 0 si es una receta
-        #order_identifier empieza con 1 si es una receta
+        approved = "yes"
         
         if conReceta:
             max_order = orders.find_one(
                             {"order_identifier": {"$regex": "^0"}, "order_identifier": {"$ne": "0"}},
                             sort=[("order_identifier", -1)],
             )
+            
+            approved = "no"
             
             if max_order:
                 last_identifier = max_order["order_identifier"]
@@ -254,7 +255,7 @@ def make_order():
         entry = {
             "order_identifier": new_identifier,
             "patient_email": patient_identifier,
-            "approved": "yes",
+            "approved": approved,
             "reason": "-",
             "date": datetime.datetime.now().strftime("%Y-%m-%d"),
             "state": "awaiting_confirmation",

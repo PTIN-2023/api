@@ -62,8 +62,8 @@ def manager_list_doctors():
     data = request.get_json()
     value = checktoken(data['session_token'])
     
-    if value['valid'] != OK or value['type'] != INTERNAL:
-        response = {'result': 'unvalid token'}
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
     
     else:
         user_email = value['email']
@@ -89,6 +89,29 @@ def manager_list_doctors():
             response = {'result': 'No ets manager, no pots revisar els ordres'}
         
     return jsonify(response)
+
+
+# def list_assigned_doctors():
+#     data = request.get_json()
+#     value = checktoken(data['session_token'])
+#     doctor_email = data['doctor_email']
+    
+#     if value['valid'] != OK or value['type'] != INTERNAL:
+#         return jsonify({'result': 'unvalid token'})
+    
+#     else: 
+#         user_email = value['email']
+#         es_manager = users.find_one({'user_email': user_email})
+#         role_persona = es_manager['user_role']
+#         if role_persona == 'manager':
+#             patients = doctor.find({'doctor_email': doctor_email})
+            
+            
+#             response = {'result': 'ok'} 
+#         else:
+#             response = {'result': 'No ets manager, no pots revisar els ordres'}
+    
+#     return jsonify(response)
 
 # def manager_assign_doctors():
 #     data = request.get_json()
