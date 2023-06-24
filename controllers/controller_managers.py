@@ -1,14 +1,7 @@
 from flask import jsonify, request
-import datetime
-from datetime import timedelta
-import jwt
 from models.models import *
 from utils.utils import checktoken
-import json
 
-
-OK = 'ok'
-INTERNAL = 'internal'
 
 def list_all_orders():
     data = request.get_json()
@@ -91,68 +84,293 @@ def manager_list_doctors():
     return jsonify(response)
 
 
-# def list_assigned_doctors():
-#     data = request.get_json()
-#     value = checktoken(data['session_token'])
-#     doctor_email = data['doctor_email']
+def list_assigned_doctors():
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    doctor_email = data['doctor_email']
     
-#     if value['valid'] != OK or value['type'] != INTERNAL:
-#         return jsonify({'result': 'unvalid token'})
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
     
-#     else: 
-#         user_email = value['email']
-#         es_manager = users.find_one({'user_email': user_email})
-#         role_persona = es_manager['user_role']
-#         if role_persona == 'manager':
-#             patients = doctor.find({'doctor_email': doctor_email})
+    else: 
+        user_email = value['email']
+        es_manager = users.find_one({'user_email': user_email})
+        role_persona = es_manager['user_role']
+        if role_persona == 'manager':
+            list_patients = []
+            patients = doctor.find({'doctor_email': doctor_email})
             
+            for patient in patients:
+                patient_email = patient['patients_email']
+                
+                patient_user = users.find_one({'user_email': patient_email})
+                
+                patient_data = {
+                    'user_full_name': patient_user['user_full_name'],
+                    'user_email': patient_user['user_email'],
+                    'user_phone': patient_user['user_phone'],
+                    'user_city': patient_user['user_city']
+                }
+
+                list_patients.append(patient_data)
             
-#             response = {'result': 'ok'} 
-#         else:
-#             response = {'result': 'No ets manager, no pots revisar els ordres'}
+            response = {'result': 'ok', 'patients': list_patients} 
+        else:
+            response = {'result': 'No ets manager, no pots revisar els ordres'}
     
-#     return jsonify(response)
+    return jsonify(response)
 
-# def manager_assign_doctors():
-#     data = request.get_json()
-#     value = checktoken(data['session_token'])
-#     patient_id = data['patient_id']
+def manager_assign_doctors():
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    doctor_email = data['doctor_email']
+    patient_email = data['patient_email']
     
-#     if value['valid'] != OK or value['type'] != INTERNAL:
-#         return jsonify({'result': 'unvalid token'})
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
     
-#     else: 
-#         user_email = value['email']
-#         es_manager = users.find_one({'user_email': user_email})
-#         role_persona = es_manager['user_role']
-#         if role_persona == 'manager':
-#             #nse donde asignarlo en BD 🤧
-#             response = {'result': 'ok'} 
-#         else:
-#             response = {'result': 'No ets manager, no pots revisar els ordres'}
-    
-#     return jsonify(response)
-
-
-# def stats():
-#     data = request.get_json()
-#     value = checktoken(data['session_token'])
-    
-#     if value['valid'] != OK or value['type'] != INTERNAL:
-#         return jsonify({'result': 'unvalid token'})
-    
-#     else:
-#         account_stats = []
-#         topCities = []
-#         yearOrders = []
-#         topMeds = []
-#         sellsComparation = []
+    else: 
+        user_email = value['email']
+        es_manager = users.find_one({'user_email': user_email})
+        role_persona = es_manager['user_role']
+        if role_persona == 'manager':
+            doctor_te_assignats = doctor.find_one({'doctor_email': doctor_email})
+            if doctor_te_assignats: #el doctor ja tenia a un pacient assignat
+                patients_email = doctor_te_assignats.get('patients_email', [])
+                patients_email.append(patient_email)
+                
+                doctor.update_one(
+                    {'doctor_email': doctor_email},
+                    {'$set': {'patients_email': patients_email}}
+                )
+                
+            else: #el doctor no tenia cap pacient assignat
+               nova_assignacio = {
+                    'doctor_email': doctor_email,
+                    'patients_email': [patient_email]
+               }
+               
+               doctor.insert_one(nova_assignacio)
+                
+            response = {'result': 'ok'} 
         
-#         response = {'result': 'ok', 
-#                     'accounts_stat': account_stats,
-#                     'topSeller_cities': topCities,
-#                     'year_orders': yearOrders,
-#                     'topSeller_meds': topMeds,
-#                     'sells_comparation': sellsComparation}
+        else:
+            response = {'result': 'No ets manager, no pots revisar els ordres'}
+    
+    return jsonify(response)
+
+
+def stats():
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
+    
+    else: 
+        num_patients = users.count_documents({'user_role': 'patient'})
+        num_doctor = users.count_documents({'user_role': 'doctor'})
+        num_manager = users.count_documents({'user_role': 'manager'})
         
-#         return jsonify(response)
+        #hardcodeado ya que no tenemos suficiente informacion
+        response = {
+                    "result": "ok",
+                    "accounts_stat": {
+                        "stat_type": "accounts_stat_query",
+                        "accounts_stat_query": [
+                            {
+                                "name": "Pacientes",
+                                "value": num_patients
+                            },
+                            {
+                                "name": "Medicos",
+                                "value": num_doctor
+                            },
+                            {
+                                "name": "Gestores",
+                                "value": num_manager
+                            }
+                        ]
+                    },
+                    "topSeller_cities": {
+                        "stat_type": "topSeller_cities_query",
+                        "topSeller_cities_query": [
+                            {
+                                "name": "Barcelona",
+                                "value": 400
+                            },
+                            {
+                                "name": "Martorell",
+                                "value": 300
+                            },
+                            {
+                                "name": "Torrelavit",
+                                "value": 300
+                            },
+                            {
+                                "name": "Lleida",
+                                "value": 200
+                            }
+                        ]
+                    },
+                    "year_orders": {
+                        "stat_type": "year_orders_query",
+                        "year_orders_query": [
+                            {
+                                "name": "Enero",
+                                "maximo": 4000
+                            },
+                            {
+                                "name": "Fabrero",
+                                "maximo": 3000
+                            },
+                            {
+                                "name": "Marzo",
+                                "maximo": 2000
+                            },
+                            {
+                                "name": "Abril",
+                                "maximo": 2780
+                            },
+                            {
+                                "name": "Mayo",
+                                "maximo": 1890
+                            },
+                            {
+                                "name": "Junio",
+                                "maximo": 2390
+                            },
+                            {
+                                "name": "Julio",
+                                "maximo": 3490
+                            },
+                            {
+                                "name": "Septiembre",
+                                "maximo": 3490
+                            },
+                            {
+                                "name": "Octubre",
+                                "maximo": 3490
+                            },
+                            {
+                                "name": "Noviembre",
+                                "maximo": 3490
+                            },
+                            {
+                                "name": "Diciembre",
+                                "maximo": 3490
+                            }
+                        ]
+                    },
+                    "topSeller_meds": {
+                        "stat_type": "topSeller_meds_query",
+                        "topSeller_meds_query": [
+                            {
+                                "name": "Ibuprofeno",
+                                "cantidad": 4000
+                            },
+                            {
+                                "name": "Heparina",
+                                "cantidad": 3000
+                            },
+                            {
+                                "name": "Dolocatil",
+                                "cantidad": 2000
+                            },
+                            {
+                                "name": "Dalsy",
+                                "cantidad": 2780
+                            },
+                            {
+                                "name": "Pectoxlisina",
+                                "cantidad": 1890
+                            },
+                            {
+                                "name": "Apiretal",
+                                "cantidad": 2390
+                            },
+                            {
+                                "name": "Omeprazol",
+                                "cantidad": 3490
+                            },
+                            {
+                                "name": "Enantyum",
+                                "cantidad": 3490
+                            },
+                            {
+                                "name": "Diazepam",
+                                "cantidad": 3490
+                            },
+                            {
+                                "name": "Adiro",
+                                "cantidad": 3490
+                            },
+                            {
+                                "name": "Amoxicilina",
+                                "cantidad": 3490
+                            }
+                        ]
+                    },
+                    "sells_comparation": {
+                        "stat_type": "sells_comparation_query",
+                        "sells_comparation_query": [
+                            {
+                                "name": "Enero",
+                                "anterior": 4000,
+                                "actual": 2400
+                            },
+                            {
+                                "name": "Fabrero",
+                                "anterior": 3000,
+                                "actual": 1398
+                            },
+                            {
+                                "name": "Marzo",
+                                "anterior": 2000,
+                                "actual": 9800
+                            },
+                            {
+                                "name": "Abril",
+                                "anterior": 2780,
+                                "actual": 3908
+                            },
+                            {
+                                "name": "Mayo",
+                                "anterior": 1890,
+                                "actual": 4800
+                            },
+                            {
+                                "name": "Junio",
+                                "anterior": 2390,
+                                "actual": 3800
+                            },
+                            {
+                                "name": "Julio",
+                                "anterior": 3490,
+                                "actual": 4300
+                            },
+                            {
+                                "name": "Septiembre",
+                                "anterior": 3490,
+                                "actual": 4300
+                            },
+                            {
+                                "name": "Octubre",
+                                "anterior": 3490,
+                                "actual": 4300
+                            },
+                            {
+                                "name": "Noviembre",
+                                "anterior": 3490,
+                                "actual": 4300
+                            },
+                            {
+                                "name": "Diciembre",
+                                "anterior": 3490,
+                                "actual": 4300
+                            }
+                        ]
+                    }
+                }
+        
+    return jsonify(response)
