@@ -9,13 +9,6 @@ import json
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
-#si hay dudas -> david
-#EL CHECKTOKEN SE HACE PREVIO A TOD0 EL RESTO
-
-# Comentarios Jaume: Done 👌
-# Prescripction_given y prescription_needed tienen que ser true o false.
-# El token se tiene que comprobar antes de nada
-# Si el token no es valid el result debe ser diferente a ok. Por ejemplo: "unvalid token" o algo así.
 
 def has_prescription():
     data = request.get_json()
@@ -127,55 +120,6 @@ def list_patient_orders():
         
         else:
             response = {'result': 'Aquest pacient no té cap ordre'}
-    else:
-        response = {'result': 'No tienes token para poder comprobar esto, espabila'}
-        
-    return jsonify(response)
-
-
-def list_all_orders():
-    data = request.get_json()
-    orders_per_page = data['orders_per_page']
-    page = data['page']
-    value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
-    if value['valid'] == 'ok': #si tiene token
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_all_orders"
-            return requests.post(url, json=data).json()
-        user_email = value['email']
-        es_manager = users.find_one({'user_email': user_email})
-        role_persona = es_manager['user_role']
-        if role_persona == 'manager':
-            te_orders = orders.find({}) #miro si tiene alguna receta
-            te_orders_list = list(te_orders)
-            if len(te_orders_list) > 0:
-                response = []
-                for te_order in te_orders_list:  # Para cada orden encontrada
-                    meds_list = te_order['meds_list']
-                    meds_details = []
-                    for med_code in meds_list: #para cada medicamento de med_list
-                        med_query = {'national_code': str(med_code)}
-                        med_result = farmacs.find_one(med_query) #lo busco en farmacs
-
-                        if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                            med_result['_id'] = str(med_result['_id'])
-                            meds_details.append(med_result)
-                            
-                    responses = {
-                                'order_identifier': te_order['order_identifier'], 
-                                'patient_email': te_order['patient_email'],
-                                'medicine_list': meds_details,
-                                'date': te_order['date'],
-                                'state': te_order['state']
-                    }
-                    response.append(responses)
-                response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
-                
-            else:
-                response = {'result': 'Aquest pacient no té cap ordre'}       
-        else:
-             response = {'result': 'No ets manager, no pots revisar els ordres', 'rol': role_persona}    
     else:
         response = {'result': 'No tienes token para poder comprobar esto, espabila'}
         

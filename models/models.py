@@ -21,6 +21,7 @@ colmenas = db['colmena']
 routes = db['Routes']
 orders = db['Orders']
 sessio = db["sessio"]
+doctor = db["DoctorAssigns"]
 camions = users = farmacs = recipies = drons = None
 if is_local == 0:
     camions = db['Camions']

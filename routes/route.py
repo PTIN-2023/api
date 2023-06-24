@@ -7,6 +7,7 @@ from controllers.controller_routes import *
 from controllers.controller_drones import *
 from controllers.controller_orders import *
 from controllers.controller_paypal import *
+from controllers.controller_managers import *
 
 
 def routes_user(app):
@@ -26,10 +27,17 @@ def routes_pacients(app):
     app.route("/api/has_prescription", methods=['POST'])(has_prescription)
     app.route("/api/get_prescription_meds", methods=['POST'])(get_prescription_meds)
     app.route("/api/list_patient_orders", methods=['POST'])(list_patient_orders)
-    app.route("/api/list_all_orders", methods=['POST'])(list_all_orders)
     app.route("/api/num_pages_patient_orders", methods=['POST'])(num_pages_patient_orders)
     app.route("/api/make_order",methods=['POST'])(make_order)
     app.route("/api/cancel_patient_order", methods=['POST'])(cancel_order)
+    
+def routes_managers(app):
+    app.route("/api/list_all_orders", methods=['POST'])(list_all_orders)
+    app.route("/api/manager_list_doctors", methods=['POST'])(manager_list_doctors)
+    # app.route("/api/manager_assign_doctors", methods=['POST'])(manager_assign_doctors)
+    # app.route("/api/stats", methods=['POST'])(stats)
+
+
 
 def routes_prescriptions(app):
     app.route("/api/doctor_create_prescription", methods=['POST'])(doctor_create_prescription)
