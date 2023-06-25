@@ -15,13 +15,18 @@ def login():
     if is_local == 1:
         url = cloud_api+"/api/login"
         response = requests.post(url, json=data).json()
+
+        logging.info(url)
+        logging.info(response)
+
         if response['result'] != 'ok':
             return response
-        # url = cloud_api+"/api/logout"
-        # data2 = {
-        #     'session_token': response['user_token']
-        # }
-        # requests.post(url, json=data2).json()
+        url = cloud_api+"/api/logout"
+        data2 = {
+            'session_token': response['user_token']
+        }
+        logging.info(url)
+        requests.post(url, json=data2).json()
         token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
         response['user_token'] = token
         entry = {
@@ -30,6 +35,7 @@ def login():
             "user_email": user_email,
         }
         sessio.insert_one(entry)
+        logging.info(response)
         return response
     user_password = data['user_password']
     doc = users.find_one({'user_email': user_email})
