@@ -83,8 +83,8 @@ def routes_routes(app):
     
 def routes_mqtt(app):
     app.route("/api/mqtt", methods=['POST'])(mqtt)
-    app.route("/api/UPDATELOCATION", methods=['POST'])(UPDATELOCATION)#nidea del hastag la verdad
-    app.route("/api/UPDATESTATUS", methods=['POST'])(UPDATESTATUS)#nidea del hastag la verdad
+    app.route("/api/update_location", methods=['POST'])(update_location)#nidea del hastag la verdad
+    app.route("/api/update_status", methods=['POST'])(update_status)#nidea del hastag la verdad
     app.route("/api/TOCLOUD_UPDATESTATUS", methods=['POST'])(TOCLOUD_UPDATESTATUS)#nidea del hastag la verdad
     app.route("/api/TOCLOUD_UPDATELOCATION", methods=['POST'])(TOCLOUD_UPDATELOCATION)#nidea del hastag la verdad
 

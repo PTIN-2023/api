@@ -21,7 +21,7 @@ CAR_SENT = 'car_sent'
 
 # Dudas -> Joa
 # Filtra el coche con id = id_car y actualiza todos los campos especificados
-def UPDATELOCATION():
+def update_location():
 
     data = request.get_json()
     update_fields = {
@@ -55,7 +55,7 @@ def UPDATELOCATION():
 # Actualiza el estado del coche con id = id_car
 # En caso de estado:
 #   3 : se actualizan todos los pedidos que transporta el coche al estado ORDER_CAR_SENT
-def UPDATESTATUS():
+def update_status():
     
     data = request.get_json()
     update_fields = {
