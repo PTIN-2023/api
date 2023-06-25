@@ -76,7 +76,20 @@ def manager_list_doctors():
                 
                 patients.append(patient_data)
             
-            response = {'result': 'ok', 'patients': patients}
+            doctor_users = users.find({'user_role': 'doctor'})
+            doctors = []
+            
+            for doctor in doctor_users:
+                doctor_data = {
+                    'user_full_name': doctor['user_full_name'],
+                    'user_email': doctor['user_email'],
+                    'user_phone': doctor['user_phone'],
+                    'user_city': doctor['user_city']
+                }
+                
+                doctors.append(doctor_data)
+            
+            response = {'result': 'ok', 'patients': patients, 'doctors': doctors}
         
         else:
             response = {'result': 'No ets manager, no pots revisar els ordres'}
@@ -137,12 +150,15 @@ def manager_assign_doctors():
             doctor_te_assignats = doctor.find_one({'doctor_email': doctor_email})
             if doctor_te_assignats: #el doctor ja tenia a un pacient assignat
                 patients_email = doctor_te_assignats.get('patients_email', [])
-                patients_email.append(patient_email)
-                
-                doctor.update_one(
-                    {'doctor_email': doctor_email},
-                    {'$set': {'patients_email': patients_email}}
-                )
+                if patient_email in patients_email:
+                    response = {'result': 'El doctor ja te assignat a aquest pacient'}
+                else:
+                    patients_email.append(patient_email)
+                    
+                    doctor.update_one(
+                        {'doctor_email': doctor_email},
+                        {'$set': {'patients_email': patients_email}}
+                    )
                 
             else: #el doctor no tenia cap pacient assignat
                nova_assignacio = {
@@ -156,6 +172,49 @@ def manager_assign_doctors():
         
         else:
             response = {'result': 'No ets manager, no pots revisar els ordres'}
+    
+    return jsonify(response)
+
+
+def delete_assignations_doctor():
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    doctor_email = data['doctor_email']
+    patient_email = data['patient_email']
+    
+    if value['valid'] != 'ok':
+        response = {'result': 'Token inválido'}
+    
+    else: 
+        user_email = value['email']
+        es_manager = users.find_one({'user_email': user_email})
+        role_persona = es_manager['user_role']
+        
+        if role_persona == 'manager':
+            doctor_te_assignats = doctor.find_one({'doctor_email': doctor_email})
+            
+            if doctor_te_assignats:  # tiene pacientes
+                patients_email = doctor_te_assignats.get('patients_email', [])
+                
+                if patient_email in patients_email:
+                    patients_email.remove(patient_email)
+                    
+                    if len(patients_email) == 0:  # solo tenia a ese paciente
+                        doctor.delete_one({'doctor_email': doctor_email})
+                    else:  # Había más de un paciente asignado
+                        doctor.update_one(
+                            {'doctor_email': doctor_email},
+                            {'$set': {'patients_email': patients_email}}
+                        )
+                    
+                    response = {'result': 'ok'}
+                else:
+                    response = {'result': 'El doctor no te aquest pacient assignat'}
+            
+            else:  #no tenia pacientes
+                response = {'result': 'El doctor no te pacients assignats o no existeix'}
+        else:
+            response = {'result': 'No ets manager, no pots revisar les assignacions'}
     
     return jsonify(response)
 
