@@ -22,7 +22,7 @@ def doctor_confirm_order():
         if order is None:
             response = {'valid': 'error', 'description': 'Order not found'}
         else:
-            if order['approved'] == '':
+            if order['approved'] == 'no':
                 update_query = {'$set': {'approved': data['approved'], 'state_num': 2, 'state': 'ordered', 'doctor_identifier': check['email']}}
                 if not data['approved']:
                     update_query['$set']['reason'] = data['reason']
@@ -165,7 +165,7 @@ def num_pending_confirmations():
             return requests.post(url, json=data).json()
         medNum = int(data['confirmations_per_page'])      
         #orders que faltan para aprobar de ese doctor
-        pending_orders_count = orders.count_documents({'approved': ''}) 
+        pending_orders_count = orders.count_documents({'approved': 'no'}) 
         num_pages = (pending_orders_count + medNum - 1) // medNum
         response = {'result': 'ok', 'num_pages': num_pages}
     else:
