@@ -196,7 +196,7 @@ def delete_assignations_doctor():
     patient_email = data['patient_email']
     
     if value['valid'] != 'ok':
-        response = {'result': 'Token inválido'}
+        response = {'result': 'Unvalid token'}
     
     else: 
         user_email = value['email']
