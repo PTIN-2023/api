@@ -121,18 +121,21 @@ def list_assigned_doctors():
                 patients_email = doctor_list.get('patients_email', [])
                 
                 for patient in patients_email:
-                    patient_user = users.find_one({'user_email': patient})
-                    
-                    print(patient_user)
-                    
-                    patient_data = {
-                        'user_full_name': patient_user['user_full_name'],
-                        'user_email': patient_user['user_email'],
-                        'user_phone': patient_user['user_phone'],
-                        'user_city': patient_user['user_city']
-                    }
+                    try:
+                        patient_user = users.find_one({'user_email': patient})
+        
+                        if patient_user:
+                            patient_data = {
+                                'user_full_name': patient_user.get('user_full_name', ''),
+                                'user_email': patient_user.get('user_email', ''),
+                                'user_phone': patient_user.get('user_phone', ''),
+                                'user_city': patient_user.get('user_city', '')
+                            }
 
-                    list_patients.append(patient_data)
+                        list_patients.append(patient_data)
+    
+                    except Exception as e:   
+                        print(f"Error occurred while processing patient data: {e}")
             
             response = {'result': 'ok', 'patients': list_patients} 
         else:
