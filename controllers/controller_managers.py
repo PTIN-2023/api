@@ -115,7 +115,7 @@ def list_assigned_doctors():
         role_persona = es_manager['user_role']
         if role_persona == 'manager':
             list_patients = []
-            doctor_list = doctor.find({'doctor_email': doctor_email})
+            doctor_list = doctor.find_one({'doctor_email': doctor_email})
             
             if doctor_list:
                 patients_email = doctor_list.get('patients_email', [])
