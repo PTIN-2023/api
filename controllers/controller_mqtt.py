@@ -19,6 +19,7 @@ FAILED  = { 'value': "fail" }
 # CAR / ORDER STATUS
 
 CAR_WAITS = 5
+CAR_UNLOADING = 2
 CAR_DELIVERING = 3
 ORDER_CAR_SENT = 3
 CAR_SENT = 'car_sent'
@@ -111,6 +112,24 @@ def update_status():
                         logging.info("ORDER | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
 
             
+            # copy orders transported by car <id_car> to edge db            
+            elif data['status_num'] == CAR_UNLOADING:
+                
+                orders_car = camions.find_one(
+                    {'id_car'       : data['id_car']}, 
+                    {'packages'     : 1}
+                )
+                orders_car = orders_car["packages"]
+
+                full_orders = []
+                for order in orders_car:
+
+                    full_orders.append(orders.find_one(
+                        { 'order_identifier' : order['order_identifier'] }
+                    ))
+            
+                logging.info(full_orders)
+
             # remove id_route from car <id_car> at the end of the route
             elif data['status_num'] == CAR_WAITS:
                 
