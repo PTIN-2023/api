@@ -166,7 +166,7 @@ def send_order_cars():
         coordinates = routes.find_one({'id_route' : id_route})
 
         packages = []        
-        [ packages.append({ 'order_identifier' : order['order_identifier']}) for order in car['cargo'] ]
+        [ packages.append({ 'order_identifier' : str(order['order_identifier'])}) for order in car['cargo'] ]
 
         update_fields = { 
             'id_route'  : id_route,
