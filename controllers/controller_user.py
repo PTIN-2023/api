@@ -15,7 +15,7 @@ def login():
     if is_local == 1:
         url = cloud_api+"/api/login"
         response = requests.post(url, json=data).json()
-        if response['result' != 'ok']:
+        if response['result'] != 'ok':
             return response
         url = cloud_api+"/api/logout"
         data2 = {

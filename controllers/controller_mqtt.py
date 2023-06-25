@@ -19,6 +19,7 @@ FAILED  = { 'value': "fail" }
 # CAR / ORDER STATUS
 
 CAR_WAITS = 5
+CAR_UNLOADING = 1
 CAR_DELIVERING = 3
 ORDER_CAR_SENT = 3
 CAR_SENT = 'car_sent'
@@ -84,6 +85,13 @@ def update_status():
                 {'$set'     : update_fields }  
             )   
 
+            if result.modified_count:
+                logging.info("CAR | Documento actualizado correctamente")
+            
+            else:
+                logging.info("update_status | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
+                return jsonify(FAILED), 404
+
             # update status orders transported by car <id_car>
             if data['status_num'] == CAR_DELIVERING:
 
@@ -110,6 +118,20 @@ def update_status():
                     else:
                         logging.info("ORDER | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
 
+            # copy orders transported by car <id_car> to edge db            
+            elif data['status_num'] == CAR_UNLOADING:
+                
+                orders_car = camions.find_one(
+                    {'id_car'       : data['id_car']}, 
+                    {'packages'     : 1}
+                )
+                orders_car = orders_car["packages"]
+
+                for order in orders_car:
+
+                    full_orders = orders.find_one({ 'order_identifier' : order['order_identifier'] })
+                    
+
             
             # remove id_route from car <id_car> at the end of the route
             elif data['status_num'] == CAR_WAITS:
@@ -125,15 +147,9 @@ def update_status():
 
                 else:
                     logging.info("update_car | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+            
+        return jsonify(OK), 200
 
-            
-            if result.modified_count:
-                logging.info("CAR | Documento actualizado correctamente")
-                return jsonify(OK), 200
-            
-            else:
-                logging.info("update_status | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
-                return jsonify(FAILED), 404
             
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
