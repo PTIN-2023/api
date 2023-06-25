@@ -17,11 +17,11 @@ def login():
         response = requests.post(url, json=data).json()
         if response['result'] != 'ok':
             return response
-        url = cloud_api+"/api/logout"
-        data2 = {
-            'session_token': response['user_token']
-        }
-        requests.post(url, json=data2).json()
+        # url = cloud_api+"/api/logout"
+        # data2 = {
+        #     'session_token': response['user_token']
+        # }
+        # requests.post(url, json=data2).json()
         token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
         response['user_token'] = token
         entry = {
