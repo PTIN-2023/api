@@ -124,6 +124,10 @@ def update_status():
                 full_orders = []
                 for order in orders_car:
 
+                    logging.info(orders.find_one(
+                        { 'order_identifier' : order['order_identifier'] }
+                    ))
+
                     full_orders.append(orders.find_one(
                         { 'order_identifier' : order['order_identifier'] }
                     ))
