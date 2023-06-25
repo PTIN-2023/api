@@ -8,6 +8,8 @@ from controllers.controller_drones import *
 from controllers.controller_orders import *
 from controllers.controller_paypal import *
 from controllers.controller_managers import *
+from controllers.controller_colmenes import *
+from controllers.controller_prescriptions import *
 
 
 def routes_user(app):
