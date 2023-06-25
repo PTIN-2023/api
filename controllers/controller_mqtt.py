@@ -122,19 +122,13 @@ def update_status():
                 orders_car = orders_car["packages"]
 
                 full_orders = []
-                logging.info(orders_car)
                 for order in orders_car:
-
-                    logging.info(orders.find_one(
-                        { 'order_identifier' : order['order_identifier'] }
-                    ))
-
                     full_orders.append(orders.find_one(
                         { 'order_identifier' : order['order_identifier'] }
                     ))
-            
-                logging.info(full_orders)
 
+                # send all orders to the specific edge
+            
             # remove id_route from car <id_car> at the end of the route
             elif data['status_num'] == CAR_WAITS:
                 
