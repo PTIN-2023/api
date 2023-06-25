@@ -160,8 +160,9 @@ def send_order_cars():
     
     for car in data['assignations']:
 
-        id_car   = car['id_car']
-        id_route = car['route']['id_route']
+        id_car      = car['id_car']
+        id_beehive  = car['id_beehive']
+        id_route    = car['route']['id_route']
         coordinates = routes.find_one({'id_route' : id_route})
 
         packages = []        
@@ -169,6 +170,7 @@ def send_order_cars():
 
         update_fields = { 
             'id_route'  : id_route,
+            'beehive'   : id_beehive,
             'packages'  : packages
         }
         result = camions.update_one(
