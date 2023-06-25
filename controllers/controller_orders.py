@@ -71,7 +71,7 @@ def list_doctor_pending_confirmations():
         medNum = int(data['confirmations_per_page'])
         page = int(data['page'])
         limit_inf = (page - 1) * medNum
-        pending_orders = orders.find({'approved': ""}).limit(medNum).skip(limit_inf)
+        pending_orders = orders.find({'approved': 'no'}).limit(medNum).skip(limit_inf)
         list = [{
             'order_identifier': doc['order_identifier'],
             'date': doc['date'],
