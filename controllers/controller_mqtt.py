@@ -122,6 +122,7 @@ def update_status():
                 orders_car = orders_car["packages"]
 
                 full_orders = []
+                logging.info(orders_car)
                 for order in orders_car:
 
                     logging.info(orders.find_one(
