@@ -67,6 +67,10 @@ def manager_list_doctors():
             patients = []
             
             for user in patient_users:
+                
+                prueba_email = user['user_email']
+                print(prueba_email)
+                
                 patient_data = {
                     'user_full_name': user['user_full_name'],
                     'user_email': user['user_email'],
@@ -111,21 +115,24 @@ def list_assigned_doctors():
         role_persona = es_manager['user_role']
         if role_persona == 'manager':
             list_patients = []
-            patients = doctor.find({'doctor_email': doctor_email})
+            doctor_list = doctor.find({'doctor_email': doctor_email})
             
-            for patient in patients:
-                patient_email = patient['patients_email']
+            if doctor_list:
+                patients_email = doctor_list.get('patients_email', [])
                 
-                patient_user = users.find_one({'user_email': patient_email})
-                
-                patient_data = {
-                    'user_full_name': patient_user['user_full_name'],
-                    'user_email': patient_user['user_email'],
-                    'user_phone': patient_user['user_phone'],
-                    'user_city': patient_user['user_city']
-                }
+                for patient in patients_email:
+                    patient_user = users.find_one({'user_email': patient})
+                    
+                    print(patient_user)
+                    
+                    patient_data = {
+                        'user_full_name': patient_user['user_full_name'],
+                        'user_email': patient_user['user_email'],
+                        'user_phone': patient_user['user_phone'],
+                        'user_city': patient_user['user_city']
+                    }
 
-                list_patients.append(patient_data)
+                    list_patients.append(patient_data)
             
             response = {'result': 'ok', 'patients': list_patients} 
         else:
@@ -150,8 +157,11 @@ def manager_assign_doctors():
             doctor_te_assignats = doctor.find_one({'doctor_email': doctor_email})
             if doctor_te_assignats: #el doctor ja tenia a un pacient assignat
                 patients_email = doctor_te_assignats.get('patients_email', [])
+                
                 if patient_email in patients_email:
                     response = {'result': 'El doctor ja te assignat a aquest pacient'}
+                    return jsonify(response)
+                
                 else:
                     patients_email.append(patient_email)
                     
