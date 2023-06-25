@@ -1,5 +1,6 @@
 from flask import jsonify, request
 from pymongo.errors import PyMongoError
+import os
 
 # Models
 from models.models import orders
@@ -9,12 +10,15 @@ from models.models import drons
 import logging
 logging.basicConfig(level = logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+is_local = int(os.environ.get('IS_LOCAL'))
+
 # Return status
 OK      = { 'value': "ok" }
 FAILED  = { 'value': "fail" }
 
 # CAR / ORDER STATUS
 
+CAR_WAITS = 5
 CAR_DELIVERING = 3
 ORDER_CAR_SENT = 3
 CAR_SENT = 'car_sent'
@@ -33,19 +37,27 @@ def update_location():
     }
 
     try:
-        result = camions.update_one(
-            {'id_car'   : data['id_car']}, 
-            {'$set'     : update_fields }
-        )
+
+        if is_local == 0:
+            result = camions.update_one(
+                {'id_car'   : data['id_car']}, 
+                {'$set'     : update_fields }
+            )
+
+        else:
+            result = drons.update_one(
+                {'id_dron'  : data['id_dron']},
+                {'$set'     : update_fields}
+            )
 
         if result.modified_count > 0:
             logging.info("Documento actualizado correctamente.")
             return jsonify(OK), 200
         
         else:
-            logging.info("UPDATELOCATION | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
+            logging.info("UPDATELOCATION | El documento no se actualizó. Puede que no se encontrara el id_car/id_dron especificado.")
             return jsonify(FAILED), 404
-    
+        
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
         return jsonify(FAILED), 500
@@ -64,37 +76,64 @@ def update_status():
     }
     
     try:
-        result = camions.update_one(
-            {'id_car'   : data['id_car']},
-            {'$set'     : update_fields }  
-        )   
 
-        if data['status_num'] == CAR_DELIVERING:
+        if is_local == 0:
 
-            orders_car = camions.find_one(
-                {'id_car'       : data['id_car']}, 
-                {'packages'     : 1}
-            )
-            orders_car = orders_car["packages"]
+            result = camions.update_one(
+                {'id_car'   : data['id_car']},
+                {'$set'     : update_fields }  
+            )   
 
-            for order in orders_car:
+            # update status orders transported by car <id_car>
+            if data['status_num'] == CAR_DELIVERING:
 
-                update_fields = {
-                    'state'     : CAR_SENT,
-                    'state_num' : ORDER_CAR_SENT
-                }
-                response = orders.update_one(
-                    { 'order_identifier' : order['order_identifier'] }, 
-                    { '$set'             : update_fields } 
+                orders_car = camions.find_one(
+                    {'id_car'       : data['id_car']}, 
+                    {'packages'     : 1}
                 )
+                orders_car = orders_car["packages"]
 
-        if result.modified_count * response.modified_count > 0:
-            logging.info("Documento actualizado correctamente")
-            return jsonify(OK), 200
-        
-        else:
-            logging.info("UPDATELOCATION | El documento no se actualizó. Puede que no se encontrara el id_car / order_identifier especificado.")
-            return jsonify(FAILED), 404
+                for order in orders_car:
+
+                    update_fields = {
+                        'state'     : CAR_SENT,
+                        'state_num' : ORDER_CAR_SENT
+                    }
+                    response = orders.update_one(
+                        { 'order_identifier' : order['order_identifier'] }, 
+                        { '$set'             : update_fields } 
+                    )
+
+                    if response.modified_count > 0:
+                        logging.info("ORDER | Documento actualizado correctamente")
+
+                    else:
+                        logging.info("ORDER | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+
+            
+            # remove id_route from car <id_car> at the end of the route
+            elif data['status_num'] == CAR_WAITS:
+                
+                update_fields = { 'id_route'  : -1 }
+                result = camions.update_one(
+                    {'id_car'   : data['id_car']},
+                    {'$set'     : update_fields }  
+                )
+                
+                if result.modified_count > 0:
+                    logging.info("update_car | Documento actualizado correctamente")
+
+                else:
+                    logging.info("update_car | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+
+            
+            if result.modified_count:
+                logging.info("CAR | Documento actualizado correctamente")
+                return jsonify(OK), 200
+            
+            else:
+                logging.info("update_status | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
+                return jsonify(FAILED), 404
             
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
