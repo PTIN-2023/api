@@ -231,6 +231,75 @@ def delete_assignations_doctor():
     
     return jsonify(response)
 
+def add_medicine():
+    #mirar si es un gestor
+    #guardar en bd
+    # retronrar resultado funcion, medicine id, medicine name
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
+    else: 
+        user_email = value['email']
+        es_manager = users.find_one({'user_email': user_email})
+        role_persona = es_manager['user_role']
+        
+        if role_persona == 'manager':
+            #es un gestor puede guardar esa medicina en meds
+            national_code = data['national_code']
+            medicine_image_url = data['medicine_image_url']
+            med_name = data['med_name']
+            excipient = data['excipient']
+            pvp = data['pvp']
+            use_type = data['use_type']
+            contents = data['contents']
+            prescription_needed = data['prescription_needed']
+            form = data['form']
+            type_of_administration = data['type_of_administration']
+
+            #guardar en bd si no esta ya puesta en bd 
+            existing_medicine=  None
+            existing_medicine = recipes.find_one({
+                "national_code": national_code,
+                "medicine_image_url": medicine_image_url,
+                "med_name": med_name,
+                "excipient": excipient,
+                "pvp": pvp,
+                "use_type": use_type,
+                "contents": contents,
+                "prescription_needed": prescription_needed,
+                "form": form,
+                "type_of_administration": type_of_administration
+            })  
+
+            if existing_medicine: #encontrada la medicina
+                response={'result': 'Hi ha un medicament amb els mateixos detalls que els entrats'}
+                return jsonify(response)
+            else:
+                medicine_data = {
+                "national_code": national_code,
+                "medicine_image_url": medicine_image_url,
+                "med_name": med_name,
+                "excipient": excipient,
+                "pvp": pvp,
+                "use_type": use_type,
+                "contents": contents,
+                "prescription_needed": prescription_needed,
+                "form": form,
+                "type_of_administration": type_of_administration
+                }
+
+                result = recipes.insert_one(medicine_data)
+                response={
+                    "result":"ok",
+                    "medicine_identifier":national_code, #id de la medicina es el national code
+                    "medicine_name":med_name
+                }         
+        else:
+            response = {'result': 'No ets manager, no pots revisar les assignacions'}
+    
+    return jsonify(response)
+
 
 def stats():
     data = request.get_json()
