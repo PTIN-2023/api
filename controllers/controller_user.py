@@ -2,7 +2,7 @@ from flask import jsonify, request
 from datetime import timedelta, datetime
 import jwt
 from models.models import *
-from utils.utils import checktoken, check_token_doctor, get_coordinates
+from utils.utils import checktoken, check_token_doctor, get_coordinates, get_closest_beehive
 import logging
 from pymongo import UpdateOne
     
@@ -74,13 +74,14 @@ def register():
         }
         sessio.insert_one(entry)
         return response
-    coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
-    if coordinates is None:
+    user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
+    if user_coordinates is None:
         #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
         response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
         return jsonify(response)
     else:
-        latitude, longitude = coordinates
+        user_latitude, user_longitude = user_coordinates
+        beehive_latitude, beehive_longitude = get_closest_beehive(data['user_city'],user_latitude,user_longitude)
         entry = {
             "user_full_name": data['user_full_name'],
             "user_given_name": data['user_given_name'],
@@ -92,8 +93,12 @@ def register():
             "user_password": data['user_password'],
             "when": datetime.now(),
             "user_coordinates": {
-                "latitude": latitude,
-                "longitude": longitude
+                "latitude": user_latitude,
+                "longitude": user_longitude
+            },
+            "beehive_coordinates": {
+                "latitude": beehive_latitude,
+                "longitude": beehive_longitude
             }
         }
         try:
@@ -250,30 +255,41 @@ def set_user_info():
         user_phone = data['user_phone']
         user_city = data['user_city']
         user_address = data['user_address']
-        longitude = data['user_coordinates']['longitude']
-        latitude = data['user_coordinates']['latitude']        
-        # Update values
-        update_operations = [
-            UpdateOne({'user_email': user_email},
-                      {'$set': {
-                          'user_full_name': user_full_name,
-                          'user_given_name': user_given_name,
-                          #'user_email': user_email,
-                          'coordinates': {'longitude': longitude,
-                                          'latitude': latitude
-                                        },
-                          'user_phone': user_phone,
-                          'user_city': user_city,
-                          'user_address': user_address
-                          
-                      }})
-        ]
-        users.bulk_write(update_operations)
 
-        response = {'result': 'ok'}
+        user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
+        if user_coordinates is None:
+            #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
+            response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
+            return jsonify(response)
+        else:
+            user_latitude, user_longitude = user_coordinates
+            beehive_latitude, beehive_longitude = get_closest_beehive(data['user_city'],user_latitude,user_longitude)     
+            # Update values
+            update_operations = [
+                UpdateOne({'user_email': user_email},
+                        {'$set': {
+                            'user_full_name': user_full_name,
+                            'user_given_name': user_given_name,
+                            'user_coordinates': {
+                                'longitude': user_longitude,
+                                'latitude': user_latitude
+                            },
+                            'beehive_coordinates': {
+                                'longitude': beehive_longitude,
+                                'latitude': beehive_latitude
+                            },
+                            'user_phone': user_phone,
+                            'user_city': user_city,
+                            'user_address': user_address
+                            
+                        }})
+            ]
+            users.bulk_write(update_operations)
 
-        return jsonify(response)
+            response = {'result': 'ok'}
+
+            return jsonify(response)
     else:
         response = {'result': 'Token invàlid'}
-    
-    
+        
+        
