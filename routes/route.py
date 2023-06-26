@@ -40,7 +40,7 @@ def routes_managers(app):
     app.route("/api/manager_assign_doctors", methods=['POST'])(manager_assign_doctors)
     app.route("/api/delete_assignations_doctor", methods=['POST'])(delete_assignations_doctor)
     app.route("/api/stats", methods=['POST'])(stats)
-
+    app.route("/api/add_medicine", methods=['POST'])(add_medicine)
 
 
 def routes_prescriptions(app):
@@ -71,7 +71,7 @@ def routes_drones(app):
     app.route("/api/drones_full_info", methods=['POST'])(drons_full_info)
     app.route("/api/drones_pos_info", methods=['POST'])(drons_pos_info)
     app.route("/api/send_order_drones", methods=['POST'])(send_order_drones)
-    app.route("/api/list_order_to_set_drones", methods=['POST'])(list_order_to_set_drones)
+    app.route("/api/list_orders_to_send_drones", methods=['POST'])(list_orders_to_send_drones)
     app.route("/api/list_available_drones", methods=['POST'])(list_available_drones)
 
 def routes_colmenes(app):
@@ -83,6 +83,9 @@ def routes_routes(app):
     app.route("/api/get_route", methods=['POST'])(get_route)
     app.route("/api/general_storage_pos", methods=['POST'])(general_storage_pos)
     app.route("/api/update_order_cars", methods=['POST'])(update_order_cars)
+    app.route("/api/update_order_drones", methods=['POST'])(update_order_drones)
+
+
     
 def routes_mqtt(app):
     app.route("/api/mqtt", methods=['POST'])(mqtt)

@@ -12,3 +12,4 @@ Werkzeug==2.2.3
 PyJWT
 paho-mqtt
 paypalrestsdk
+geopy

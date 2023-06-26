@@ -2,7 +2,7 @@ from flask import jsonify, request
 from datetime import timedelta, datetime
 import jwt
 from models.models import *
-from utils.utils import checktoken, check_token_doctor
+from utils.utils import checktoken, check_token_doctor, get_coordinates
 import logging
 from pymongo import UpdateOne
     
@@ -74,30 +74,41 @@ def register():
         }
         sessio.insert_one(entry)
         return response
-    entry = {
-        "user_full_name": data['user_full_name'],
-        "user_given_name": data['user_given_name'],
-        "user_role": "patient",
-        "user_email": user_email,
-        "user_phone": data['user_phone'],
-        "user_city": data['user_city'],
-        "user_address": data['user_address'],
-        "user_password": data['user_password'],
-        "when": datetime.now(),
-    }
-    try:
-        id = users.insert_one(entry).inserted_id
-        token = jwt.encode({'username': entry['user_email']}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
-        token_entry = {
-            "token": token,
-            "data": datetime.now().isoformat(),
-            "user_email": entry['user_email'],
+    coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
+    if coordinates is None:
+        #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
+        response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
+        return jsonify(response)
+    else:
+        latitude, longitude = coordinates
+        entry = {
+            "user_full_name": data['user_full_name'],
+            "user_given_name": data['user_given_name'],
+            "user_role": "patient",
+            "user_email": user_email,
+            "user_phone": data['user_phone'],
+            "user_city": data['user_city'],
+            "user_address": data['user_address'],
+            "user_password": data['user_password'],
+            "when": datetime.now(),
+            "user_coordinates": {
+                "latitude": latitude,
+                "longitude": longitude
+            }
         }
-        res = sessio.insert_one(token_entry)
-        response = {'result': 'ok', 'session_token': token}
-    except pymongo.errors.DuplicateKeyError as description_error:
-        response = {'result': 'error', 'description': str(description_error)}
-    return jsonify(response)
+        try:
+            id = users.insert_one(entry).inserted_id
+            token = jwt.encode({'username': entry['user_email']}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
+            token_entry = {
+                "token": token,
+                "data": datetime.now().isoformat(),
+                "user_email": entry['user_email'],
+            }
+            res = sessio.insert_one(token_entry)
+            response = {'result': 'ok', 'session_token': token}
+        except pymongo.errors.DuplicateKeyError as description_error:
+            response = {'result': 'error', 'description': str(description_error)}
+        return jsonify(response)
 
 
 def register_premium():

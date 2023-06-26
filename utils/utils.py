@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import request
 from models.models import *
+from geopy.geocoders import Nominatim
 
 def checktoken(token):
     if(token==""):
@@ -55,4 +56,11 @@ def checktokenv2():
     else:
         return {'existe':'0'}
 
+def get_coordinates(address):
+    geolocator = Nominatim(user_agent="geo_locator")
+    location = geolocator.geocode(address)
+    if location is None:
+        return None
+    else:
+        return location.latitude, location.longitude
 
