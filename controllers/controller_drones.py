@@ -197,37 +197,4 @@ def list_available_drones():
     else:
         return jsonify(response)
 
-# def colmena_global():
-#     data = request.get_json()
-#     value = checktoken(data['session_token'])
-#     response = {'value': value['valid']}
-    
-#     if value['valid'] == 'ok':
-#         colmena = colmenas.find()
-#         return jsonify(response, [{
-#             'id_beehive': doc['id_beehive'],
-#         #falta latitude y longitud
-#         }for doc in drones])
-#     else:
-#         return jsonify(response)
-        
-#def beehives_local():
-#    if is_local == 0:
-#        return jsonify({'result':'error, funcio no disponible al cloud'})
-#    data = request.get_json()
-#    value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
-#    if value['valid'] == 'ok': #si tiene token
-#        #mañana la acabo
-#        #variable de entorno, pillar su id
-#        #query = {'id_beehive': variable de entorno (id)}
-#        #for de ids
-#            #array auxiliar
-#            #latitud y longitud para ese id.append
-#        #en el response meter el array 
-#        response = {'valid': 'None1'}
-#    
-#    else:
-#        response = {'result': 'No tienes token para poder comprobar esto, espabila'}
-#        
-#    return jsonify(response)      
-#
+
