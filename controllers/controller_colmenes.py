@@ -21,8 +21,8 @@ def beehives_global():
         response['beehives'] = [{
             'id_beehive': doc['id_beehive'],
             'latitude': doc['location_end']['latitude'],
-            'longitude': doc['location_end']['longitude'],
-            'url_beehive': url,
+            'longitude': doc['location_end']['longitude']
+            # 'url_beehive': url,
         }for doc in colmenitas]
     else:
         response = value 
