@@ -62,7 +62,7 @@ def manager_list_doctors():
         user_email = value['email']
         es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
-        if role_persona == 'manager':
+        if role_persona == 'manager' or role_persona == 'doctor':
             patient_users = users.find({'user_role': 'patient'})
             patients = []
             
