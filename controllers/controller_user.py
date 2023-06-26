@@ -15,7 +15,7 @@ def login():
     if is_local == 1:
         url = cloud_api+"/api/login"
         response = requests.post(url, json=data).json()
-        if response['result' != 'ok']:
+        if response['result'] != 'ok':
             return response
         token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
         response['user_token'] = token
@@ -58,7 +58,7 @@ def register():
     if is_local == 1:
         url = cloud_api+"/api/register"
         response = requests.post(url, json=data).json()
-        if response['result' != 'ok']:
+        if response['result'] != 'ok':
             return response
         url = cloud_api+"/api/logout"
         data2 = {
@@ -117,7 +117,7 @@ def register_premium():
     if is_local == 1:
         url = cloud_api+"/api/manager_create_account"
         response = requests.post(url, json=data).json()
-        if response['result' != 'ok']:
+        if response['result'] != 'ok':
             return response
         url = cloud_api+"/api/logout"
         data2 = {

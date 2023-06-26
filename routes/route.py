@@ -83,6 +83,9 @@ def routes_routes(app):
     app.route("/api/get_route", methods=['POST'])(get_route)
     app.route("/api/general_storage_pos", methods=['POST'])(general_storage_pos)
     app.route("/api/update_order_cars", methods=['POST'])(update_order_cars)
+    app.route("/api/update_order_drones", methods=['POST'])(update_order_drones)
+
+
     
 def routes_mqtt(app):
     app.route("/api/mqtt", methods=['POST'])(mqtt)
