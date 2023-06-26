@@ -131,7 +131,7 @@ def list_orders_to_send_drones():
 
     if value['valid'] == OK:
 
-        beehive = colmenas.find({ 'id_beehive' : data['id_beehive'] })
+        beehive = colmenas.find_one({ 'id_beehive' : data['id_beehive'] })
         if beehive is not None:
 
             orders = []
