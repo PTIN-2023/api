@@ -65,7 +65,7 @@ def get_coordinates(address):
     else:
         return location.latitude, location.longitude
 
-def distance(lat1, lat2, lon1, lon2):
+def get_distance(lat1, lat2, lon1, lon2):
      
     # The math module contains a function named
     # radians which converts from degrees to radians.
@@ -108,7 +108,7 @@ def get_closest_beehive(city, user_latitude, user_longitude):
             colmena_latitude = colmena['location_end']['latitude']
             colmena_longitude = colmena['location_end']['longitude']
             
-            distance = distance(user_latitude, colmena_latitude, user_longitude, colmena_longitude)
+            distance = get_distance(user_latitude, colmena_latitude, user_longitude, colmena_longitude)
             
             if distance < closest_distance:
                 closest_distance = distance
