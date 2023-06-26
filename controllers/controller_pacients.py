@@ -241,6 +241,7 @@ def make_order():
         #else:
         max_order = orders.find_one({'order_identifier': [("order_identifier", -1)]})
         #    
+        logging.info(max_order)
         if max_order:
             last_identifier = max_order["order_identifier"]
             rest_of_value = int(last_identifier[1:])
