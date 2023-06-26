@@ -3,6 +3,8 @@ from models.models import *
 from utils.utils import checktoken
 import json
 
+OK = 'ok'
+NOT_AVAILABLE_AT_CLOUD = { 'result': 'error, funcio no disponible al cloud' }
 
 def beehives_global():
     data = request.get_json()
@@ -23,17 +25,26 @@ def beehives_global():
     return jsonify(response)    
 
 def beehives_local():
+
+    if is_local == 0:
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+
     data = request.get_json()
     value = checktoken(data['session_token'])
-    if value['valid'] == 'ok':
-        if is_local == 0:
-            return jsonify({'result':'error, funcio no disponible al cloud'})
+    response = { 'value' : value['valid'] }
+
+    if value['valid'] == OK:
         colmenitas = colmenas.find()
-        response['beehives'] = [{
-            'id_beehive': doc['id_beehive'],
-            'latitude': doc['location_end']['latitude'],
-            'longitude': doc['location_end']['longitude'],
-        }for doc in colmenitas]
+
+        beehives = []
+        for colmena in colmenitas:
+            beehives.append({
+                'id_beehive'    : colmena['id_beehive'],
+                'latitude'      : colmena['location_end']['latitude'],
+                'longitude'     : colmena['location_end']['longitude'],
+            })
+        response['beehives'] = beehives
     else:
         response = value
+        
     return jsonify(response) 
