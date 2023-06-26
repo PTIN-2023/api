@@ -43,7 +43,7 @@ def drons_full_info():
         
         return jsonify({
             'result'    : OK, 
-            'drons'     : res
+            'drones'     : res
         })
     
     else:
@@ -69,7 +69,7 @@ def drons_pos_info():
 
         return jsonify({
             'result'    : OK, 
-            'drons'     : res
+            'drones'     : res
         })
     
     else:
@@ -143,10 +143,10 @@ def list_available_drones():
     if value['valid'] == OK:
         drones = drons.find({
             'status'    : DRON_WAITS,
-            'beehive'   : data['id_beehive']
+            'beehive'   : int(data['id_beehive'])
         })
         res=( [{
-            'id_car'    : doc['id_dron'],
+            'id_dron'   : doc['id_dron'],
             'status'    : doc['status_num'],
             'autonomy'  : doc['autonomy'],
             'capacity'  : doc['capacity']
@@ -154,7 +154,7 @@ def list_available_drones():
         
         return jsonify({
             'result'    : OK, 
-            'drons'     : res
+            'drones'     : res
         })
     else:
         return jsonify(response)
