@@ -119,7 +119,6 @@ def send_dron(id_dron, order, coordinates):
     client.disconnect()
 
 
-#Faltan edges y mapa bien
 def list_order_to_set_drones():
     if is_local == 0:
         return jsonify({'result':'error, funcio no disponible al cloud'})
@@ -133,21 +132,30 @@ def list_order_to_set_drones():
     return jsonify(response)
 
 def list_available_drones():
+    
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
-    response = {'result': value['valid']}
+    response = { 'value' : value['valid'] }
 
-    if value['valid'] == 'ok':
-        drones = drons.find()
-        res=([{
-            'id_car': doc['id_dron'],
-            'status': doc['status'],
-            'autonomy': doc['autonomy'],
-            'capacity': doc['capacity']
-    }for doc in drones])
-        return jsonify({'result':'ok','drons':res})
+    if value['valid'] == OK:
+        drones = drons.find({
+            'status'    : DRON_WAITS,
+            'beehive'   : data['id_beehive']
+        })
+        res=( [{
+            'id_car'    : doc['id_dron'],
+            'status'    : doc['status_num'],
+            'autonomy'  : doc['autonomy'],
+            'capacity'  : doc['capacity']
+    } for doc in drones] )
+        
+        return jsonify({
+            'result'    : OK, 
+            'drons'     : res
+        })
     else:
         return jsonify(response)
 
