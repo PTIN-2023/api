@@ -90,11 +90,11 @@ def distance(lat1, lat2, lon1, lon2):
 def get_closest_beehive(city, user_latitude, user_longitude):
     query = {"city": city}
     result = colmenas.find(query)
-    colmenas = list(result)
-    count = len(colmenas)
+    colmenass = list(result)
+    count = len(colmenass)
 
     if count == 1:
-        colmena = colmenas[0]
+        colmena = colmenass[0]
         colmena_latitude = colmena['location_end']['latitude']
         colmena_longitude = colmena['location_end']['longitude']
         
@@ -104,7 +104,7 @@ def get_closest_beehive(city, user_latitude, user_longitude):
         closest_distance = float('inf')
         closest_colmena = None
         
-        for colmena in colmenas:
+        for colmena in colmenass:
             colmena_latitude = colmena['location_end']['latitude']
             colmena_longitude = colmena['location_end']['longitude']
             
