@@ -139,7 +139,7 @@ def list_orders_to_send_drones():
 
             for package in packages:
                 order_identifier = package['order_identifier']
-                order = orders.find({ 'order_identifier' : order_identifier })
+                order = orders.find_one({ 'order_identifier' : order_identifier })
 
                 # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
                 # Av. Corral d'en Cona, 8, 08880 El Corral d'en Cona, Barcelona -> 41.219670, 1.669643
