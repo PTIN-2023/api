@@ -193,53 +193,39 @@ def make_order():
             return requests.post(url, json=data).json()
         meds_list = data['medicine_identifiers']
         patient_identifier = value['email'] #cojo el mail de la persona
-        meds_final = []
-        
-        conReceta = False 
+       
+        approvation_required = False 
         
         for med_code in meds_list: #se revisa si el input es correcto
+
             med_query = {'national_code': str(med_code)}
             med_result = farmacs.find_one(med_query) #lo busco en farmacs
             
-            if med_result: 
+            if med_result:
                 response = {'result': 'vas bien'}
-                prescription_needed = med_result.get('prescription_needed', False)
-                if prescription_needed: #si el medicamento necesita receta
+                if med_result['prescription_needed']:
                     #mirar si el user tiene receta para este med
-                    prescription_given = recipes.find_one({'patient_identifier': patient_identifier}) #miro si tiene alguna receta
-                    med_nationalCode = med_result['national_code']
-                    if prescription_given and med_nationalCode in prescription_given['meds_list']:   
-                        meds_final.append(med_result)
-                        conReceta = True
-                    else:
-                        response = {'result': 'No ho pot fer, no te recepta per un dels medicaments', 'medicament del qual no te recepta': med_nationalCode}
-                        return jsonify(response)
-                else: #el medicamento no necesita receta
-                    meds_final.append(med_result)
-                    response = {'result': 'no tiene receta'}
+                    prescription_given = recipes.find({'patient_identifier': patient_identifier}) #miro si tiene alguna receta
+                    medicament_receptat = False
+                    for recepta in prescription_given:
+                        for med in recepta['meds_list']:
+                            if med == med_result['codi_nacional'] or approvation_required:
+                                medicament_receptat = True
+                                break
+                        if medicament_receptat or approvation_required:
+                            break
+                    if not medicament_receptat:
+                        approvation_required = True
             else:
-                response = {'result': 'El input no son medicamentos'}
+                response = {'result': 'Hay un medicamento no encontrado en la bd'}
                 return jsonify(response)
         
-        approved = "yes"
-        
-        #if conReceta:
-        #    max_order = orders.find_one(
-        #                    {"order_identifier": {"$regex": "^0"}, "order_identifier": {"$ne": "0"}},
-        #                    sort=[("order_identifier", -1)],
-        #    )
-        #    
-        #    approved = "no"
-        #    
-        #    if max_order:
-        #        last_identifier = max_order["order_identifier"]
-        #        rest_of_value = int(last_identifier[1:])
-        #        new_identifier = "0" + str(rest_of_value + 1)
-        #    else:
-        #        new_identifier = "01" 
-        #        
-        #else:
-        max_order = orders.find_one({'order_identifier': [("order_identifier", -1)]})
+        if approvation_required:
+            approved = "pending"
+        else:
+            approved = "yes"
+        max_order = orders.find_one({}, sort=[("order_identifier", -1)])
+
         #    
         logging.info(max_order)
         if max_order:
