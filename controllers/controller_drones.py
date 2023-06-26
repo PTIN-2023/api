@@ -51,21 +51,27 @@ def drons_full_info():
 
 
 def drons_pos_info():
+
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
     
     data = request.get_json()
     value = checktoken(data['session_token'])
-    response = {'value': value['valid']}
+    response = { 'value' : value['valid'] }
 
-    if value['valid'] == 'ok':
+    if value['valid'] == OK:
         drones = drons.find()
-        res=([{
-             'id_dron': doc['id_dron'],
-             'latitude': doc['location_in']['latitude'],
-             'longitud': doc['location_in']['longitude'],
-        }for doc in drones])
-        return jsonify({'result':'ok','drons':res})
+        res=( [{
+             'id_dron'  : doc['id_dron'],
+             'latitude' : doc['location_in']['latitude'],
+             'longitud' : doc['location_in']['longitude'],
+        } for doc in drones] )
+
+        return jsonify({
+            'result'    : OK, 
+            'drons'     : res
+        })
+    
     else:
         return jsonify(response)
 
