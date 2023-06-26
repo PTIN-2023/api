@@ -24,7 +24,7 @@ def beehives_global():
                 'id_beehive'    : colmena['id_beehive'],
                 'latitude'      : colmena['location_end']['latitude'],
                 'longitude'     : colmena['location_end']['longitude'],
-                'url beehive'   : "/api/beehives/global",
+                'url_beehive'   : colmena['url_beehive'],
             })
         response['beehives'] = beehives
     else:
