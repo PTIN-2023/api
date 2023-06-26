@@ -8,36 +8,46 @@ from utils.utils import checktoken
 import json
 import paho.mqtt.client as mqtt
 
+OK = 'ok'
+DRON_WAITS = 'waits'
+
 START_ROUTE = 1
+NOT_AVAILABLE_AT_CLOUD = { 'result': 'error, funcio no disponible al cloud' }
 
 def drons_full_info():
+    
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
-    response = {'value': value['valid']}
-    if value['valid'] == 'ok':
+    response = { 'value' : value['valid'] }
+    
+    if value['valid'] == OK:
         drones = drons.find()
-        res=([{
-            'id_dron': doc['id_dron'],
-             #'id_route': doc['id_route'], #BBDD no tienen id_route
-             'battery': doc['battery'],
-             'status': doc['status'],
-             'autonomy': doc['autonomy'],
-             'capacity': doc['capacity'], #No lo tienen los de BBDD
-             'last_maintenance_date': doc['last_maintenance_date'],
-             'order_identifier': doc['order_identifier'],
-             'id_beehive': doc['beehive'],
-             'location_in ': doc['location_in'],
-             'location_act': doc['location_act'],
-             'location_end': doc['location_end'],
-
-    }for doc in drones])
-        return jsonify({'result':'ok','drons':res})
+        res=( [{
+            'id_dron'               : doc['id_dron'],
+            'id_route'              : doc['id_route'],
+            'beehive'               : doc['beehive'],
+            'order_identifier'      : doc['order_identifier'],
+            'battery'               : doc['battery'],
+            'status'                : doc['status_num'],
+            'autonomy'              : doc['autonomy'],
+            'capacity'              : doc['capacity'],
+            'id_beehive'            : doc['beehive'],
+            'location_in '          : doc['location_in'],
+            'location_act'          : doc['location_act'],
+            'location_end'          : doc['location_end'],
+            'last_maintenance_date' : doc['last_maintenance_date'],
+        } for doc in drones] )
+        
+        return jsonify({
+            'result'    : OK, 
+            'drons'     : res
+        })
+    
     else:
         return jsonify(response)
-
-
 
 
 def drons_pos_info():
