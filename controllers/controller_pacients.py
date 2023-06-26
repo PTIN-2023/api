@@ -207,6 +207,7 @@ def make_order():
                     #mirar si el user tiene receta para este med
                     medicament_receptat = False
                     for recepta in prescription_given:
+                        logging.info(prescription_given)
                         for med in recepta['meds_list']:
                             if med == med_result['national_code'] or approvation_required:
                                 medicament_receptat = True
@@ -218,7 +219,7 @@ def make_order():
             else:
                 response = {'result': 'Hay un medicamento no encontrado en la bd'}
                 return jsonify(response)
-        logging.info(prescription_given)
+
         if approvation_required:
             approved = "pending"
         else:
