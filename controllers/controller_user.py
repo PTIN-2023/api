@@ -74,7 +74,7 @@ def register():
         }
         sessio.insert_one(entry)
         return response
-    coordinates = get_coordinates(data['user_address'])
+    coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
     if coordinates is None:
         #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
         response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
