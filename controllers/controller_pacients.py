@@ -195,7 +195,7 @@ def make_order():
         patient_identifier = value['email'] #cojo el mail de la persona
        
         approvation_required = False 
-        prescription_given = recipes.find({'patient_identifier': patient_identifier})
+        prescription_given = recipes.find_all({'patient_identifier': patient_identifier})
         for med_code in meds_list: #se revisa si el input es correcto
             logging.info(med_code)
             med_query = {'national_code': str(med_code)}
