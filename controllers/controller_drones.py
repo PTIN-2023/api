@@ -5,15 +5,22 @@ import jwt
 from models.models import *
 from utils.utils import checktoken
 
+import logging
+logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(levelname)s - %(message)s')
+
 import json
 import paho.mqtt.client as mqtt
 
 OK = 'ok'
-DRON_WAITS = 'waits'
+INTERNAL = 'internal'
+
+RES_OK  = { 'value': "ok" }
+FAILED  = { 'value': "failed" }
 BEEHIVE_DOES_NOT_EXIST = {'result' : 'error, la colmena no existeix'}
+NOT_AVAILABLE_AT_CLOUD = { 'result': 'error, funcio no disponible al cloud' }
 
 START_ROUTE = 1
-NOT_AVAILABLE_AT_CLOUD = { 'result': 'error, funcio no disponible al cloud' }
+DRON_WAITS = 'waits'
 
 def drons_full_info():
     
@@ -77,41 +84,52 @@ def drons_pos_info():
         return jsonify(response)
 
 def send_order_drones():
+    
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
-    assignations = data['assignations'] 
-    if value['valid'] == 'ok':
+    if value['valid'] != OK or value['type'] != INTERNAL:
+        return jsonify(FAILED)
+    
+    for dron in data['assignations']:
 
-        # check si la ruta existe
-        coordinates = routes.find_one({'id_route': assignation['id_route']})['coordinates']
+        id_dron             = dron['id_dron']
+        id_route            = dron['route']['id_route']
+        order_identifier    = dron['order']['order_identifier']
+        coordinates         = routes.find_one({ 'id_route': id_route })['coordinates']
 
-        assignations = data['assignations']
-        for assignation in assignations:
-            send_dron(
-                assignation['id_dron'],
-                START_ROUTE,
-                coordinates,
-            )
+        update_fields = { 
+            'id_route'          : id_route,
+            'order_identifier'  : order_identifier,
+        }
+        result = drons.update_one(
+            {'id_car'   : id_dron }, 
+            {'$set'     : update_fields }
+        )
                 
-        response = {'result' : 'ok'}
-    else:
-        response = {'result': 'Invalid token'}
+        if result.modified_count > 0:
+            send_dron(id_dron, coordinates)
+
+        else:
+            logging.info("DRONS | El documento no se actualizó. Puede que no se encontrara el id_dron especificado.")
+            return jsonify(FAILED), 404
+
+    return jsonify(RES_OK)
         
-    return jsonify(response)
 
-
-def send_dron(id_dron, order, coordinates):
+def send_dron(id_dron, coordinates):
+    
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
     
     client = mqtt.Client()
     client.connect("mosquitto", 1883, 60)
 
     msg = {    
         "id_dron"   :   id_dron,
-        "order"     :   order,
+        "order"     :   START_ROUTE,
         "route"     :   coordinates
     }
     mensaje_json = json.dumps(msg)
