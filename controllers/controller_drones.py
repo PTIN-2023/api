@@ -131,10 +131,10 @@ def list_orders_to_send_drones():
 
     if value['valid'] == OK:
 
-        beehive = colmenas.find_one({ 'id_beehive' : data['id_beehive'] })
+        beehive = colmenas.find_one({ 'id_beehive' : int(data['id_beehive']) })
         if beehive is not None:
 
-            orders = []
+            orders_to_send = []
             packages = beehive['packages']
 
             for package in packages:
@@ -150,7 +150,7 @@ def list_orders_to_send_drones():
                     'longitude' :   '1.669643'
                 }
 
-                orders.append({
+                orders_to_send.append({
                     'order_identifier'  : order['order_identifier'],
                     'medicine_list'     : order['meds_list'],
                     'date'              : order['date'],
@@ -160,7 +160,7 @@ def list_orders_to_send_drones():
 
             return jsonify({
                 'result'    : OK, 
-                'orders'    : orders
+                'orders'    : orders_to_send
             })
 
         else:
