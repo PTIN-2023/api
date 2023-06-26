@@ -5,25 +5,32 @@ from geopy.geocoders import Nominatim
 from math import radians, cos, sin, asin, sqrt
 
 def checktoken(token):
-    if(token==""):
-        token=request.get_json()['token']
-    if(token=="internal"):
-        return {'valid':'ok', 'type':'internal'}
-    user_data = sessio.find_one({'token': token})
-    if user_data is None:
-        response = {'valid': 'None1'}
-    else:
-        user = users.find_one({'user_email': user_data['user_email']})
-        if user is None:
-            response = {'valid': 'None2'}
-        elif datetime.now() <= (datetime.strptime(user_data['data'], '%Y-%m-%dT%H:%M:%S.%f') + timedelta(minutes=50)):
-            response = {'valid': 'ok', 'email': user['user_email'], 'type': user["user_role"]}
-            sessio.update_one({'token': token}, {'$set': {'data': datetime.now().isoformat()}})
-            
-        else:
-            response = {'valid': 'timeout'}
-    return response
+    
+    if is_local == 0:
 
+        if(token==""):
+            token=request.get_json()['token']
+        if(token=="internal"):
+            return {'valid':'ok', 'type':'internal'}
+        user_data = sessio.find_one({'token': token})
+        if user_data is None:
+            response = {'valid': 'None1'}
+        else:
+            user = users.find_one({'user_email': user_data['user_email']})
+            if user is None:
+                response = {'valid': 'None2'}
+            elif datetime.now() <= (datetime.strptime(user_data['data'], '%Y-%m-%dT%H:%M:%S.%f') + timedelta(minutes=50)):
+                response = {'valid': 'ok', 'email': user['user_email'], 'type': user["user_role"]}
+                sessio.update_one({'token': token}, {'$set': {'data': datetime.now().isoformat()}})
+            else:
+                response = {'valid': 'timeout'}
+
+        return response
+
+    else:
+        data = { 'token': token }
+        url = cloud_api+"/api/checktoken"
+        return requests.post(url, json=data).json()
 
 def check_token_doctor(token):
     user_data = sessio.find_one({'token': token})
