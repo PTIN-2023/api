@@ -223,33 +223,30 @@ def make_order():
         
         approved = "yes"
         
-        if conReceta:
-            max_order = orders.find_one(
-                            {"order_identifier": {"$regex": "^0"}, "order_identifier": {"$ne": "0"}},
-                            sort=[("order_identifier", -1)],
-            )
-            
-            approved = "no"
-            
-            if max_order:
-                last_identifier = max_order["order_identifier"]
-                rest_of_value = int(last_identifier[1:])
-                new_identifier = "0" + str(rest_of_value + 1)
-            else:
-                new_identifier = "01" 
-                
+        #if conReceta:
+        #    max_order = orders.find_one(
+        #                    {"order_identifier": {"$regex": "^0"}, "order_identifier": {"$ne": "0"}},
+        #                    sort=[("order_identifier", -1)],
+        #    )
+        #    
+        #    approved = "no"
+        #    
+        #    if max_order:
+        #        last_identifier = max_order["order_identifier"]
+        #        rest_of_value = int(last_identifier[1:])
+        #        new_identifier = "0" + str(rest_of_value + 1)
+        #    else:
+        #        new_identifier = "01" 
+        #        
+        #else:
+        max_order = orders.find_one({'order_identifier': [("order_identifier", -1)]})
+        #    
+        if max_order:
+            last_identifier = max_order["order_identifier"]
+            rest_of_value = int(last_identifier[1:])
+            new_identifier = str(rest_of_value + 1)
         else:
-            max_order = orders.find_one(
-                            {"order_identifier": {"$regex": "^1"}, "order_identifier": {"$ne": "1"}},
-                            sort=[("order_identifier", -1)],
-            )
-            
-            if max_order:
-                last_identifier = max_order["order_identifier"]
-                rest_of_value = int(last_identifier[1:])
-                new_identifier = "1" + str(rest_of_value + 1)
-            else:
-                new_identifier = "10"
+            new_identifier = "0"
         
         
         entry = {
