@@ -209,7 +209,7 @@ def make_order():
                     medicament_receptat = False
                     for recepta in prescription_given:
                         for med in recepta['meds_list']:
-                            if med == med_result['codi_nacional'] or approvation_required:
+                            if med == med_result['national_code'] or approvation_required:
                                 medicament_receptat = True
                                 break
                         if medicament_receptat or approvation_required:
