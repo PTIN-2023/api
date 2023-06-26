@@ -84,6 +84,20 @@ def update_order_cars():
     return jsonify({'result':'ok'})
 
 
+def update_order_drones():
+    
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    
+    if value['valid'] != 'ok' or value['type'] != 'internal':
+        return jsonify({'result': 'tu no pots man'})
+    
+    if is_local == 1:
+        data['session_token'] = 'internal'
+        url = cloud_api+"/api/update_order_drones"
+        return requests.post(url, json=data).json()
+
+    return jsonify({'result':'ok'})
 
     
 def general_storage_pos():
