@@ -29,6 +29,8 @@ def beehives_global():
     else:
         response = value 
 
+    return jsonify(response) 
+
 def beehives_local():
 
     if is_local == 0:
