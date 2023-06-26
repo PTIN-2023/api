@@ -10,6 +10,7 @@ import paho.mqtt.client as mqtt
 
 OK = 'ok'
 DRON_WAITS = 'waits'
+BEEHIVE_DOES_NOT_EXIST = {'result' : 'error, la colmena no existeix'}
 
 START_ROUTE = 1
 NOT_AVAILABLE_AT_CLOUD = { 'result': 'error, funcio no disponible al cloud' }
@@ -43,7 +44,7 @@ def drons_full_info():
         
         return jsonify({
             'result'    : OK, 
-            'drones'     : res
+            'drones'    : res
         })
     
     else:
@@ -69,7 +70,7 @@ def drons_pos_info():
 
         return jsonify({
             'result'    : OK, 
-            'drones'     : res
+            'drones'    : res
         })
     
     else:
@@ -119,17 +120,54 @@ def send_dron(id_dron, order, coordinates):
     client.disconnect()
 
 
-def list_order_to_set_drones():
+def list_orders_to_send_drones():
+    
     if is_local == 0:
-        return jsonify({'result':'error, funcio no disponible al cloud'})
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+    
     data = request.get_json()
     value = checktoken(data['session_token']) 
-    if value['valid'] == 'ok':
-        response = {'result' : 'token bien'}
+    response = { 'value' : value['valid'] }
+
+    if value['valid'] == OK:
+
+        beehive = colmenas.find({ 'id_beehive' : data['id_beehive'] })
+        if beehive is not None:
+
+            orders = []
+            packages = beehive['packages']
+
+            for package in packages:
+                order_identifier = package['order_identifier']
+                order = orders.find({ 'order_identifier' : order_identifier })
+
+                # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
+                # Av. Corral d'en Cona, 8, 08880 El Corral d'en Cona, Barcelona -> 41.219670, 1.669643
+
+                # Final: coger info del cloud a partir de patient_email, y sacar coordenadas
+                coords_destiny = {
+                    'latitude'  :   '41.219670',
+                    'longitude' :   '1.669643'
+                }
+
+                orders.append({
+                    'order_identifier'  : order['order_identifier'],
+                    'medicine_list'     : order['meds_list'],
+                    'date'              : order['date'],
+                    'state'             : order['state'],
+                    'coords_destiny'    : coords_destiny
+                })
+
+            return jsonify({
+                'result'    : OK, 
+                'orders'    : orders
+            })
+
+        else:
+            return jsonify(BEEHIVE_DOES_NOT_EXIST)
+
     else:
-        response = {'result': 'Invalid token'}
-        
-    return jsonify(response)
+        return jsonify(response)
 
 def list_available_drones():
     
@@ -154,7 +192,7 @@ def list_available_drones():
         
         return jsonify({
             'result'    : OK, 
-            'drones'     : res
+            'drones'    : res
         })
     else:
         return jsonify(response)

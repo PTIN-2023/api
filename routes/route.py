@@ -71,7 +71,7 @@ def routes_drones(app):
     app.route("/api/drones_full_info", methods=['POST'])(drons_full_info)
     app.route("/api/drones_pos_info", methods=['POST'])(drons_pos_info)
     app.route("/api/send_order_drones", methods=['POST'])(send_order_drones)
-    app.route("/api/list_order_to_set_drones", methods=['POST'])(list_order_to_set_drones)
+    app.route("/api/list_orders_to_send_drones", methods=['POST'])(list_orders_to_send_drones)
     app.route("/api/list_available_drones", methods=['POST'])(list_available_drones)
 
 def routes_colmenes(app):
