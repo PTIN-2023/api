@@ -195,7 +195,16 @@ def get_user_info():
             url = cloud_api+"/api/user_info"
             return requests.post(url, json=data).json()
         doc = users.find_one({'user_email': check['email']})
-        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_full_name': doc['user_full_name'], 'user_email': doc['user_email'], 'user_phone': doc['user_phone'], 'user_city': doc['user_city'], 'user_address': doc['user_address'], 'user_picture': "No tenim imatge", 'user_token': token}
+        response = {'result': 'ok', 
+                    'user_given_name': doc['user_given_name'], 
+                    'user_role': doc['user_role'], 
+                    'user_full_name': doc['user_full_name'],
+                    'user_email': doc['user_email'],
+                    'user_phone': doc['user_phone'],
+                    'user_city': doc['user_city'],
+                    'user_address': doc['user_address'],
+                    'user_picture': "No tenim imatge",
+                    'user_token': token}
         return jsonify(response)
     else:
         response = {'result': 'error', 'message': check['valid']}
@@ -241,7 +250,8 @@ def set_user_info():
         user_phone = data['user_phone']
         user_city = data['user_city']
         user_address = data['user_address']
-        
+        longitude = data['user_coordinates']['longitude']
+        latitude = data['user_coordinates']['latitude']        
         # Update values
         update_operations = [
             UpdateOne({'user_email': user_email},
@@ -249,9 +259,13 @@ def set_user_info():
                           'user_full_name': user_full_name,
                           'user_given_name': user_given_name,
                           #'user_email': user_email,
+                          'coordinates': {'longitude': longitude,
+                                          'latitude': latitude
+                                        },
                           'user_phone': user_phone,
                           'user_city': user_city,
                           'user_address': user_address
+                          
                       }})
         ]
         users.bulk_write(update_operations)
