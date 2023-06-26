@@ -15,14 +15,19 @@ def beehives_global():
             url = cloud_api+"/api/beehives_global"
             return requests.post(url, json=data).json()
         colmenitas = colmenas.find()
-        response['beehives'] = [{
-            'id_beehive': doc['id_beehive'],
-            'latitude': doc['location_end']['latitude'],
-            'longitude': doc['location_end']['longitude'],
-            #'url_beehive': url,
-        }for doc in colmenitas]
+
+        beehives = []
+        for colmena in colmenitas:
+            beehives.append({
+                'id_beehive': colmena['id_beehive'],
+                'latitude': colmena['location_end']['latitude'],
+                'longitude': colmena['location_end']['longitude'],
+                'url_beehive': cloud_api+"/api/beehives_global",
+        })
+        response['beehives'] = beehives
     else:
         response = value
+
     return jsonify(response)    
 
 def beehives_local():
