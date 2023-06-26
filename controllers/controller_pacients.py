@@ -195,9 +195,9 @@ def make_order():
         patient_identifier = value['email'] #cojo el mail de la persona
        
         approvation_required = False 
-        
+        prescription_given = recipes.find({'patient_identifier': patient_identifier})
         for med_code in meds_list: #se revisa si el input es correcto
-
+            logging.info(med_code)
             med_query = {'national_code': str(med_code)}
             med_result = farmacs.find_one(med_query) #lo busco en farmacs
             
@@ -205,7 +205,6 @@ def make_order():
                 response = {'result': 'vas bien'}
                 if med_result['prescription_needed']:
                     #mirar si el user tiene receta para este med
-                    prescription_given = recipes.find({'patient_identifier': patient_identifier}) #miro si tiene alguna receta
                     medicament_receptat = False
                     for recepta in prescription_given:
                         for med in recepta['meds_list']:
@@ -219,7 +218,7 @@ def make_order():
             else:
                 response = {'result': 'Hay un medicamento no encontrado en la bd'}
                 return jsonify(response)
-        
+        logging.info(prescription_given)
         if approvation_required:
             approved = "pending"
         else:
@@ -229,9 +228,7 @@ def make_order():
         #    
         logging.info(max_order)
         if max_order:
-            last_identifier = max_order["order_identifier"]
-            rest_of_value = int(last_identifier[1:])
-            new_identifier = str(rest_of_value + 1)
+            new_identifier = str(int(max_order["order_identifier"]) + 1)
         else:
             new_identifier = "0"
         
