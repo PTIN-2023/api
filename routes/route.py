@@ -40,7 +40,7 @@ def routes_managers(app):
     app.route("/api/manager_assign_doctors", methods=['POST'])(manager_assign_doctors)
     app.route("/api/delete_assignations_doctor", methods=['POST'])(delete_assignations_doctor)
     app.route("/api/stats", methods=['POST'])(stats)
-
+    app.route("/api/add_medicine", methods=['POST'])(add_medicine)
 
 
 def routes_prescriptions(app):
