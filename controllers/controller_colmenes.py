@@ -15,12 +15,6 @@ def beehives_global():
     data = request.get_json()
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
-<<<<<<< Updated upstream
-=======
-
-    if value['valid'] == OK:
-        colmenitas = colmenas.find()
->>>>>>> Stashed changes
 
     if value['valid'] == OK:
         colmenitas = colmenas.find()
