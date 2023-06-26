@@ -18,14 +18,11 @@ def beehives_global():
 
     if value['valid'] == OK:
         colmenitas = colmenas.find()
-        beehives = []
-        for colmena in colmenitas:
-            beehives.append({
-                'id_beehive'    : colmena['id_beehive'],
-                'latitude'      : colmena['location_end']['latitude'],
-                'longitude'     : colmena['location_end']['longitude'],
-            })
-        response['beehives'] = beehives
+        response['beehives'] = [{
+            'id_beehive': doc['id_beehive'],
+            'latitude': doc['location_end']['latitude'],
+            'longitude': doc['location_end']['longitude'],
+        }for doc in colmenitas]
     else:
         response = value 
 
