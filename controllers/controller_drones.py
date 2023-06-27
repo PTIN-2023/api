@@ -108,7 +108,7 @@ def send_order_drones():
             'order_identifier'  : order_identifier,
         }
         result = drons.update_one(
-            {'id_car'   : id_dron }, 
+            {'id_dron'  : id_dron }, 
             {'$set'     : update_fields }
         )
                 
