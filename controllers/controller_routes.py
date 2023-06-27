@@ -10,25 +10,31 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
 def store_route():
-    data = request.get_json()
-    token = data['session_token']
-    check = checktoken(token)
+    
+    data    = request.get_json()
+    token   = data['session_token']
+    check   = checktoken(token)
+    
     if check['valid'] == 'ok':
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/store_route"
-            return requests.post(url, json=data).json()
         new_route = {
-            'id_route': data['id_route'],
-            'coordinates': data['coordinates']
+            'id_route'      : data['id_route'],
+            'coordinates'   : data['coordinates']
         }
         try:
             id = routes.insert_one(new_route).inserted_id
-            response = {'result': 'ok'}
+            response = { 'result': 'ok' }
+
         except pymongo.errors.DuplicateKeyError as description_error:
-            response = {'result': 'error', 'description': str(description_error)}
+            response = {
+                'result'        : 'error', 
+                'description'   : str(description_error)
+            }
     else:
-        response = {'result': 'error', 'description': check['valid']}
+        response = {
+            'result'        : 'error', 
+            'description'   : check['valid']
+        }
+    
     return jsonify(response)
 
 def get_route():
