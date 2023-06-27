@@ -263,7 +263,7 @@ def add_medicine():
             #pregunta: això busca si algun dels camps és igual o si tots son iguals?
             #no te molt sentit en cap dels dos casos
             existing_medicine=  None
-            existing_medicine = recipes.find_one({
+            existing_medicine = farmacs.find_one({
                 "national_code": national_code,
                 "medicine_image_url": medicine_image_url,
                 "med_name": med_name,
@@ -295,7 +295,7 @@ def add_medicine():
                 "amount_sold": 0
                 }
 
-                result = recipes.insert_one(medicine_data)
+                result = farmacs.insert_one(medicine_data)
                 response={
                     "result":"ok",
                     "medicine_identifier":national_code, #id de la medicina es el national code
