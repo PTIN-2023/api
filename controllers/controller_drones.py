@@ -133,7 +133,7 @@ def send_dron(id_dron, coordinates):
     msg = {    
         "id_dron"   :   id_dron,
         "order"     :   START_ROUTE,
-        "route"     :   coordinates
+        "route"     :   str(coordinates)
     }
     mensaje_json = json.dumps(msg)
 
