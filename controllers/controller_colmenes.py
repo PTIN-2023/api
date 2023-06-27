@@ -66,6 +66,7 @@ def unload_car():
 
     logging.info(request)
     logging.info(request.get_json())
+    logging.info(request.json())
 
     data = request.get_json()
     value = checktoken(data['session_token'])

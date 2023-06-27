@@ -143,7 +143,7 @@ def update_status():
 
                 if edge_api != -1:
                     url = edge_api + "/api/unload_car"
-                    response = requests.post(url, data=payloadJSON)
+                    response = requests.post(url, data=jsonify(payloadJSON))
                     
                     if response.status_code == 200:
                         return jsonify(OK), 200
