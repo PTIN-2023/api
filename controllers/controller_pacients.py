@@ -166,7 +166,7 @@ def make_order():
         for ordered_med in meds_list: #se revisa si el input es correcto
             logging.info(ordered_med)
             med_query = {'national_code': str(ordered_med)}
-            med_result = farmacs.find_one(med_query) #lo busco en farmacs
+            med_result = farmacs.find_one(med_query[0]) #lo busco en farmacs
             
             if med_result:
                 response = {'result': 'vas bien'}
