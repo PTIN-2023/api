@@ -96,7 +96,7 @@ def update_order_cars():
         url = "localhost:3000/api/update_order_cars"
         return requests.post(url, json=data).json()
 
-    return jsonify({'result':'ok'})
+    return jsonify({'result':'ok'}), 200
 
 
 def update_order_drones():
