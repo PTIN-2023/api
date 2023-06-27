@@ -42,6 +42,7 @@ def drons_full_info():
             'order_identifier'      : doc['order_identifier'],
             'battery'               : doc['battery'],
             'status'                : doc['status_num'],
+            'status_text'           : doc['status'],
             'autonomy'              : doc['autonomy'],
             'capacity'              : doc['capacity'],
             'id_beehive'            : doc['beehive'],
