@@ -69,6 +69,9 @@ def unload_car():
     response = { 'value' : value['valid'] }
 
     if value['valid'] == OK:
+
+        logging.info('A')
+
         full_orders = data['orders']
         id_beehive  = data['id_beehive']
 

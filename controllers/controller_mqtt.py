@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from pymongo.errors import PyMongoError
-import os, requests
+import os, requests, json
 
 from utils.utils import get_url_edge
 
@@ -134,7 +134,7 @@ def update_status():
                 payload = {
                     'session_token' : 'internal',
                     'id_beehive'    : id_beehive,
-                    'orders'        : full_orders
+                    'orders'        : json.dumps(full_orders)
                 }
 
                 edge_api = get_url_edge(id_beehive)
