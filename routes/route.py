@@ -44,8 +44,9 @@ def routes_managers(app):
     app.route("/api/list_assigned_doctors", methods=['POST'])(list_assigned_doctors)
     app.route("/api/manager_assign_doctors", methods=['POST'])(manager_assign_doctors)
     app.route("/api/delete_assignations_doctor", methods=['POST'])(delete_assignations_doctor)
-    app.route("/api/stats", methods=['POST'])(stats)
+    app.route("/api/stats", methods=['POST'])(stats) ########################################################           hardcoded
     app.route("/api/add_medicine", methods=['POST'])(add_medicine)
+    app.route("/api/delete_medicine", methods=['POST'])(delete_medicine)
     app.route("/api/update_medicine", methods=['POST'])(update_medicine)
 
 
