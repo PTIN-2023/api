@@ -137,6 +137,7 @@ def update_status():
                     'orders'        : full_orders
                 }
 
+                payload = jsonify(payload)
                 edge_api = get_url_edge(id_beehive)
 
                 if edge_api != -1:
