@@ -28,7 +28,8 @@ def beehives_global():
                 'longitude'     : colmena['location_end']['longitude'],
                 'url_beehive'   : colmena['url_beehive'],
             })
-        response['beehives'] = beehives
+        response['beehives']    = beehives
+        response['result']      = OK
     else:
         response = value 
 
@@ -53,7 +54,9 @@ def beehives_local():
                 'latitude'      : colmena['location_end']['latitude'],
                 'longitude'     : colmena['location_end']['longitude'],
             })
-        response['beehives'] = beehives
+        response['beehives']    = beehives
+        response['result']      = OK
+    
     else:
         response = value
         
