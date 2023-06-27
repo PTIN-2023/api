@@ -195,7 +195,7 @@ def update_recipes(patient_identifier, ordered_med):
 def quantity_available_user(national_code, user):
     medicament = farmacs.find_one({'national_code': national_code})
     quant = 0
-    if not medicament['prescription_needed']
+    if not medicament['prescription_needed']:
         return int(medicament['quantity_available'])
     prescription_given = recipes.find({'patient_identifier': user})
     for prescription in prescription_given:
@@ -203,6 +203,8 @@ def quantity_available_user(national_code, user):
             if med[0] == national_code:
                 quant += med[1]
                 break
-    return int(min(quant,medicament['quantity_available'])
+    return int(min(quant,medicament['quantity_available']))
 
-#def restar_meds():
+#def restar_meds(meds_list):
+#    for med in meds_list:
+#        recipes.find_one_and_update
