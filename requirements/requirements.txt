@@ -13,3 +13,4 @@ PyJWT
 paho-mqtt
 paypalrestsdk
 geopy
+unidecode
