@@ -134,7 +134,7 @@ def update_status():
                 payload = {
                     'session_token' : 'internal',
                     'id_beehive'    : id_beehive,
-                    'orders'        : json.dumps(full_orders)
+                    'orders'        : json.dumps(full_orders, default=str)
                 }
 
                 edge_api = get_url_edge(id_beehive)
