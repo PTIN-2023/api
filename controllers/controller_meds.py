@@ -8,12 +8,11 @@ import json
 def search_farmacs():
     data = request.get_json()
     token = data['session_token']
-    logging.info(token)
     check = check_token_manager(token)
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_available_medicines"
+            url = cloud_api+"/api/list_inventory_meds"
             return requests.post(url, json=data).json()
         query = {}
         if 'filter' in data:
@@ -60,7 +59,8 @@ def search_farmacs():
             'excipients': doc['excipients'],
             'form': doc['form'],
             'medicine_image_url': doc['medicine_image_url'],
-            'quantity_available': doc['quantity_available']
+            'quantity_available': doc['quantity_available'],
+            'amount_sold': doc['amount_sold']
         } for doc in results]
         return jsonify({"result":"ok","medicines":res})
     else:
@@ -70,7 +70,6 @@ def search_farmacs():
 def search_client_farmacs():
     data = request.get_json()
     token = data['session_token']
-    logging.info(token)
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
@@ -122,7 +121,8 @@ def search_client_farmacs():
             'excipients': doc['excipients'],
             'form': doc['form'],
             'medicine_image_url': doc['medicine_image_url'],
-            'quantity_available': quantity_available_user(doc['national_code'], check['email'])
+            'quantity_available': quantity_available_user(doc['national_code'], check['email']),
+            'amount_sold': doc['amount_sold']
         } for doc in results]
         return jsonify({"result":"ok","medicines":res})
     else:
@@ -132,12 +132,11 @@ def search_client_farmacs():
 def num_search_farmacs():
     data = request.get_json()
     token = data['session_token']
-    logging.info(token)
     check = check_token_manager(token)
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_available_medicines"
+            url = cloud_api+"/api/list_inventory_meds_num"
             return requests.post(url, json=data).json()
         query = {}
         if 'filter' in data:
@@ -176,12 +175,11 @@ def num_search_farmacs():
 def num_search_client_farmacs():
     data = request.get_json()
     token = data['session_token']
-    logging.info(token)
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_available_medicines"
+            url = cloud_api+"/api/list_available_medicines_num"
             return requests.post(url, json=data).json()
         query = {}
         if 'filter' in data:
@@ -220,12 +218,11 @@ def num_search_client_farmacs():
 def get_meds_prescription():
     data = request.get_json()
     token = data['session_token']
-    logging.info(token)
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_available_medicines"
+            url = cloud_api+"/api/get_meds_prescription"
             return requests.post(url, json=data).json()
         medicine_list = recipes.find_one({'prescription_identifier': data['prescription_identifier']})['meds_list']
         list = []
