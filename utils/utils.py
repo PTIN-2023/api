@@ -205,6 +205,7 @@ def quantity_available_user(national_code, user):
                 break
     return int(min(quant,medicament['quantity_available']))
 
-#def restar_meds(meds_list):
-#    for med in meds_list:
-#        recipes.find_one_and_update
+def restar_meds(meds_list):
+    for med in meds_list:
+        quantity = farmacs.find_one({'national_code': med[0]})['quantity_available'] - med[1]
+        farmacs.update_one({'national_code': med[0]}, {'$set': {'quantity_available': quantity}})
