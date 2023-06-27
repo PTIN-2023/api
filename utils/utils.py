@@ -193,7 +193,7 @@ def update_recipes(patient_identifier, ordered_med):
             orders.update_one(query, update_query)
 
 def quantity_available_user(national_code, user):
-    prescription_given = recipes.find({'patient_identifier': patient_identifier})
+    prescription_given = recipes.find({'patient_identifier': user})
     quant = 0
     for prescription in prescription_given:
         for med in prescription['meds_list']:
