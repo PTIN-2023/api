@@ -164,15 +164,13 @@ def list_orders_to_send_drones():
                     'state'               : CAR_SENT 
                 })
 
-                if order != None:
-                    # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
-                    # Av. Corral d'en Cona, 8, 08880 El Corral d'en Cona, Barcelona -> 41.219670, 1.669643
-
-                    # Final: coger info del cloud a partir de patient_email, y sacar coordenadas
-                    coords_destiny = {
-                        'latitude'  :   '41.219670',
-                        'longitude' :   '1.669643'
+                if order != None:                    
+                    payload = {
+                        'session_token' : INTERNAL,
+                        'user_email'    : order['user_email']
                     }
+                    url = cloud_api + "/api/user_position"
+                    coords_destiny = requests.post(url, json=payload).json()['user_coordinates']
 
                     orders_to_send.append({
                         'order_identifier'  : order['order_identifier'],
