@@ -107,20 +107,21 @@ def list_orders_to_send_cars():
         orderss = orders.find({'state':"ordered"})
         ordersss = []
         for doc in orderss:
-            # colmena_random_cursor = colmenas.aggregate([{ "$sample": { "size": 1 } }])
-            # colmena_random = next(colmena_random_cursor, None)
-            # colmena_random = colmenas.find_one()
 
-            # De momento ponemos esta 
-            colmena_random = colmenas.find_one({
-                'zip_code' : '08880'
+            patient = users.find_one({ 'user_email' : doc['patient_email']})
+            beehive_coords_destiny = patient['beehive_coordinates']
+
+            colmena = colmenas.find_one({
+                'location_end.latitude'     : beehive_coords_destiny['latitude'],
+                'location_end.longitude'    : beehive_coords_destiny['longitude']
             })
+
             ordersss.append({
                 'order_identifier': doc['order_identifier'],
                 'beehive_coords_destiny': {
-                    'id_beehive'    :   colmena_random['id_beehive'],
-                    'latitude'      :   colmena_random['location_end']['latitude'],
-                    'longitude'     :   colmena_random['location_end']['longitude']
+                    'id_beehive'    :   colmena['id_beehive'],
+                    'latitude'      :   beehive_coords_destiny['latitude'],
+                    'longitude'     :   beehive_coords_destiny['longitude']
                 },
                 'medicine_list': [{
                     'medicine_identifier': medicine
