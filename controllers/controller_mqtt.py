@@ -29,6 +29,10 @@ DRON_DELIVERING = 3
 ORDER_DRON_SENT = 4
 DRON_SENT = 'dron_sent'
 
+DRON_WAITING = 4
+ORDER_DELIVERED_AWAITING = 5
+DELIVERED_AWAITING = 'delivered_awaiting '
+
 # Dudas -> Joa
 # Filtra el coche/dron con id = id_car/id_dron y actualiza todos los campos especificados
 def update_location():
@@ -189,47 +193,18 @@ def update_status():
                 {'$set'     : update_fields }  
             )
 
+            order_dron = drons.find_one(
+                { 'id_dron'          : data['id_dron'] }, 
+                { 'order_identifier' : 1 }
+            )
+            # 1 order per dron
+            order_identifier = order_dron["order_identifier"]
+
             if data['status_num'] == DRON_DELIVERING:
+                update_status_cloud_edge(DRON_SENT, ORDER_DRON_SENT, order_identifier)
 
-                # --- UPDATE ORDERS DB EDGE ----- #
-
-                order_dron = drons.find_one(
-                    { 'id_dron'          : data['id_dron'] }, 
-                    { 'order_identifier' : 1 }
-                )
-                # 1 order per dron
-                order_identifier = order_dron["order_identifier"]
-                update_fields = {
-                    'state'     : DRON_SENT,
-                    'state_num' : ORDER_DRON_SENT
-                }
-                response = orders.update_one(
-                    { 'order_identifier' : order_identifier }, 
-                    { '$set'             : update_fields } 
-                )
-                if response.modified_count > 0:
-                    logging.info("ORDER | EDGE | Documento actualizado correctamente")
-                else:
-                    logging.info("ORDER | EDGE |  El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
-
-                # --- UPDATE ORDERS DB CLOUD ----- #
-
-                payload = {
-                    'session_token'     : 'internal',
-                    'order_identifier'  : order_identifier,
-                    'state'             : DRON_SENT,
-                    'state_num'         : ORDER_DRON_SENT
-                }
-                url = cloud_api + "/api/update_status_order"
-                response = requests.post(url, json=payload).json()
-
-                if response['result'] == 'ok':
-                    logging.info("ORDER | CLOUD | Documento actualizado correctamente")
-                    return jsonify(OK), 200
-                
-                else:
-                    logging.info("ORDER | CLOUD | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
-                    return jsonify(FAILED), 404
+            if data['status_num'] == DRON_WAITING:
+                pass
 
 
     except PyMongoError as e:
@@ -237,6 +212,41 @@ def update_status():
         return jsonify(FAILED), 500
 
 
+def update_status_cloud_edge(state, state_num, order_identifier):
+
+    # --- UPDATE ORDERS DB EDGE ----- #
+
+    update_fields = {
+        'state'     : state,
+        'state_num' : state_num
+    }
+    response = orders.update_one(
+        { 'order_identifier' : order_identifier }, 
+        { '$set'             : update_fields } 
+    )
+    if response.modified_count > 0:
+        logging.info("ORDER | EDGE | Documento actualizado correctamente")
+    else:
+        logging.info("ORDER | EDGE |  El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+
+    # --- UPDATE ORDERS DB CLOUD ----- #
+
+    payload = {
+        'session_token'     : 'internal',
+        'order_identifier'  : order_identifier,
+        'state'             : state,
+        'state_num'         : state_num
+    }
+    url = cloud_api + "/api/update_status_order"
+    response = requests.post(url, json=payload).json()
+
+    if response['result'] == 'ok':
+        logging.info("ORDER | CLOUD | Documento actualizado correctamente")
+        return jsonify(OK), 200
+    
+    else:
+        logging.info("ORDER | CLOUD | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+        return jsonify(FAILED), 404
 
 
 # FUNCIONES DRON!!!! FALTA ACABARLAS!!
