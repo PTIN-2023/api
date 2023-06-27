@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 OK = 'ok'
 INTERNAL = 'internal'
+USER_DOES_NOT_EXITS = "L'usuari no existeix!"
 
 def login():
     data = request.get_json()
@@ -241,11 +242,14 @@ def get_user_position():
             return requests.post(url, json=data).json()
 
         doc = users.find_one({'user_email' : data['user_email']})
-        return jsonify({
-            'result'                : OK,
-            'user_coordinates'      : doc['user_coordinates'],
-            'beehive_coordinates'   : doc['beehive_coordinates']
-        })
+        if doc != None:
+            return jsonify({
+                'result'                : OK,
+                'user_coordinates'      : doc['user_coordinates'],
+                'beehive_coordinates'   : doc['beehive_coordinates']
+            })
+        else:
+            response['result'] = USER_DOES_NOT_EXITS
     
     return jsonify(response)
 
