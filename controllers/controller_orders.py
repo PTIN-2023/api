@@ -8,6 +8,11 @@ from utils.utils import checktoken , check_token_doctor
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+OK = 'ok'
+INTERNAL = 'internal'
+
+NOT_AVAILABLE_AT_EDGE   = { 'result': "error, funcio no disponible a l'edge" }
+
 def doctor_confirm_order():
     data = request.get_json()
     token = data['session_token']
@@ -188,4 +193,39 @@ def num_approved_confirmations():
         response = {'result': 'ok', 'num_pages': num_pages}
     else:
         response = value
+    return jsonify(response)
+
+
+def update_status_order():
+
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    response = { 'value' : value['valid'] }
+
+    if value['valid'] == OK:
+        
+        if is_local == 1:
+            return jsonify(NOT_AVAILABLE_AT_EDGE)
+
+        order_identifier    = data['order_identifier']
+        state               = data['state']
+        state_num           = data['state_num']
+
+        update_fields = {
+            'state'     : state,
+            'state_num' : state_num
+        }
+        response = orders.update_one(
+            { 'order_identifier' : order_identifier }, 
+            { '$set'             : update_fields } 
+        )
+
+        if response.modified_count > 0:
+            response['result'] = 'ok'
+        else:
+            response['result'] = 'failed'
+
+    else:
+        response = value
+    
     return jsonify(response)

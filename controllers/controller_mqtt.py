@@ -25,8 +25,12 @@ CAR_DELIVERING = 3
 ORDER_CAR_SENT = 3
 CAR_SENT = 'car_sent'
 
+DRON_DELIVERING = 3
+ORDER_DRON_SENT = 4
+DRON_SENT = 'dron_sent'
+
 # Dudas -> Joa
-# Filtra el coche con id = id_car y actualiza todos los campos especificados
+# Filtra el coche/dron con id = id_car/id_dron y actualiza todos los campos especificados
 def update_location():
 
     data = request.get_json()
@@ -68,6 +72,7 @@ def update_location():
 # Dudas -> Joa
 # Actualiza el estado del coche con id = id_car
 # En caso de estado:
+#   2 : se copian todos los pedidos a la colmena destino y la bd orders del edge correspondiente
 #   3 : se actualizan todos los pedidos que transporta el coche al estado ORDER_CAR_SENT
 def update_status():
     
@@ -79,6 +84,7 @@ def update_status():
     
     try:
 
+        # cars
         if is_local == 0:
 
             result = camions.update_one(
@@ -164,7 +170,7 @@ def update_status():
                     logging.info("update_car | Documento actualizado correctamente")
 
                 else:
-                    logging.info("update_car | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+                    logging.info("update_car | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
 
             
             if result.modified_count:
@@ -174,6 +180,53 @@ def update_status():
             else:
                 logging.info("update_status | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
                 return jsonify(FAILED), 404
+
+        # drons  
+        else:
+
+            result = drons.update_one(
+                {'id_dron'  : data['id_dron']},
+                {'$set'     : update_fields }  
+            )
+
+            if data['status_num'] == DRON_DELIVERING:
+
+                # --- UPDATE ORDERS DB EDGE ----- #
+
+                order_dron = drons.find_one(
+                    { 'id_dron'          : data['id_dron'] }, 
+                    { 'order_identifier' : 1 }
+                )
+                # 1 order per dron
+                order_identifier = order_dron["order_identifier"]
+                update_fields = {
+                    'state'     : DRON_SENT,
+                    'state_num' : ORDER_DRON_SENT
+                }
+                response = orders.update_one(
+                    { 'order_identifier' : order_identifier }, 
+                    { '$set'             : update_fields } 
+                )
+                if response.modified_count > 0:
+                    logging.info("ORDER | EDGE | Documento actualizado correctamente")
+                else:
+                    logging.info("ORDER | EDGE |  El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
+
+                # --- UPDATE ORDERS DB CLOUD ----- #
+
+                payload = {
+                    'session_token'     : 'internal',
+                    'order_identifier'  : order_identifier,
+                    'state'             : DRON_SENT,
+                    'state_num'         : ORDER_DRON_SENT
+                }
+                url = cloud_api + "/api/update_status_order"
+                response = requests.post(url, json=payload).json()
+
+                if response['result'] == 'ok':
+                    logging.info("ORDER | CLOUD | Documento actualizado correctamente")
+                else:
+                    logging.info("ORDER | CLOUD | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
             
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))

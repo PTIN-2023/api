@@ -59,6 +59,7 @@ def routes_orders(app):
     app.route("/api/num_pages_doctor_pending_confirmations",methods=['POST'])(num_pending_confirmations)
     app.route("/api/num_pages_doctor_approved_confirmations",methods=['POST'])(num_approved_confirmations)
     app.route("/api/info_clients_for_doctor",methods=['POST'])(info_clients_for_doctor)
+    app.route("/api/update_status_order", methods=['POST'])(update_status_order)
 
 
 def routes_cotxes(app):
