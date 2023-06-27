@@ -128,6 +128,8 @@ def update_status():
                         { 'order_identifier' : order['order_identifier'] }
                     ))
                 
+                logging.info(full_orders)
+
                 id_beehive = camions.find_one({ 'id_car' : data['id_car'] })['beehive']
                 payload = {
                     'session_token' : 'internal',
