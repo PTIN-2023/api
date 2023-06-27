@@ -167,7 +167,7 @@ def list_orders_to_send_drones():
                 if order != None:                    
                     payload = {
                         'session_token' : INTERNAL,
-                        'user_email'    : order['user_email']
+                        'user_email'    : order['patient_email']
                     }
                     url = cloud_api + "/api/user_position"
                     coords_destiny = requests.post(url, json=payload).json()['user_coordinates']
