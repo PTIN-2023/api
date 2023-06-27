@@ -193,11 +193,14 @@ def update_recipes(patient_identifier, ordered_med):
             orders.update_one(query, update_query)
 
 def quantity_available_user(national_code, user):
-    prescription_given = recipes.find({'patient_identifier': user})
+    medicament = farmacs.find_one{'national_code': national_code}
     quant = 0
+    if not medicament['prescription_needed']
+        return int(medicament['quantity_available'])
+    prescription_given = recipes.find({'patient_identifier': user})
     for prescription in prescription_given:
         for med in prescription['meds_list']:
             if med[0] == national_code:
                 quant += med[1]
                 break
-    return quant
+    return int(min(quant,medicament['quantity_available'])

@@ -122,7 +122,7 @@ def search_client_farmacs():
             'excipients': doc['excipients'],
             'form': doc['form'],
             'medicine_image_url': doc['medicine_image_url'],
-            'quantity_available': min(doc['quantity_available'], quantity_available_user(doc['national_code'], check['email']))
+            'quantity_available': quantity_available_user(doc['national_code'], check['email'])
         } for doc in results]
         return jsonify({"result":"ok","medicines":res})
     else:

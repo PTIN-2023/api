@@ -1,13 +1,13 @@
 from flask import jsonify, request
 from models.models import *
-from utils.utils import check_token_manager
+from utils.utils import checktoken
 
 
 def list_all_orders():
     data = request.get_json()
     orders_per_page = data['orders_per_page']
     page = data['page']
-    value = check_token_manager(data['session_token']) #checkeo si el usuario de la sesion tiene token
+    value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
         if is_local == 1:
             data['session_token'] = 'internal'
@@ -53,7 +53,7 @@ def list_all_orders():
 
 def manager_list_doctors():
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     
     if value['valid'] != 'ok':
         response = {'result': 'Unvalid token'}
@@ -103,7 +103,7 @@ def manager_list_doctors():
 
 def list_assigned_doctors():
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     doctor_email = data['doctor_email']
     
     if value['valid'] != 'ok':
@@ -145,7 +145,7 @@ def list_assigned_doctors():
 
 def manager_assign_doctors():
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     doctor_email = data['doctor_email']
     patient_email = data['patient_email']
     
@@ -191,7 +191,7 @@ def manager_assign_doctors():
 
 def delete_assignations_doctor():
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     doctor_email = data['doctor_email']
     patient_email = data['patient_email']
     
@@ -236,7 +236,7 @@ def add_medicine():
     #guardar en bd
     # retronrar resultado funcion, medicine id, medicine name
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     if value['valid'] != 'ok':
         response = {'result': 'Unvalid token'}
     else: 
@@ -303,7 +303,7 @@ def add_medicine():
 
 def stats():
     data = request.get_json()
-    value = check_token_manager(data['session_token'])
+    value = checktoken(data['session_token'])
     
     if value['valid'] != 'ok':
         response = {'result': 'Unvalid token'}
