@@ -225,9 +225,13 @@ def update_status():
 
                 if response['result'] == 'ok':
                     logging.info("ORDER | CLOUD | Documento actualizado correctamente")
+                    return jsonify(OK), 200
+                
                 else:
                     logging.info("ORDER | CLOUD | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
-            
+                    return jsonify(FAILED), 404
+
+
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
         return jsonify(FAILED), 500

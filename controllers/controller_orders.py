@@ -215,13 +215,14 @@ def update_status_order():
             'state'     : state,
             'state_num' : state_num
         }
-        response = orders.update_one(
+        result = orders.update_one(
             { 'order_identifier' : order_identifier }, 
             { '$set'             : update_fields } 
         )
 
-        if response.modified_count > 0:
+        if result.modified_count > 0:
             response['result'] = 'ok'
+     
         else:
             response['result'] = 'failed'
 
