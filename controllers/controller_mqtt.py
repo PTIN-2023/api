@@ -132,12 +132,11 @@ def update_status():
 
                 id_beehive = camions.find_one({ 'id_car' : data['id_car'] })['beehive']
                 payload = {
-                    'session_token' : 'internal',
-                    'id_beehive'    : id_beehive,
-                    'orders'        : json.dumps(full_orders, default=str)
+                    "session_token" : 'internal',
+                    "id_beehive"    : id_beehive,
+                    "orders"        : json.dumps(full_orders, default=str)
                 }
 
-                payload = json.dumps(payload)
                 edge_api = get_url_edge(id_beehive)
 
                 if edge_api != -1:
