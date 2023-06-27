@@ -58,25 +58,25 @@ def list_patient_orders():
             url = cloud_api+"/api/list_patient_orders"
             return requests.post(url, json=data).json()
         patient_email = value['email'] #cojo el mail de la persona 
-        te_orders = orders.find({'patient_email': patient_email}) #miro si tiene alguna receta //comprobar si hay mas de una
-        if te_orders:
+        orders_list = orders.find({'patient_email': patient_email}) #miro si tiene alguna receta //comprobar si hay mas de una
+        if orders_list:
             #medicaments
             response = []
-            for te_order in te_orders:  # Para cada orden encontrada
-                meds_list = te_order['meds_list']
+            for order in orders_list:  # Para cada orden encontrada
+                meds_list = order['meds_list']
                 meds_details = []
-                for med_code in meds_list: #para cada medicamento de med_list
-                    med_query = {'national_code': str(med_code)}
-                    med_result = farmacs.find_one(med_query) #lo busco en farmacs
-
-                    if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                        med_result['_id'] = str(med_result['_id'])
-                        meds_details.append(med_result)
-                        
-                responses = {'order_identifier': te_order['order_identifier'], 
-                            'medicine_list': meds_details,
-                            'date': te_order['date'],
-                            'state': te_order['state']
+                #for med_code in meds_list: #para cada medicamento de med_list
+                #    med_query = {'national_code': str(med_code)}
+                #    med_result = farmacs.find_one(med_query) #lo busco en farmacs
+#
+                #    if med_result:  #guardo todo y lo meto en la array que se devolverá al final
+                #        med_result['_id'] = str(med_result['_id'])
+                #        meds_details.append(med_result)
+                #        
+                responses = {'order_identifier': order['order_identifier'], 
+                            'medicine_list': meds_list,
+                            'date': order['date'],
+                            'state': order['state']
                             }
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
