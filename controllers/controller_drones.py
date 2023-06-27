@@ -137,7 +137,9 @@ def send_dron(id_dron, coordinates):
     }
     mensaje_json = json.dumps(msg)
 
-    client.publish("PTIN2023/DRON/STARTROUTE", mensaje_json)
+    STARTROUTE = "PTIN2023/" + str(topic_city) + "/DRON/STARTROUTE"
+
+    client.publish(STARTROUTE, mensaje_json)
     client.disconnect()
 
 

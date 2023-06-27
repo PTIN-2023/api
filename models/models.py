@@ -6,6 +6,7 @@ cloud_api = os.environ.get('CLOUD_API')
 mongo_host = os.environ.get('DB_HOST')
 mongo_port = os.environ.get('DB_PORT')
 is_local = int(os.environ.get('IS_LOCAL'))
+topic_city = os.environ.get('TOPIC_CITY')
 
 edge0_api = os.environ.get('EDGE0')
 edge1_api = os.environ.get('EDGE1')
