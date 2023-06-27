@@ -129,6 +129,94 @@ def search_client_farmacs():
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
         return jsonify(response)
     
+def num_search_farmacs():
+    data = request.get_json()
+    token = data['session_token']
+    logging.info(token)
+    check = check_token_manager(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_available_medicines"
+            return requests.post(url, json=data).json()
+        query = {}
+        if 'filter' in data:
+            try:
+                filter_data = data['filter']
+                if 'med_name' in filter_data:
+                    query['med_name'] = {'$regex': filter_data['med_name']}
+                if 'pvp_min' in filter_data:
+                    query['pvp'] = {'$gte': float(filter_data['pvp_min'])}
+                if 'pvp_max' in filter_data:
+                    if 'pvp' in query:
+                        query['pvp']['$lte'] = float(filter_data['pvp_max'])
+                    else:
+                        query['pvp'] = {'$lte': float(filter_data['pvp_max'])}
+                if 'prescription_needed' in filter_data:
+                    if True == filter_data['prescription_needed']:
+                        query['prescription_needed'] = {'$eq': True}
+                    if False == filter_data['prescription_needed']:
+                        query['prescription_needed'] = {'$eq': False}
+                if 'form' in filter_data:
+                    query['form'] = {'$in': filter_data['form']}
+                if 'type_of_administration' in filter_data:
+                    query['type_of_administration'] = {'$in': filter_data['type_of_administration']}
+             # Executem la query amb els límits especificats
+                results = farmacs.count_documents(query)
+            except Exception as e:
+                results = str(e)
+    # Si no es proporciona un filtre, es retornen tots els medicaments
+        else:
+            results = farmacs.count_documents()
+        return jsonify({"result":"ok","num": results})
+    else:
+        response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
+        return jsonify(response)
+    
+def num_search_client_farmacs():
+    data = request.get_json()
+    token = data['session_token']
+    logging.info(token)
+    check = checktoken(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_available_medicines"
+            return requests.post(url, json=data).json()
+        query = {}
+        if 'filter' in data:
+            try:
+                filter_data = data['filter']
+                if 'med_name' in filter_data:
+                    query['med_name'] = {'$regex': filter_data['med_name']}
+                if 'pvp_min' in filter_data:
+                    query['pvp'] = {'$gte': float(filter_data['pvp_min'])}
+                if 'pvp_max' in filter_data:
+                    if 'pvp' in query:
+                        query['pvp']['$lte'] = float(filter_data['pvp_max'])
+                    else:
+                        query['pvp'] = {'$lte': float(filter_data['pvp_max'])}
+                if 'prescription_needed' in filter_data:
+                    if True == filter_data['prescription_needed']:
+                        query['prescription_needed'] = {'$eq': True}
+                    if False == filter_data['prescription_needed']:
+                        query['prescription_needed'] = {'$eq': False}
+                if 'form' in filter_data:
+                    query['form'] = {'$in': filter_data['form']}
+                if 'type_of_administration' in filter_data:
+                    query['type_of_administration'] = {'$in': filter_data['type_of_administration']}
+             # Executem la query amb els límits especificats
+                results = farmacs.count_documents(query)
+            except Exception as e:
+                results = str(e)
+    # Si no es proporciona un filtre, es retornen tots els medicaments
+        else:
+            results = farmacs.count_documents()
+        return jsonify({"result":"ok","num": results})
+    else:
+        response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
+        return jsonify(response)
+
 def get_meds_prescription():
     data = request.get_json()
     token = data['session_token']

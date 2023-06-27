@@ -25,6 +25,8 @@ def routes_user(app):
 def routes_meds(app):
     app.route("/api/list_available_medicines", methods=['POST'])(search_client_farmacs)
     app.route("/api/list_inventory_meds", methods=['POST'])(search_farmacs)
+    app.route("/api/list_available_medicines_num", methods=['POST'])(num_search_client_farmacs)
+    app.route("/api/list_inventory_meds_num", methods=['POST'])(num_search_farmacs)
     app.route("/api/get_meds_prescription", methods=['POST'])(get_meds_prescription)
     
 def routes_pacients(app):
@@ -43,6 +45,7 @@ def routes_managers(app):
     app.route("/api/delete_assignations_doctor", methods=['POST'])(delete_assignations_doctor)
     app.route("/api/stats", methods=['POST'])(stats)
     app.route("/api/add_medicine", methods=['POST'])(add_medicine)
+    app.route("/api/update_medicine", methods=['POST'])(update_medicine)
 
 
 def routes_prescriptions(app):
@@ -93,9 +96,10 @@ def routes_routes(app):
     
 def routes_mqtt(app):
     app.route("/api/mqtt", methods=['POST'])(mqtt)
-    app.route("/api/update_location", methods=['POST'])(update_location)
-    app.route("/api/update_status", methods=['POST'])(update_status)
-
+    app.route("/api/update_location", methods=['POST'])(update_location)#nidea del hastag la verdad
+    app.route("/api/update_status", methods=['POST'])(update_status)#nidea del hastag la verdad
+    app.route("/api/TOCLOUD_UPDATESTATUS", methods=['POST'])(TOCLOUD_UPDATESTATUS)#nidea del hastag la verdad
+    app.route("/api/TOCLOUD_UPDATELOCATION", methods=['POST'])(TOCLOUD_UPDATELOCATION)#nidea del hastag la verdad
 
 def routes_paypal(app):
     app.route("/api/create_payment", methods=['POST'])(create_payment)

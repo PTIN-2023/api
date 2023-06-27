@@ -306,6 +306,22 @@ def add_medicine():
     
     return jsonify(response)
 
+def update_medicine():
+    data = request.get_json()
+    token = data['session_token']
+    check = checktoken(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/list_available_medicines"
+            return requests.post(url, json=data).json()
+    try:
+        farmacs.update_one({'national_code': data['national_code']}, {'$set': {'quantity_available': data['quantity_available'], 'pvp': data['pvp']}})
+        response = {'result': 'ok'}
+    except pymongo.errors.DuplicateKeyError as description_error:
+        response = {'result': 'error', 'description': str(description_error)}
+    return jsonify(response)
+
 
 def stats():
     data = request.get_json()
