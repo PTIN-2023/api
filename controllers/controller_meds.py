@@ -142,7 +142,7 @@ def get_meds_prescription():
         medicine_list = recipes.find_one({'prescription_identifier': data['prescription_identifier']})['meds_list']
         list = []
         for doc in medicine_list:
-            medicament = farmacs.find_one({'national_code': doc})
+            medicament = farmacs.find_one({'national_code': doc[0]})
             list.append({
                 'medicine_identifier': medicament['national_code'],
                 'medicine_image_url': medicament['medicine_image_url'],
