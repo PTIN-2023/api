@@ -175,8 +175,8 @@ def add_med(meds, new_med):
         meds.append(new_med)
 
 def update_recipes(patient_identifier, ordered_med):
-    recipes = recipes.find({'patient_identifier': patient_identifier})
-    for recipe in recipes:
+    recipes_list = recipes.find({'patient_identifier': patient_identifier})
+    for recipe in recipes_list:
         update_needed = False
         for med in recipe['meds_list']:
             if ordered_med[0] == med[0]:
