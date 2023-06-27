@@ -14,6 +14,8 @@ import paho.mqtt.client as mqtt
 OK = 'ok'
 INTERNAL = 'internal'
 
+CAR_SENT = 'car_sent'
+
 RES_OK  = { 'value': "ok" }
 FAILED  = { 'value': "failed" }
 BEEHIVE_DOES_NOT_EXIST = {'result' : 'error, la colmena no existeix'}
@@ -157,24 +159,28 @@ def list_orders_to_send_drones():
 
             for package in packages:
                 order_identifier = package['order_identifier']
-                order = orders.find_one({ 'order_identifier' : order_identifier })
+                order = orders.find_one(
+                    { 'order_identifier'    : order_identifier },
+                    { 'state'               : CAR_SENT }
+                )
 
-                # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
-                # Av. Corral d'en Cona, 8, 08880 El Corral d'en Cona, Barcelona -> 41.219670, 1.669643
+                if order != None:
+                    # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
+                    # Av. Corral d'en Cona, 8, 08880 El Corral d'en Cona, Barcelona -> 41.219670, 1.669643
 
-                # Final: coger info del cloud a partir de patient_email, y sacar coordenadas
-                coords_destiny = {
-                    'latitude'  :   '41.219670',
-                    'longitude' :   '1.669643'
-                }
+                    # Final: coger info del cloud a partir de patient_email, y sacar coordenadas
+                    coords_destiny = {
+                        'latitude'  :   '41.219670',
+                        'longitude' :   '1.669643'
+                    }
 
-                orders_to_send.append({
-                    'order_identifier'  : order['order_identifier'],
-                    'medicine_list'     : order['meds_list'],
-                    'date'              : order['date'],
-                    'state'             : order['state'],
-                    'coords_destiny'    : coords_destiny
-                })
+                    orders_to_send.append({
+                        'order_identifier'  : order['order_identifier'],
+                        'medicine_list'     : order['meds_list'],
+                        'date'              : order['date'],
+                        'state'             : order['state'],
+                        'coords_destiny'    : coords_destiny
+                    })
 
             return jsonify({
                 'result'    : OK, 
