@@ -15,16 +15,8 @@ def doctor_create_prescription():
             data['session_token'] = 'internal'
             url = cloud_api+"/api/doctor_create_prescription"
             return requests.post(url, json=data).json()
-        max_recipe = recipes.find_one(
-                        {"prescription_identifier": {"$regex": "^1"}, "prescription_identifier": {"$ne": "1"}},
-                        sort=[("prescription_identifier", -1)],
-        )
-        if max_recipe:
-            prescription_identifier = str(int(max_recipe["prescription_identifier"])+1)
-        else:
-            prescription_identifier = "1"
         entry = {
-            'prescription_identifier': prescription_identifier,
+            'prescription_identifier': data['prescription_identifier'],
             'patient_identifier': users.find_one({'user_full_name': data['user_full_name']})['user_email'],
             'meds_list': [doc['medicine_identifier'] for doc in data['medicine_list']],  ####################################Esto igual está mal pero és lo que pone en el apicalls, un poco raro y tal
             'duration': data['duration'], 
@@ -66,3 +58,26 @@ def get_patient_prescription_history():
     else:
         response = check
     return jsonify(response)
+
+def get_prescription_identifier():
+    data = request.get_json()
+    token = data['session_token']
+    check = check_token_doctor(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/doctor_create_prescription"
+            return requests.post(url, json=data).json()
+        max_recipe = recipes.find_one(
+                        {"prescription_identifier": {"$regex": "^1"}, "prescription_identifier": {"$ne": "1"}},
+                        sort=[("prescription_identifier", -1)],
+        )
+        if max_recipe:
+            prescription_identifier = str(int(max_recipe["prescription_identifier"])+1)
+        else:
+            prescription_identifier = "1"
+        response = {'result': 'ok', 'prescription_identifier': prescription_identifier}
+    else:
+        response = check
+    return jsonify(response)
+    

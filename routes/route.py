@@ -53,6 +53,8 @@ def routes_managers(app):
 def routes_prescriptions(app):
     app.route("/api/doctor_create_prescription", methods=['POST'])(doctor_create_prescription)
     app.route("/api/get_patient_prescription_history", methods=['POST'])(get_patient_prescription_history)
+    app.route("/api/get_prescription_identifier", methods=['POST'])(get_prescription_identifier)
+    
 
 def routes_orders(app):
     app.route("/api/doctor_confirm_order",methods=['POST'])(doctor_confirm_order)
