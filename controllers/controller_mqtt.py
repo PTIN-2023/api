@@ -135,10 +135,6 @@ def update_status():
                 }
 
                 payloadJSON = json.dumps(payload, default=str)
-
-                logging.info(payload)
-                logging.info(payloadJSON)
-
                 edge_api = get_url_edge(id_beehive)
 
                 if edge_api != -1:
