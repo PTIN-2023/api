@@ -80,8 +80,8 @@ def unload_car():
             })
 
         response['value'] = OK
+        return jsonify(value), 200
     
     else:
         response = value
-
-    return jsonify(value)
+        return jsonify(value), 500

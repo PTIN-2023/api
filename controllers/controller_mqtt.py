@@ -141,7 +141,7 @@ def update_status():
                     url = edge_api + "/api/unload_car"
                     response = requests.post(url, data=payload)
                     
-                    if response['value'] == 'ok':
+                    if response.status_code == 200:
                         return jsonify(OK), 200
                     else:
                         logging.info("update_status | /api/unload_car failed")
