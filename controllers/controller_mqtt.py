@@ -239,6 +239,16 @@ def update_status():
                     return jsonify(OK), 200
                 else:
                     return jsonify(FAILED), 404
+                
+            else:
+                if result.modified_count:
+                    logging.info("DRON | Documento actualizado correctamente")
+                    return jsonify(OK), 200
+                
+                else:
+                    logging.info("update_status | El documento no se actualizó. Puede que no se encontrara el id_dron especificado.")
+                    return jsonify(FAILED), 404
+                
 
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
