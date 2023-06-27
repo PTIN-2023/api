@@ -322,6 +322,21 @@ def update_medicine():
         response = {'result': 'error', 'description': str(description_error)}
     return jsonify(response)
 
+def delete_medicine():
+    data = request.get_json()
+    token = data['session_token']
+    check = checktoken(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/delete_medicine"
+            return requests.post(url, json=data).json()
+    try:
+        farmacs.delete_one({'national_code': data['national_code']})
+        response = {'result': 'ok'}
+    except pymongo.errors.DuplicateKeyError as description_error:
+        response = {'result': 'error', 'description': str(description_error)}
+    return jsonify(response)
 
 def stats():
     data = request.get_json()
