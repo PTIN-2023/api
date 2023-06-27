@@ -139,7 +139,13 @@ def update_status():
 
                 if edge_api != -1:
                     url = edge_api + "/api/unload_car"
-                    return requests.post(url, data=payload)
+                    response = requests.post(url, data=payload)
+                    
+                    if response['value'] == 'ok':
+                        return jsonify(OK), 200
+                    else:
+                        logging.info("update_status | /api/unload_car failed")
+                        return jsonify(FAILED), 500
                 
                 else:
                     logging.info("update_status | No se ha encontrado la colmena en el edge")
