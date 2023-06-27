@@ -166,7 +166,7 @@ def num_search_farmacs():
                 results = str(e)
     # Si no es proporciona un filtre, es retornen tots els medicaments
         else:
-            results = farmacs.count_documents()
+            results = farmacs.count_documents({})
         return jsonify({"result":"ok","num": results})
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
@@ -209,7 +209,7 @@ def num_search_client_farmacs():
                 results = str(e)
     # Si no es proporciona un filtre, es retornen tots els medicaments
         else:
-            results = farmacs.count_documents()
+            results = farmacs.count_documents({})
         return jsonify({"result":"ok","num": results})
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
