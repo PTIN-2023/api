@@ -191,25 +191,32 @@ def register_premium():
 
 
 def get_user_info():
-    data = request.get_json()
-    token = data['token']
-    check = checktoken(token)
+    
+    data    = request.get_json()
+    token   = data['token']
+    check   = checktoken(token)
+    
     if check['valid'] == 'ok':
+        
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/user_info"
+            url = cloud_api + "/api/user_info"
             return requests.post(url, json=data).json()
-        doc = users.find_one({'user_email': check['email']})
-        response = {'result': 'ok', 
-                    'user_given_name': doc['user_given_name'], 
-                    'user_role': doc['user_role'], 
-                    'user_full_name': doc['user_full_name'],
-                    'user_email': doc['user_email'],
-                    'user_phone': doc['user_phone'],
-                    'user_city': doc['user_city'],
-                    'user_address': doc['user_address'],
-                    'user_picture': "No tenim imatge",
-                    'user_token': token}
+        
+        doc = users.find_one({'user_email' : check['email']})
+        response = {
+            'result'            : 'ok', 
+            'user_given_name'   : doc['user_given_name'], 
+            'user_role'         : doc['user_role'], 
+            'user_full_name'    : doc['user_full_name'],
+            'user_email'        : doc['user_email'],
+            'user_phone'        : doc['user_phone'],
+            'user_city'         : doc['user_city'],
+            'user_address'      : doc['user_address'],
+            'user_picture'      : "No tenim imatge",
+            'user_token'        : token
+        }
+        
         return jsonify(response)
     else:
         response = {'result': 'error', 'message': check['valid']}
