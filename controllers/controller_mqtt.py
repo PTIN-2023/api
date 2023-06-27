@@ -31,7 +31,15 @@ DRON_SENT = 'dron_sent'
 
 DRON_WAITING = 4
 ORDER_DELIVERED_AWAITING = 5
-DELIVERED_AWAITING = 'delivered_awaiting '
+DELIVERED_AWAITING = 'delivered_awaiting'
+
+DRON_DELIVERED = 9
+ORDER_DELIVERED = 6
+DELIVERED = 'delivered'
+
+DRON_NOT_DELIVERED = 10
+ORDER_DELIVERY_FAILED = 7
+DELIVERY_FAILED = 'delivery_failed'
 
 # Dudas -> Joa
 # Filtra el coche/dron con id = id_car/id_dron y actualiza todos los campos especificados
@@ -201,11 +209,36 @@ def update_status():
             order_identifier = order_dron["order_identifier"]
 
             if data['status_num'] == DRON_DELIVERING:
-                update_status_cloud_edge(DRON_SENT, ORDER_DRON_SENT, order_identifier)
+                res = update_status_cloud_edge(DRON_SENT, ORDER_DRON_SENT, order_identifier)
+                
+                if res == 'ok':
+                    return jsonify(OK), 200
+                else:
+                    return jsonify(FAILED), 404
 
             if data['status_num'] == DRON_WAITING:
-                pass
-
+                res = update_status_cloud_edge(DELIVERED_AWAITING, ORDER_DELIVERED_AWAITING, order_identifier)
+                
+                if res == 'ok':
+                    return jsonify(OK), 200
+                else:
+                    return jsonify(FAILED), 404
+                
+            if data['status_num'] == DRON_DELIVERED:
+                res = update_status_cloud_edge(DELIVERED, ORDER_DELIVERED, order_identifier)
+                
+                if res == 'ok':
+                    return jsonify(OK), 200
+                else:
+                    return jsonify(FAILED), 404
+                
+            if data['status_num'] == DRON_NOT_DELIVERED:
+                res = update_status_cloud_edge(DELIVERY_FAILED, ORDER_DELIVERY_FAILED, order_identifier)
+                
+                if res == 'ok':
+                    return jsonify(OK), 200
+                else:
+                    return jsonify(FAILED), 404
 
     except PyMongoError as e:
         logging.error("Ocurrió un error al actualizar el documento:", str(e))
@@ -242,61 +275,7 @@ def update_status_cloud_edge(state, state_num, order_identifier):
 
     if response['result'] == 'ok':
         logging.info("ORDER | CLOUD | Documento actualizado correctamente")
-        return jsonify(OK), 200
-    
     else:
         logging.info("ORDER | CLOUD | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
-        return jsonify(FAILED), 404
 
-
-# FUNCIONES DRON!!!! FALTA ACABARLAS!!
-def TOCLOUD_UPDATELOCATION():
-    data = request.get_json()
-    update_fields = {
-        'location_act'  :   data['location_act'],
-        'status'        :   data['status'],
-        'battery'       :   data['battery'],
-        'autonomy'      :   data['autonomy'],
-        'status_num'    :   data['status_num']
-    }
-
-    try:
-        result = drons.update_one(
-            {'id_dron'   : data['id_dron']}, 
-            {'$set'     : update_fields }
-        )
-
-        if result.modified_count > 0:
-            logging.info("Documento actualizado correctamente.")
-            return jsonify(OK), 200
-        
-        else:
-            logging.info("drones | El documento no se actualizó. Puede que no se encontrara el id_dron especificado.")
-            return jsonify(FAILED), 404
-    
-    except PyMongoError as e:
-        logging.error("Ocurrió un error al actualizar el documento:", str(e))
-        return jsonify(FAILED), 500
-
-def TOCLOUD_UPDATESTATUS():
-    data = request.get_json()
-    update_fields = {
-        'status'        : data['status'],
-        'status_num'    : data['status_num']
-    }
-    
-    try:
-        result = drons.update_one(
-            {'id_dron'   : data['id_car']},
-            {'$set'     : update_fields }  
-        ) 
-        if result.modified_count > 0:
-            logging.info("Documento actualizado correctamente.")
-            return jsonify(OK), 200
-        
-        else:
-            logging.info("drones | El documento no se actualizó. Puede que no se encontrara el id_dron especificado.")
-            return jsonify(FAILED), 404
-    except PyMongoError as e:
-        logging.error("Ocurrió un error al actualizar el documento:", str(e))
-        return jsonify(FAILED), 500
+    return response['result'] 
