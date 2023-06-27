@@ -64,8 +64,13 @@ def unload_car():
     if is_local == 0:
         return jsonify(NOT_AVAILABLE_AT_CLOUD)
 
-    data = request.get_json()
-    logging.info(data)
+    try:
+        data = request.get_json()
+        logging.info(data)
+    except:
+        logging.info("basura asquerosa")
+
+        
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
 
