@@ -208,8 +208,6 @@ def make_order():
                                 medicament_receptat = True
                                 update_recipes(patient_identifier,ordered_med)
                                 break
-                        if medicament_receptat:
-                            break
                     if not medicament_receptat:
                         approvation_required = True
             else:
