@@ -38,21 +38,30 @@ def store_route():
     return jsonify(response)
 
 def get_route():
-    data = request.get_json()
-    token = data['session_token']
-    check = checktoken(token)
+    
+    data    = request.get_json()
+    token   = data['session_token']
+    check   = checktoken(token)
+    
     if check['valid'] == 'ok':
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/get_route"
-            return requests.post(url, json=data).json()
-        route = routes.find_one({'id_route': data['id_route']})
+
+        route = routes.find_one({ 'id_route' : data['id_route'] })
         if route is None:
-            response = {'valid': 'error', 'description': 'Route not found'}
+            response = {
+                'valid'         : 'error', 
+                'description'   : 'Route not found'
+            }
         else:
-            response = {'result': 'ok', 'coordinates' : route['coordinates']}
+            response = {
+                'result'        : 'ok', 
+                'coordinates'   : route['coordinates']
+            }
     else:
-        response = {'result': 'error', 'description': check['valid']}
+        response = {
+            'result'        : 'error', 
+            'description'   : check['valid']
+        }
+    
     return jsonify(response)
 
 #def generate_map_route():
