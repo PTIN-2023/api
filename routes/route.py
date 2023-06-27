@@ -9,6 +9,7 @@ from controllers.controller_orders import *
 from controllers.controller_paypal import *
 from controllers.controller_managers import *
 from controllers.controller_colmenes import *
+from controllers.controller_proves import *
 from controllers.controller_prescriptions import *
 
 
