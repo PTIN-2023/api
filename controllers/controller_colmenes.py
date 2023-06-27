@@ -75,9 +75,8 @@ def unload_car():
         logging.info(full_orders)
         logging.info(id_beehive)
 
-
         for order in full_orders:
-            orders.insert_one(order)
+            orders.insert_one(jsonify(order))
 
         logging.info('B')
         colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
