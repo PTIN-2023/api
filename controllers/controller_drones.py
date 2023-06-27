@@ -159,10 +159,10 @@ def list_orders_to_send_drones():
 
             for package in packages:
                 order_identifier = package['order_identifier']
-                order = orders.find_one(
-                    { 'order_identifier'    : order_identifier },
-                    { 'state'               : CAR_SENT }
-                )
+                order = orders.find_one({
+                    'order_identifier'    : order_identifier,
+                    'state'               : CAR_SENT 
+                })
 
                 if order != None:
                     # Para probar ponemos un destino fijo, edge 2, ubicación -> cubelles
