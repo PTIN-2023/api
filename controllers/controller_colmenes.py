@@ -64,45 +64,23 @@ def unload_car():
     if is_local == 0:
         return jsonify(NOT_AVAILABLE_AT_CLOUD)
 
-    try:
-        data = request.get_json()
-        logging.info(data)
-    except:
-        logging.info("basura asquerosa")
-
-        
+    data = request.get_json()
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
 
     if value['valid'] == OK:
 
-        logging.info('A')
-
         full_orders = data['orders']
         id_beehive  = data['id_beehive']
 
-        logging.info(full_orders)
-        logging.info(id_beehive)
-
         for order in full_orders:
-            logging.info(order)
-            try:
-                orders.insert_one(order)
-            except:
-                pass
+            orders.insert_one(order)
 
         colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
-        logging.info("colmena")
-        logging.info(colmena)
-
         for order in full_orders:
-            try:
-                logging.info(order['order_identifier'])
-                colmena['packages'].append({
-                    'order_identifier' : order['order_identifier']
-                })
-            except:
-                pass
+            colmena['packages'].append({
+                'order_identifier' : order['order_identifier']
+            })
 
         response['value'] = OK
         return jsonify(response), 200

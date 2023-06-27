@@ -111,7 +111,6 @@ def update_status():
 
                     else:
                         logging.info("ORDER | El documento no se actualizó. Puede que no se encontrara el order_identifier especificado.")
-
             
             # copy orders transported by car <id_car> to edge db            
             elif data['status_num'] == CAR_UNLOADING:
@@ -124,15 +123,10 @@ def update_status():
 
                 full_orders = []
                 for order in orders_car:
-                    
-                    full_order = orders.find_one(
+                    full_orders.append(orders.find_one(
                         { 'order_identifier' : order['order_identifier'] }
-                    )
-                    full_order = {str(key) : str(value) for key, value in full_order}
-                    full_orders.append(full_order)
+                    ))
                 
-                logging.info(full_orders)
-
                 id_beehive = camions.find_one({ 'id_car' : data['id_car'] })['beehive']
                 payload = {
                     "session_token" : 'internal',
@@ -144,13 +138,8 @@ def update_status():
 
                 if edge_api != -1:
                     url = edge_api + "/api/unload_car"
-
-                    logging.info(url)
-
                     response = requests.post(url, data=payload)
                     
-                    logging.info(response)
-
                     if response.status_code == 200:
                         return jsonify(OK), 200
                     else:
