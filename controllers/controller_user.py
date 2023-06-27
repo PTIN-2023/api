@@ -8,6 +8,8 @@ from pymongo import UpdateOne
     
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
+OK = 'ok'
+INTERNAL = 'internal'
 
 def login():
     data = request.get_json()
@@ -218,9 +220,36 @@ def get_user_info():
         }
         
         return jsonify(response)
+    
     else:
         response = {'result': 'error', 'message': check['valid']}
+    
     return jsonify(response)
+
+
+def get_user_position():
+
+    data = request.get_json()
+    value = checktoken(data['session_token']) 
+    response = { 'value' : value['valid'] }
+
+    if value['valid'] == OK:
+            
+        if is_local == 1:
+            data['session_token'] = INTERNAL
+            url = cloud_api + "/api/user_position"
+            return requests.post(url, json=data).json()
+
+        doc = users.find_one({'user_email' : data['user_email']})
+        return jsonify({
+            'result'                : OK,
+            'user_coordinates'      : doc['user_coordinates'],
+            'beehive_coordinates'   : doc['beehive_coordinates']
+        })
+    
+    return jsonify(response)
+
+
 
 def info_clients_for_doctor():
     data = request.get_json()

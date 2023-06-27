@@ -20,6 +20,7 @@ def routes_user(app):
     app.route("/api/user_info", methods=['POST'])(get_user_info)
     app.route("/api/logout", methods=['POST'])(logout)
     app.route("/api/set_user_info", methods=['POST'])(set_user_info)
+    app.route("/api/user_position", methods=['POST'])(get_user_position)
     
 def routes_meds(app):
     app.route("/api/list_available_medicines", methods=['POST'])(search_client_farmacs)
