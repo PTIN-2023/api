@@ -79,7 +79,9 @@ def unload_car():
         for order in full_orders:
             orders.insert_one(order)
 
+        logging.info('B')
         colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
+        logging.info('A')
         logging.info(colmena)
         for order in full_orders:
             colmena['packages'].append({
