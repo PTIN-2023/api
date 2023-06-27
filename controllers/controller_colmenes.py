@@ -3,6 +3,8 @@ from models.models import *
 from utils.utils import checktoken
 import json
 
+import logging
+
 OK = 'ok'
 NOT_AVAILABLE_AT_CLOUD  = { 'result': 'error, funcio no disponible al cloud' }
 NOT_AVAILABLE_AT_EDGE   = { 'result': "error, funcio no disponible a l'edge" }
@@ -70,18 +72,23 @@ def unload_car():
         full_orders = data['orders']
         id_beehive  = data['id_beehive']
 
+        logging.info(full_orders)
+        logging.info(id_beehive)
+
+
         for order in full_orders:
             orders.insert_one(order)
 
         colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
+        logging.info(colmena)
         for order in full_orders:
             colmena['packages'].append({
                 'order_identifier' : order['order_identifier']
             })
 
         response['value'] = OK
-        return jsonify(value), 200
+        return jsonify(response), 200
     
     else:
         response = value
-        return jsonify(value), 500
+        return jsonify(response), 500
