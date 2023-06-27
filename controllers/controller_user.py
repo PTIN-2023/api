@@ -5,6 +5,7 @@ from models.models import *
 from utils.utils import checktoken, check_token_doctor, get_coordinates, get_closest_beehive
 import logging
 from pymongo import UpdateOne
+from unidecode import unidecode
     
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
@@ -84,7 +85,8 @@ def register():
         return jsonify(response)
     else:
         user_latitude, user_longitude = user_coordinates
-        beehive_latitude, beehive_longitude = get_closest_beehive(data['user_city'],user_latitude,user_longitude)
+        city_lowercase_no_accents = unidecode(data['user_city']).lower()
+        beehive_latitude, beehive_longitude = get_closest_beehive(city_lowercase_no_accents,user_latitude,user_longitude)
         entry = {
             "user_full_name": data['user_full_name'],
             "user_given_name": data['user_given_name'],
@@ -303,7 +305,8 @@ def set_user_info():
             return jsonify(response)
         else:
             user_latitude, user_longitude = user_coordinates
-            beehive_latitude, beehive_longitude = get_closest_beehive(data['user_city'],user_latitude,user_longitude)     
+            city_lowercase_no_accents = unidecode(data['user_city']).lower()
+            beehive_latitude, beehive_longitude = get_closest_beehive(city_lowercase_no_accents,user_latitude,user_longitude)   
             # Update values
             update_operations = [
                 UpdateOne({'user_email': user_email},
