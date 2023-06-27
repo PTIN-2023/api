@@ -172,12 +172,16 @@ def list_orders_to_send_drones():
                     url = cloud_api + "/api/user_position"
                     response = requests.post(url, json=payload).json()
 
+                    coords_destiny = ''
+                    if response['result'] == OK:
+                        coords_destiny = response['user_coordinates']
+                       
                     orders_to_send.append({
                         'order_identifier'  : order['order_identifier'],
                         'medicine_list'     : order['meds_list'],
                         'date'              : order['date'],
                         'state'             : order['state'],
-                        'coords_destiny'    : response['user_coordinates']
+                        'coords_destiny'    : coords_destiny
                     })
 
             return jsonify({
