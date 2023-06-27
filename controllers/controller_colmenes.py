@@ -76,16 +76,24 @@ def unload_car():
         logging.info(id_beehive)
 
         for order in full_orders:
-            orders.insert_one(jsonify(order))
+            logging.info(order)
+            try:
+                orders.insert_one(order)
+            except:
+                pass
 
-        logging.info('B')
         colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
-        logging.info('A')
+        logging.info("colmena")
         logging.info(colmena)
+
         for order in full_orders:
-            colmena['packages'].append({
-                'order_identifier' : order['order_identifier']
-            })
+            try:
+                logging.info(order['order_identifier'])
+                colmena['packages'].append({
+                    'order_identifier' : order['order_identifier']
+                })
+            except:
+                pass
 
         response['value'] = OK
         return jsonify(response), 200

@@ -137,13 +137,17 @@ def update_status():
                     'orders'        : full_orders
                 }
 
-                payload = jsonify(payload)
                 edge_api = get_url_edge(id_beehive)
 
                 if edge_api != -1:
                     url = edge_api + "/api/unload_car"
+
+                    logging.info(url)
+
                     response = requests.post(url, data=payload)
                     
+                    logging.info(response)
+
                     if response.status_code == 200:
                         return jsonify(OK), 200
                     else:
