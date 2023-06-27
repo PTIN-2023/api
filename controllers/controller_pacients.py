@@ -150,6 +150,7 @@ def paginate(data, items_per_page):
 #si hay dudas -> david
 def make_order():
     data = request.get_json()
+    logging.info(data)
     value = checktoken(data['session_token'])
     if value['valid'] == 'ok':
         if is_local == 1:
@@ -161,7 +162,7 @@ def make_order():
        
         approvation_required = False 
         #prescription_given = recipes.find({'patient_identifier': patient_identifier})
-        prescription_given = prescription_given(patient_identifier)
+        prescription_list = prescription_given(patient_identifier)
         for ordered_med in meds_list: #se revisa si el input es correcto
             logging.info(ordered_med)
             med_query = {'national_code': str(ordered_med)}
@@ -172,7 +173,7 @@ def make_order():
                 if med_result['prescription_needed']:
                     #mirar si el user tiene receta para este med
                     medicament_receptat = False
-                    for med in prescription_given:
+                    for med in prescription_list:
                             if med[0] == ordered_med[0] and med[1] >= ordered_med[1]:
                                 medicament_receptat = True
                                 update_recipes(patient_identifier,ordered_med)

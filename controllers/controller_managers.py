@@ -313,7 +313,7 @@ def update_medicine():
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_available_medicines"
+            url = cloud_api+"/api/update_medicine"
             return requests.post(url, json=data).json()
     try:
         farmacs.update_one({'national_code': data['national_code']}, {'$set': {'quantity_available': data['quantity_available'], 'pvp': data['pvp']}})

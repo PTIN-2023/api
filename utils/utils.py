@@ -207,5 +207,5 @@ def quantity_available_user(national_code, user):
 
 def restar_meds(meds_list):
     for med in meds_list:
-        quantity = farmacs.find_one({'national_code': med[0]})['quantity_available'] - med[1]
-        farmacs.update_one({'national_code': med[0]}, {'$set': {'quantity_available': quantity}})
+        farmac = farmacs.find_one({'national_code': med[0]})
+        farmacs.update_one({'national_code': med[0]}, {'$set': {'quantity_available': farmac['quantity_available'] - med[1], 'amount_sold': farmac['amount_sold'] + med[1]}})
