@@ -3,7 +3,7 @@ import datetime
 from datetime import timedelta
 import jwt
 from models.models import *
-from utils.utils import checktoken
+from utils.utils import checktoken, prescription_given, add_med, update_recipes
 import paho.mqtt.client as mqtt
 import json
 import logging
@@ -49,38 +49,34 @@ def has_prescription():
 #si hay dudas -> david
 def get_prescription_meds():
     data = request.get_json()
-    value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
-    if value['valid'] == 'ok': #si tiene token
+    token = data['session_token']
+    logging.info(token)
+    check = checktoken(token)
+    if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/get_prescription_meds"
+            url = cloud_api+"/api/list_available_medicines"
             return requests.post(url, json=data).json()
-        #busco si existe receta para el valor importado
-        prescription_identifier = data['prescription_identifier']
-        query = {'prescription_identifier': prescription_identifier}
-        result = recipes.find_one(query) 
-        
-        if result: #si hay receta devuelvo los medicamentos
-            meds_list = result['meds_list']
-            meds_details = []
-
-            for med_code in meds_list: #para cada medicamento de med_list
-                med_query = {'national_code': str(med_code)}
-                med_result = farmacs.find_one(med_query) #lo busco en farmacs
-                
-                if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                    med_result['_id'] = str(med_result['_id'])
-                    meds_details.append(med_result)
-            
-            response = {'result': 'ok', 'meds_details': meds_details}
-            return jsonify(response)
-        
-        else: #si no hay receta lo notifico
-            response = {'result' :'No hi ha recepta per aquest valor'}
-            return jsonify(response)
+        medicine_list = recipes.find_one({'prescription_identifier': data['prescription_identifier']})['meds_list']
+        list = []
+        for doc in medicine_list:
+            medicament = farmacs.find_one({'national_code': doc})
+            list.append({
+                'medicine_identifier': medicament['national_code'],
+                'medicine_image_url': medicament['medicine_image_url'],
+                'medicine_name': medicament['med_name'],
+                'excipient': medicament['excipients'],
+                'pvp': medicament['pvp'],
+                'contents': medicament['contents'],
+                'prescription_needed': medicament['prescription_needed'],
+                'form': medicament['form'],
+                'type_of_administration': medicament['type_of_administration'],
+            })
+        response = {'result': 'ok', 'medicine_list': list}
     else:
-        response = {'result': 'No tienes token para poder comprobar esto, espabila'}
-        return jsonify(response)
+        response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
+    return jsonify(response)
+
 
 #si hay dudas -> david  
 def list_patient_orders():
@@ -195,10 +191,11 @@ def make_order():
         patient_identifier = value['email'] #cojo el mail de la persona
        
         approvation_required = False 
-        prescription_given = recipes.find({'patient_identifier': patient_identifier})
-        for med_code in meds_list: #se revisa si el input es correcto
-            logging.info(med_code)
-            med_query = {'national_code': str(med_code)}
+        #prescription_given = recipes.find({'patient_identifier': patient_identifier})
+        prescription_given = prescription_given(patient_identifier)
+        for ordered_med in meds_list: #se revisa si el input es correcto
+            logging.info(ordered_med)
+            med_query = {'national_code': str(ordered_med)}
             med_result = farmacs.find_one(med_query) #lo busco en farmacs
             
             if med_result:
@@ -206,13 +203,12 @@ def make_order():
                 if med_result['prescription_needed']:
                     #mirar si el user tiene receta para este med
                     medicament_receptat = False
-                    for recepta in prescription_given:
-                        logging.info(prescription_given)
-                        for med in recepta['meds_list']:
-                            if med == med_result['national_code'] or approvation_required:
+                    for med in prescription_given:
+                            if med[0] == ordered_med[0] and med[1] >= ordered_med[1]:
                                 medicament_receptat = True
+                                update_recipes(patient_identifier,ordered_med)
                                 break
-                        if medicament_receptat or approvation_required:
+                        if medicament_receptat:
                             break
                     if not medicament_receptat:
                         approvation_required = True
@@ -351,5 +347,6 @@ def send_car():
 
     # Cierra la conexión MQTT
     client.disconnect()
+
 
 

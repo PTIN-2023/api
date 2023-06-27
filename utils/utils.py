@@ -50,6 +50,24 @@ def check_token_doctor(token):
             response = {'valid': 'error', 'description': 'timeout'}
     return response
 
+def check_token_manager(token):
+    user_data = sessio.find_one({'token': token})
+    if user_data is None:
+        response = {'valid': 'None1'}
+    else:
+        user = users.find_one({'user_email': user_data['user_email']})
+        if user is None:
+            response = {'valid': 'None2'}
+            return response
+        elif datetime.now() <= (datetime.strptime(user_data['data'], '%Y-%m-%dT%H:%M:%S.%f') + timedelta(minutes=50)):
+            if user['user_role'] == 'manager':
+                response = {'valid': 'ok', 'email': user['user_email'], 'type': user["user_role"]}
+            else:
+                response = {'valid': 'error', 'description': 'No ets manager'}
+        else:
+            response = {'valid': 'error', 'description': 'timeout'}
+    return response
+
 def checktokenv2():
     # Define the query to find the document
     query = {'user_email': 'valor'}
@@ -137,3 +155,49 @@ def get_url_edge(id_beehive):
     
     else:
         return -1
+
+def prescription_given(patient_identifier):
+    prescription_given = recipes.find({'patient_identifier': patient_identifier})
+    meds = []
+    for prescription in prescription_given:
+        for med in prescription['meds_list']:
+            add_med(meds, med)
+    return meds
+
+def add_med(meds, new_med):
+    trobat = False
+    for med in meds:
+        if med[0] == new_med[0]:
+            trobat = True
+            med[1] += new_med[1]
+            break
+    if not trobat:
+        meds.append(new_med)
+
+def update_recipes(patient_identifier, ordered_med):
+    recipes = recipes.find({'patient_identifier': patient_identifier})
+    for recipe in recipes:
+        update_needed = False
+        for med in recipe['meds_list']:
+            if ordered_med[0] == med[0]:
+                if ordered_med[1] > med[1]:
+                    ordered_med -= med[1]
+                    med[1] = 0
+                else:
+                    med[1] -= ordered_med[1]
+                update_needed = True
+                break
+        if update_needed:
+            update_query = {'$set': {'meds_list': recipe['meds_list']}}
+            query = {'prescription_identifier': recipe['prescription_identifier']}
+            orders.update_one(query, update_query)
+
+def quantity_available_user(national_code, user):
+    prescription_given = recipes.find({'patient_identifier': patient_identifier})
+    quant = 0
+    for prescription in prescription_given:
+        for med in prescription['meds_list']:
+            if med[0] == national_code:
+                quant += med[1]
+                break
+    return quant
