@@ -93,7 +93,7 @@ def update_order_cars():
     
     if is_local == 0:
         data['session_token'] = 'internal'
-        url = cloud_api+"/api/update_order_cars"
+        url = "localhost:3000/api/update_order_cars"
         return requests.post(url, json=data).json()
 
     return jsonify({'result':'ok'})
