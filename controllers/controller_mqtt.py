@@ -1,16 +1,17 @@
 from flask import jsonify, request
 from pymongo.errors import PyMongoError
-import os
+import os, requests
+
+from utils.utils import get_url_edge
 
 # Models
 from models.models import orders
 from models.models import camions
 from models.models import drons
+from models.models import is_local, cloud_api
 
 import logging
 logging.basicConfig(level = logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-is_local = int(os.environ.get('IS_LOCAL'))
 
 # Return status
 OK      = { 'value': "ok" }
@@ -126,9 +127,24 @@ def update_status():
                     full_orders.append(orders.find_one(
                         { 'order_identifier' : order['order_identifier'] }
                     ))
+                
+                id_beehive = camions.find_one({ 'id_car' : data['id_car'] })['beehive']
+                payload = {
+                    'session_token' : 'internal',
+                    'id_beehive'    : id_beehive,
+                    'orders'        : full_orders
+                }
 
-                # send all orders to the specific edge
-            
+                edge_api = get_url_edge(id_beehive)
+
+                if edge_api != -1:
+                    url = edge_api + "/api/unload_car"
+                    return requests.post(url, data=payload)
+                
+                else:
+                    logging.info("update_status | No se ha encontrado la colmena en el edge")
+                    return jsonify(FAILED), 404
+                
             # remove id_route from car <id_car> at the end of the route
             elif data['status_num'] == CAR_WAITS:
                 

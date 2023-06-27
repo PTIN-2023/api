@@ -56,3 +56,32 @@ def beehives_local():
         response = value
         
     return jsonify(response) 
+
+def unload_car():
+
+    if is_local == 0:
+        return jsonify(NOT_AVAILABLE_AT_CLOUD)
+
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    response = { 'value' : value['valid'] }
+
+    if value['valid'] == OK:
+        full_orders = data['orders']
+        id_beehive  = data['id_beehive']
+
+        for order in full_orders:
+            orders.insert_one(order)
+
+        colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
+        for order in full_orders:
+            colmena['packages'].append({
+                'order_identifier' : order['order_identifier']
+            })
+
+        response['value'] = OK
+    
+    else:
+        response = value
+
+    return jsonify(value)

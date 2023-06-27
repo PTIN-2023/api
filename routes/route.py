@@ -77,6 +77,7 @@ def routes_drones(app):
 def routes_colmenes(app):
     app.route("/api/beehives_local", methods=['POST'])(beehives_local)
     app.route("/api/beehives_global", methods=['POST'])(beehives_global)
+    app.route("/api/unload_car", methods=['POST'])(unload_car)
 
 def routes_routes(app):
     app.route("/api/store_route", methods=['POST'])(store_route)

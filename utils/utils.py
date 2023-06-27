@@ -124,4 +124,16 @@ def get_closest_beehive(city, user_latitude, user_longitude):
         if closest_colmena:
             return closest_colmena
 
-
+def get_url_edge(id_beehive):
+    
+    if id_beehive in BEEHIVES_EDGE0:
+        return edge0_api
+    
+    elif id_beehive in BEEHIVES_EDGE1:
+        return edge1_api
+    
+    elif id_beehive in BEEHIVES_EDGE2:
+        return edge2_api
+    
+    else:
+        return -1

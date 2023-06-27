@@ -7,6 +7,14 @@ mongo_host = os.environ.get('DB_HOST')
 mongo_port = os.environ.get('DB_PORT')
 is_local = int(os.environ.get('IS_LOCAL'))
 
+edge0_api = os.environ.get('EDGE0')
+edge1_api = os.environ.get('EDGE1')
+edge2_api = os.environ.get('EDGE2')
+
+BEEHIVES_EDGE0 = [1]
+BEEHIVES_EDGE1 = [3, 4]
+BEEHIVES_EDGE2 = [2]
+
 config = {
     "username": "root",
     "password": "root",
