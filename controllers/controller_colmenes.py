@@ -76,11 +76,13 @@ def unload_car():
         for order in full_orders:
             orders.insert_one(order)
 
-        colmena = colmenas.find_one({ 'id_beehive' : int(id_beehive) })
         for order in full_orders:
-            colmena['packages'].append({
-                'order_identifier' : order['order_identifier']
-            })
+            colmenas.update_one(
+                { 'id_beehive' : int(id_beehive) },
+                { "$push" : { "packages" : {
+                    'order_identifier' : order['order_identifier']
+                }}}
+            )
 
         response['value'] = OK
         return jsonify(response), 200
