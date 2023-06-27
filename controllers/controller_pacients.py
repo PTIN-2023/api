@@ -3,7 +3,7 @@ import datetime
 from datetime import timedelta
 import jwt
 from models.models import *
-from utils.utils import checktoken, prescription_given, add_med, update_recipes
+from utils.utils import checktoken, prescription_given, add_med, update_recipes, restar_meds
 import paho.mqtt.client as mqtt
 import json
 import logging
@@ -61,17 +61,18 @@ def get_prescription_meds():
         list = []
         for doc in medicine_list:
             medicament = farmacs.find_one({'national_code': doc})
-            list.append({
-                'medicine_identifier': medicament['national_code'],
-                'medicine_image_url': medicament['medicine_image_url'],
-                'medicine_name': medicament['med_name'],
-                'excipient': medicament['excipients'],
-                'pvp': medicament['pvp'],
-                'contents': medicament['contents'],
-                'prescription_needed': medicament['prescription_needed'],
-                'form': medicament['form'],
-                'type_of_administration': medicament['type_of_administration'],
-            })
+            if medicament:
+                list.append({
+                    'medicine_identifier': medicament['national_code'],
+                    'medicine_image_url': medicament['medicine_image_url'],
+                    'medicine_name': medicament['med_name'],
+                    'excipient': medicament['excipients'],
+                    'pvp': medicament['pvp'],
+                    'contents': medicament['contents'],
+                    'prescription_needed': medicament['prescription_needed'],
+                    'form': medicament['form'],
+                    'type_of_administration': medicament['type_of_administration'],
+                })
         response = {'result': 'ok', 'medicine_list': list}
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
@@ -112,7 +113,8 @@ def list_patient_orders():
                             }
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
-            response = {'result': 'success', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
+            data = users.find_one({'user_email': patient_email})
+            response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': data['user_address'] + " , " + data['user_city']}
         
         else:
             response = {'result': 'Aquest pacient no te cap ordre'}
@@ -218,6 +220,7 @@ def make_order():
             approved = "pending"
         else:
             approved = "yes"
+            restar_meds(meds_list)
         max_order = orders.find_one({}, sort=[("order_identifier", -1)])
 
         #    
