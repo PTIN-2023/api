@@ -249,21 +249,25 @@ def add_medicine():
             national_code = data['national_code']
             medicine_image_url = data['medicine_image_url']
             med_name = data['med_name']
-            excipient = data['excipient']
+            excipients = data['excipients']
             pvp = data['pvp']
             use_type = data['use_type']
             contents = data['contents']
             prescription_needed = data['prescription_needed']
             form = data['form']
             type_of_administration = data['type_of_administration']
+            quantity_available = data['quantity_available']
+
 
             #guardar en bd si no esta ya puesta en bd 
+            #pregunta: això busca si algun dels camps és igual o si tots son iguals?
+            #no te molt sentit en cap dels dos casos
             existing_medicine=  None
             existing_medicine = recipes.find_one({
                 "national_code": national_code,
                 "medicine_image_url": medicine_image_url,
                 "med_name": med_name,
-                "excipient": excipient,
+                "excipients": excipients,
                 "pvp": pvp,
                 "use_type": use_type,
                 "contents": contents,
@@ -280,13 +284,15 @@ def add_medicine():
                 "national_code": national_code,
                 "medicine_image_url": medicine_image_url,
                 "med_name": med_name,
-                "excipient": excipient,
+                "excipients": excipients,
                 "pvp": pvp,
                 "use_type": use_type,
                 "contents": contents,
                 "prescription_needed": prescription_needed,
                 "form": form,
-                "type_of_administration": type_of_administration
+                "type_of_administration": type_of_administration,
+                "quantity_available": quantity_available,
+                "amount_sold": 0
                 }
 
                 result = recipes.insert_one(medicine_data)
