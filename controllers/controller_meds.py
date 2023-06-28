@@ -238,7 +238,9 @@ def get_meds_prescription():
                 'prescription_needed': medicament['prescription_needed'],
                 'form': medicament['form'],
                 'type_of_administration': medicament['type_of_administration'],
+                'quantitat': doc[1]
             })
+
         response = {'result': 'ok', 'medicine_list': list}
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK

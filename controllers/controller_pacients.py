@@ -221,6 +221,8 @@ def make_order():
         return jsonify(response)
     else:
         return jsonify({'result':"error en el envio a omar"})
+    
+
 
 
 def cancel_order():
