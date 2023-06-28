@@ -202,7 +202,7 @@ def update_status_order():
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
 
-    if value['valid'] == OK:
+    if value['valid'] == 'ok':
         
         if is_local == 1:
             return jsonify(NOT_AVAILABLE_AT_EDGE)

@@ -246,29 +246,3 @@ def get_meds_prescription():
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
     return jsonify(response)
 
-
-#ESTA PARA PROBAR DEJARLO
-# def search_farmacs():
-#     data = request.get_json()
-#     token = data['session_token']
-#     check = checktoken(token)
-#     if check['valid'] == 'yes':
-#         query = {}
-#         results = farmacs.find()
-#         res=[{
-#             'medicine_identifier':  doc['national_code'],
-#             'medicine_name': doc['med_name'],
-#             'national_code': doc['national_code'],
-#             'use_type': str(doc['use_type']) + '€',
-#             'type_of_administration': doc['type_of_administration'],
-#             'prescription_needed': doc['prescription_needed'],
-#             'pvp': doc['pvp'],
-#             'form': doc['form'],
-#             'excipients': doc['excipients'],
-#             'form': doc['form'],
-#             'medicine_image_url': "https://picsum.photos/200",
-#         } for doc in results]
-#         return jsonify({"result":"ok","medicines":res})
-#     else:
-#         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
-#         return jsonify(response)

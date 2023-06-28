@@ -170,31 +170,6 @@ def register_premium():
     return jsonify(response)
 
 
-# def google():
-#     data = request.get_json()
-#     user_google = data['user_google_token']
-#     #No es suficiente este token, falta info
-#     entry = {
-#             "user_full_name": data['user_full_name'],
-#             "user_given_name": data['user_given_name'],
-#             "user_email": data['user_email'],
-#             "user_phone": data['user_phone'],
-#             "user_city": data['user_city'],
-#             "user_address":data['user_address'],
-#             "user_password": data['user_password'] ,
-#             "when": datetime.datetime.now(),
-#     }
-#     try:
-#         id = users.insert_one(entry).inserted_id
-#         response = {'result': 'ok'}
-#         #Falta token aquí, añadir en response
-#     except pymongo.errors.DuplicateKeyError as description_error:
-#          response = {'result': 'error',
-# 		     'description': str(description_error)}
-#     #response = {'result': 'ok'}
-#     return jsonify(response)
-
-
 def get_user_info():
     
     data    = request.get_json()

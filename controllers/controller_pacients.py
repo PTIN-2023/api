@@ -3,7 +3,7 @@ import datetime
 from datetime import timedelta
 import jwt
 from models.models import *
-from utils.utils import checktoken, prescription_given, add_med, update_recipes, restar_meds
+from utils.utils import checktoken, prescription_given, add_med, update_recipes, restar_meds, paginate
 import paho.mqtt.client as mqtt
 import json
 import logging
@@ -149,16 +149,6 @@ def num_pages_patient_orders():
         
     return jsonify(response)
 
-def paginate(data, items_per_page):
-    paginated_data = []
-    total_pages = (len(data) + items_per_page - 1) // items_per_page  # calcular el número total de páginas
-    
-    for page in range(total_pages):
-        start = page * items_per_page
-        end = start + items_per_page
-        paginated_data.append(data[start:end])
-    
-    return paginated_data, total_pages
 
 #si hay dudas -> david
 def make_order():

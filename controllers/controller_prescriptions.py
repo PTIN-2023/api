@@ -66,7 +66,7 @@ def get_prescription_identifier():
     if check['valid'] == 'ok':
         if is_local == 1:
             data['session_token'] = 'internal'
-            url = cloud_api+"/api/doctor_create_prescription"
+            url = cloud_api+"/api/get_prescription_identifier"
             return requests.post(url, json=data).json()
         max_recipe = recipes.find_one(
                         {"prescription_identifier": {"$regex": "^1"}, "prescription_identifier": {"$ne": "1"}},

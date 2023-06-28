@@ -209,3 +209,15 @@ def restar_meds(meds_list):
     for med in meds_list:
         farmac = farmacs.find_one({'national_code': med[0]})
         farmacs.update_one({'national_code': med[0]}, {'$set': {'quantity_available': farmac['quantity_available'] - med[1], 'amount_sold': farmac['amount_sold'] + med[1]}})
+
+
+def paginate(data, items_per_page):
+    paginated_data = []
+    total_pages = (len(data) + items_per_page - 1) // items_per_page  # calcular el número total de páginas
+    
+    for page in range(total_pages):
+        start = page * items_per_page
+        end = start + items_per_page
+        paginated_data.append(data[start:end])
+    
+    return paginated_data, total_pages
