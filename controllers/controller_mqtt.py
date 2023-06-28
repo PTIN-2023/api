@@ -158,6 +158,9 @@ def update_status():
                 edge_api = get_url_edge(id_beehive)
 
                 if edge_api != -1:
+
+                    logging.info(payloadJSON)
+
                     url = edge_api + "/api/unload_car"
                     response = requests.post(url, json=payloadJSON)
                     
