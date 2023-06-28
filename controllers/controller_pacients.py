@@ -65,14 +65,14 @@ def list_patient_orders():
             for order in orders_list:  # Para cada orden encontrada
                 meds_list = order['meds_list']
                 meds_details = []
-                #for med_code in meds_list: #para cada medicamento de med_list
-                #    med_query = {'national_code': str(med_code)}
-                #    med_result = farmacs.find_one(med_query) #lo busco en farmacs
-#
-                #    if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                #        med_result['_id'] = str(med_result['_id'])
-                #        meds_details.append(med_result)
-                #        
+                for med_code in meds_list: #para cada medicamento de med_list
+                    med_query = {'national_code': str(med_code)}
+                    med_result = farmacs.find_one(med_query) #lo busco en farmacs
+
+                    if med_result:  #guardo todo y lo meto en la array que se devolverá al final
+                        med_result['_id'] = str(med_result['_id'])
+                        meds_details.append(med_result)
+                        
                 responses = {'order_identifier': order['order_identifier'], 
                             'medicine_list': meds_list,
                             'date': order['date'],
