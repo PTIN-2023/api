@@ -9,6 +9,9 @@ from utils.utils import checktoken
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
+CAR = 'car'
+DRON = 'dron'
+
 def store_route():
     
     data    = request.get_json()
@@ -45,7 +48,24 @@ def get_route():
     
     if check['valid'] == 'ok':
 
-        route = routes.find_one({ 'id_route' : data['id_route'] })
+        transport = data['transport']
+
+        if is_local == 0:
+            route = routes.find_one({ 'id_route' : data['id_route'] })
+        
+        else:
+            if transport == CAR:
+                url = cloud_api + "/api/get_route"
+                response = requests.post(url, json=data).json()
+
+            elif transport == DRON:
+                route = routes.find_one({ 'id_route' : data['id_route'] })
+
+            else:
+                return({
+                    'result'    : 'failed, transport [car/dron] undefined'
+                })
+        
         if route is None:
             response = {
                 'valid'         : 'error', 
