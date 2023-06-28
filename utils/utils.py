@@ -28,8 +28,8 @@ def checktoken(token):
         return response
 
     else:
-        data = { 'token': token }
-        url = cloud_api+"/api/checktoken"
+        data = { 'session_token' : token }
+        url  = cloud_api + "/api/checktoken"
         return requests.post(url, json=data).json()
 
 def check_token_doctor(token):

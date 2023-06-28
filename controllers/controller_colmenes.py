@@ -67,16 +67,7 @@ def unload_car():
     if is_local == 0:
         return jsonify(NOT_AVAILABLE_AT_CLOUD)
 
-    data = request.get_json()
-    logging.info(data)
-
-    try:
-        data = json.loads(request.get_json())
-        logging.info(data)
-    except:
-        logging.info("FAILED LOADS")
-
-
+    data = json.loads(request.get_json())
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
 
@@ -84,9 +75,6 @@ def unload_car():
 
         full_orders = data['orders']
         id_beehive  = data['id_beehive']
-
-        logging.info(full_orders)
-        logging.info(id_beehive)
 
         for order in full_orders:
             logging.info(order)
