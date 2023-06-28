@@ -203,7 +203,7 @@ def quantity_available_user(national_code, user):
             if med[0] == national_code:
                 quant += med[1]
                 break
-    return int(min(int(quant),medicament['quantity_available']))
+    return int(min(int(quant),int(medicament['quantity_available'])))
 
 def restar_meds(meds_list):
     for med in meds_list:
