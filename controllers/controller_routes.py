@@ -57,8 +57,7 @@ def get_route():
         else:
             if transport == CAR:
                 url = cloud_api + "/api/get_route"
-                response = requests.post(url, json=data).json()
-                route = response['coordinates']
+                route = requests.post(url, json=data).json()
 
             elif transport == DRON:
                 route = routes.find_one({ 'id_route' : data['id_route'] })
