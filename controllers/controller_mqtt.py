@@ -172,7 +172,10 @@ def update_status():
             # remove id_route from car <id_car> at the end of the route
             elif data['status_num'] == CAR_WAITS:
                 
-                update_fields = { 'id_route'  : -1 }
+                update_fields = { 
+                    'id_route'  : -1 ,
+                    'packages'  : []
+                }
                 result = camions.update_one(
                     {'id_car'   : data['id_car']},
                     {'$set'     : update_fields }  
