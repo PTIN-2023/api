@@ -20,11 +20,13 @@ FAILED  = { 'value': "failed" }
 CAR_START_ROUTE = 1
 
 def cars_full_info():
+
+    data = request.get_json()
     if is_local == 1:
         data['session_token'] = 'internal'
         url = cloud_api+"/api/cars_full_info"
         return requests.post(url, json=data).json()
-    data = request.get_json()
+    
     value = checktoken(data['session_token'])
     response = {'value': value['valid']}
     
@@ -51,12 +53,13 @@ def cars_full_info():
         return jsonify(response)
 
 def car_pos_info():
-    if is_local == 1:
-        
+
+    data = request.get_json()
+    if is_local == 1:    
         data['session_token'] = 'internal'
         url = cloud_api+"/api/car_pos_info"
         return requests.post(url, json=data).json()
-    data = request.get_json()
+    
     value = checktoken(data['session_token'])
     response = {'result': value['valid']}
 
@@ -71,8 +74,10 @@ def car_pos_info():
     return jsonify(response)
 
 def list_available_cars():
+    
     if is_local == 1:
         return jsonify({'result':'error, funcio no disponible al edge'})
+    
     data = request.get_json()
     value = checktoken(data['session_token'])
     response = {'result': value['valid']}
@@ -88,8 +93,10 @@ def list_available_cars():
     return jsonify(response)
 
 def prova_list_available_cars():
+    
     if is_local == 1:
         return jsonify({'result':'error, funcio no disponible al edge'})
+    
     response = {'value': 'cloduy'}
     coches = camions.find({'status':"waits"})
     return jsonify(response, [{
