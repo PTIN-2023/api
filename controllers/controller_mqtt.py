@@ -25,6 +25,8 @@ CAR_DELIVERING = 3
 ORDER_CAR_SENT = 3
 CAR_SENT = 'car_sent'
 
+DRON_WAITS = 6
+
 DRON_DELIVERING = 3
 ORDER_DRON_SENT = 4
 DRON_SENT = 'dron_sent'
@@ -173,7 +175,8 @@ def update_status():
             elif data['status_num'] == CAR_WAITS:
                 
                 update_fields = { 
-                    'id_route'  : -1 ,
+                    'id_route'  : -1,
+                    'beehive'   : -1,
                     'packages'  : []
                 }
                 result = camions.update_one(
@@ -243,6 +246,23 @@ def update_status():
                 else:
                     return jsonify(FAILED), 404
                 
+            if data['status_num'] == DRON_WAITS:
+
+                update_fields = {
+                    'id_route'          : -1,
+                    'order_identifier'  : '' 
+                }
+                
+                result = drons.update_one(
+                    {'id_dron'  : data['id_dron']},
+                    {'$set'     : update_fields }  
+                )
+
+                if result.modified_count:
+                    return jsonify(OK), 200                
+                else:
+                    return jsonify(FAILED), 404
+
             else:
                 if result.modified_count:
                     logging.info("DRON | Documento actualizado correctamente")
