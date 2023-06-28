@@ -198,7 +198,7 @@ def register_premium():
 def get_user_info():
     
     data    = request.get_json()
-    token   = data['token']
+    token   = data['session_token']
     check   = checktoken(token)
     
     if check['valid'] == 'ok':
