@@ -49,7 +49,7 @@ def list_all_orders():
                                 'date': order['date'],
                                 'state': order['state']
                                 }
-                    responses.append(responses)
+                    response.append(responses)
                 response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
                 
             else:
