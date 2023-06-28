@@ -77,7 +77,6 @@ def unload_car():
         id_beehive  = data['id_beehive']
 
         for order in full_orders:
-            logging.info(order)
             orders.insert_one(order)
 
         for order in full_orders:
