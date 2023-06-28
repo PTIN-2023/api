@@ -20,25 +20,35 @@ def list_all_orders():
             te_orders = orders.find({}) #miro si tiene alguna receta
             te_orders_list = list(te_orders)
             if len(te_orders_list) > 0:
-                response = []
-                for te_order in te_orders_list:  # Para cada orden encontrada
-                    meds_list = te_order['meds_list']
+                for order in te_orders_list:  # Para cada orden encontrada
+                    meds_list = order['meds_list']
                     meds_details = []
                     for med_code in meds_list: #para cada medicamento de med_list
-                        med_query = {'national_code': str(med_code)}
+                        med_query = {'national_code': str(med_code[0])}
                         med_result = farmacs.find_one(med_query) #lo busco en farmacs
 
                         if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                            med_result['_id'] = str(med_result['_id'])
+                            med_result = [{
+                                'medicine_identifier':  med_result['national_code'],
+                                'medicine_name': med_result['med_name'],
+                                'national_code': med_result['national_code'],
+                                'use_type': str(med_result['use_type']) + '€',
+                                'type_of_administration': med_result['type_of_administration'],
+                                'prescription_needed': med_result['prescription_needed'],
+                                'pvp': med_result['pvp'],
+                                'form': med_result['form'],
+                                'excipients': med_result['excipients'],
+                                'form': med_result['form'],
+                                'medicine_image_url': med_result['medicine_image_url'],
+                                'amount_sold': med_result['amount_sold'],
+                            }, med_code[1]]
                             meds_details.append(med_result)
                             
-                    responses = {
-                                'order_identifier': te_order['order_identifier'], 
-                                'patient_email': te_order['patient_email'],
+                    responses = {'order_identifier': order['order_identifier'], 
                                 'medicine_list': meds_details,
-                                'date': te_order['date'],
-                                'state': te_order['state']
-                    }
+                                'date': order['date'],
+                                'state': order['state']
+                                }
                     response.append(responses)
                 response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
                 
