@@ -22,8 +22,8 @@ CAR_START_ROUTE = 1
 def cars_full_info():
     if is_local == 1:
         data['session_token'] = 'internal'
-            url = cloud_api+"/api/cars_full_info"
-            return requests.post(url, json=data).json()
+        url = cloud_api+"/api/cars_full_info"
+        return requests.post(url, json=data).json()
     data = request.get_json()
     value = checktoken(data['session_token'])
     response = {'value': value['valid']}
