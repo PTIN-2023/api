@@ -83,6 +83,8 @@ def routes_drones(app):
     app.route("/api/send_order_drones", methods=['POST'])(send_order_drones)
     app.route("/api/list_orders_to_send_drones", methods=['POST'])(list_orders_to_send_drones)
     app.route("/api/list_available_drones", methods=['POST'])(list_available_drones)
+    app.route("/api/send_drone_hehe", methods=['POST'])(send_anomalias_dron)
+
 
 def routes_colmenes(app):
     app.route("/api/beehives_local", methods=['POST'])(beehives_local)

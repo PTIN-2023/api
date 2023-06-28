@@ -227,3 +227,19 @@ def list_available_drones():
         return jsonify(response)
 
 
+
+def send_anomalias_dron():
+    data = request.get_json()
+    value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
+    if value['valid'] == 'ok': #si tiene token
+        client = mqtt.Client()
+        client.connect("mosquitto", 1883, 60)
+
+        msg = data['hehe']
+        mensaje_json = json.dumps(msg)
+
+        client.publish("PTIN2023/"+topic_city+"/DRON/ANOMALIA", mensaje_json)
+        client.disconnect()
+        return { 'result' : 'ok' }
+    else:
+        return { 'result' : 'error' }
