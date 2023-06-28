@@ -48,6 +48,7 @@ def get_route():
     
     if check['valid'] == 'ok':
 
+        route = None
         transport = data['transport']
 
         if is_local == 0:
