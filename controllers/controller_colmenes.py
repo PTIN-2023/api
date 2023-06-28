@@ -68,6 +68,15 @@ def unload_car():
         return jsonify(NOT_AVAILABLE_AT_CLOUD)
 
     data = request.get_json()
+    logging.info(data)
+
+    try:
+        data = json.loads(request.get_json())
+        logging.info(data)
+    except:
+        logging.info("FAILED LOADS")
+
+
     value = checktoken(data['session_token'])
     response = { 'value' : value['valid'] }
 
