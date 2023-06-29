@@ -3,7 +3,7 @@ import datetime
 from datetime import timedelta
 import jwt
 from models.models import *
-from utils.utils import checktoken
+from utils.utils import checktoken, generate_extra_points
 
 import logging
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(levelname)s - %(message)s')
@@ -113,7 +113,8 @@ def send_order_drones():
         )
                 
         if result.modified_count > 0:
-            send_dron(id_dron, coordinates)
+            route = generate_extra_points(coordinates)
+            send_dron(id_dron, route)
 
         else:
             logging.info("DRONS | El documento no se actualizó. Puede que no se encontrara el id_dron especificado.")

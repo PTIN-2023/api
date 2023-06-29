@@ -6,7 +6,7 @@ import datetime
 from datetime import timedelta
 
 from models.models import *
-from utils.utils import checktoken
+from utils.utils import checktoken, generate_extra_points
 
 import logging
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(levelname)s - %(message)s')
@@ -192,7 +192,8 @@ def send_order_cars():
         )
 
         if result.modified_count > 0:
-            send_car(id_car, coordinates['coordinates'])
+            route = generate_extra_points(coordinates['coordinates'])
+            send_car(id_car, route)
 
         else:
             logging.info("CARS | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
