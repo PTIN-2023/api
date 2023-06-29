@@ -159,8 +159,10 @@ def send_confirmation_to_dron(confirmed, order_identifier):
 
     CONFIRMDELIVERY = "PTIN2023/" + topic_city + "/DRON/CONFIRMDELIVERY"
 
+    SERVER = "192.168.80.241" if id_dron == 0 else "mosquitto"
+
     client = mqtt.Client()
-    client.connect("mosquitto", 1883, 60)
+    client.connect(SERVER, 1883, 60)
 
     msg = {    
         "id_dron"    :   id_dron,
