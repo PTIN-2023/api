@@ -113,7 +113,7 @@ def num_pages_patient_orders():
             data['session_token'] = 'internal'
             url = cloud_api+"/api/num_pages_patient_orders"
             return requests.post(url, json=data).json()
-        patient_email = value['email'] #cojo el mail de la persona 
+        patient_email = value['email']
         te_orders = orders.find({'patient_email': patient_email}) #miro si tiene alguna receta //comprobar si hay mas de una
         if te_orders:
             #medicaments
@@ -138,7 +138,7 @@ def num_pages_patient_orders():
                 response.append(responses)
                 
             #Paginar
-            paginated_response, number_of_pages = paginate(response, orders_per_page)
+            paginated_response, number_of_pages = paginate(response, int(orders_per_page))
             
             response = {'result': 'ok', 'data': paginated_response, 'number_of_pages': number_of_pages}
         
