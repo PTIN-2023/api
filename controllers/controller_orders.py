@@ -103,7 +103,6 @@ def confirm_patient_order():
     if check['valid'] == 'ok':
         
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/confirm_patient_order"
             response = requests.post(url, json=data).json()
             
@@ -135,7 +134,6 @@ def cancel_patient_order():
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/cancel_patient_order"
             return requests.post(url, json=data).json()
         query = {'order_identifier': data['order_identifier'] }
