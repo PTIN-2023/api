@@ -97,8 +97,6 @@ def confirm_patient_order():
     data = request.get_json()
     token = data['session_token']
     check = checktoken(token)
-
-    logging.info(check)
     
     if check['valid'] == 'ok':
         
@@ -119,15 +117,15 @@ def confirm_patient_order():
             response = {'result': 'error', 'description': 'Order not found'}
         else:
             if order['patient_email'] == check['email']:
-                update_query = {'$set': {'state': 'delivered'}}
-                orders.update_one(query, update_query)
                 response = {'result': 'ok'}
             else:
                 response = {'result': 'error', 'description': 'You are not the owner of the order'}
     else:
         response = check
+
     return jsonify(response)
 
+# TODO
 def cancel_patient_order():
     data = request.get_json()
     token = data['session_token']
