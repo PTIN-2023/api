@@ -49,8 +49,8 @@ def list_all_orders():
                                 'date': order['date'],
                                 'state': order['state']
                                 }
-                    response.append(responses)
-                response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
+                    meds_details.append(responses)
+                response = {'result': 'ok', 'orders': meds_details, 'page': page, 'orders_per_page': orders_per_page}
                 
             else:
                 response = {'result': 'Aquest pacient no té cap ordre'}       
