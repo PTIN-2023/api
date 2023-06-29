@@ -97,6 +97,8 @@ def confirm_patient_order():
     data = request.get_json()
     token = data['session_token']
     check = checktoken(token)
+
+    logging.info(check)
     
     if check['valid'] == 'ok':
         
