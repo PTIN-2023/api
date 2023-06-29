@@ -8,7 +8,11 @@ from utils.utils import checktoken , check_token_doctor
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+import json
+import paho.mqtt.client as mqtt
+
 OK = 'ok'
+ERROR = 'error'
 INTERNAL = 'internal'
 
 NOT_AVAILABLE_AT_EDGE   = { 'result': "error, funcio no disponible a l'edge" }
@@ -89,14 +93,25 @@ def list_doctor_pending_confirmations():
     return jsonify(response)
 
 def confirm_patient_order():
+
     data = request.get_json()
     token = data['session_token']
     check = checktoken(token)
+    
     if check['valid'] == 'ok':
+        
         if is_local == 1:
             data['session_token'] = 'internal'
             url = cloud_api+"/api/confirm_patient_order"
-            return requests.post(url, json=data).json()
+            response = requests.post(url, json=data).json()
+            
+            if response['result'] == ERROR or response['valid'] == ERROR:
+                send_confirmation_to_dron(False, data['order_identifier'])   
+            else:
+                send_confirmation_to_dron(True, data['order_identifier'])   
+
+            return response
+        
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
@@ -135,6 +150,29 @@ def cancel_patient_order():
     else:
         response = check
     return jsonify(response)
+
+
+def send_confirmation_to_dron(confirmed, order_identifier):
+
+    status = 1 if confirmed else 2
+        
+    dron = drons.find_one({ 'order_identifier' : order_identifier })
+    id_dron = dron['id_dron']
+
+    CONFIRMDELIVERY = "PTIN2023/" + topic_city + "/DRON/CONFIRMDELIVERY"
+
+    client = mqtt.Client()
+    client.connect("mosquitto", 1883, 60)
+
+    msg = {    
+        "id_dron"    :   id_dron,
+        "status"     :   status
+    }
+    message = json.dumps(msg)
+
+    client.publish(CONFIRMDELIVERY, message)
+    client.disconnect()
+
 
 def check_order(): #mirar a través del qr
     data = request.get_json()
