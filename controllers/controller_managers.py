@@ -19,6 +19,7 @@ def list_all_orders():
         if role_persona == 'manager':
             te_orders = orders.find({}) #miro si tiene alguna receta
             te_orders_list = list(te_orders)
+            response_list = []
             if len(te_orders_list) > 0:
                 for order in te_orders_list:  # Para cada orden encontrada
                     meds_list = order['meds_list']
@@ -49,8 +50,8 @@ def list_all_orders():
                                 'date': order['date'],
                                 'state': order['state']
                                 }
-                    response.append(responses)
-                response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': orders_per_page}
+                    response_list.append(responses)
+                response = {'result': 'ok', 'orders': response_list, 'page': page, 'orders_per_page': orders_per_page}
                 
             else:
                 response = {'result': 'Aquest pacient no té cap ordre'}       
