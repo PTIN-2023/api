@@ -128,8 +128,10 @@ def send_dron(id_dron, coordinates):
     if is_local == 0:
         return jsonify(NOT_AVAILABLE_AT_CLOUD)
     
+    SERVER = "192.168.80.241" if id_dron == 0 else "mosquitto"
+
     client = mqtt.Client()
-    client.connect("mosquitto", 1883, 60)
+    client.connect(SERVER, 1883, 60)
 
     msg = {    
         "id_dron"   :   id_dron,
