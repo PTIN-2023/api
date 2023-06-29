@@ -106,7 +106,7 @@ def confirm_patient_order():
             url = cloud_api+"/api/confirm_patient_order"
             response = requests.post(url, json=data).json()
             
-            if response['result'] == ERROR or response['valid'] == ERROR:
+            if response['result'] == ERROR:
                 send_confirmation_to_dron(False, data['order_identifier'])   
             else:
                 send_confirmation_to_dron(True, data['order_identifier'])   
@@ -116,7 +116,7 @@ def confirm_patient_order():
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
-            response = {'valid': 'error', 'description': 'Order not found'}
+            response = {'result': 'error', 'description': 'Order not found'}
         else:
             if order['patient_email'] == check['email']:
                 update_query = {'$set': {'state': 'delivered'}}
@@ -139,7 +139,7 @@ def cancel_patient_order():
         query = {'order_identifier': data['order_identifier'] }
         order = orders.find_one(query)
         if order is None:
-            response = {'valid': 'error', 'description': 'Order not found'}
+            response = {'result': 'error', 'description': 'Order not found'}
         else:
             if order['patient_email'] == check['email']:
                 update_query = {'$set': {'state': 'canceled'}}
