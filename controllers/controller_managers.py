@@ -258,6 +258,41 @@ def delete_assignations_doctor():
     
     return jsonify(response)
 
+def get_patient_doctor():
+    data = request.get_json()
+    value = checktoken(data['session_token'])
+    
+    if value['valid'] != 'ok':
+        response = {'result': 'Unvalid token'}
+    
+    else:
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/manager_list_doctors"
+            return requests.post(url, json=data).json()
+        
+        patient_email = value['email']
+        doctor_encontrado = doctor.find_one({'patients_email': patient_email})
+        
+        if doctor_encontrado:
+            doctor_email = doctor_encontrado['doctor_email']
+            doctor_user = users.find_one({'user_email': doctor_email})
+            
+            if doctor_user:
+                doctor_phone = doctor_user['user_phone']
+                response = {
+                            'result': 'ok',
+                            'doctor_phone': doctor_phone,
+                            'doctor_email': doctor_email
+                }
+            else:
+                response = {'result': 'El doctor trobat no es troba a la BD Users'}
+        else:
+            response = {'result': 'No te cap doctor assignat'}
+    
+    return jsonify(response)
+
+
 def add_medicine():
     #mirar si es un gestor
     #guardar en bd
