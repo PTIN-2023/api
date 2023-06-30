@@ -51,7 +51,37 @@ def list_all_orders():
                                 'state': order['state']
                                 }
                     response_list.append(responses)
-                response = {'result': 'ok', 'orders': response_list, 'page': page, 'orders_per_page': orders_per_page}
+                
+                if order['state'] == 'dron_sent':
+                    #actual
+                    posicio_trobada = drons.find_one({'status_num': order['state_num']})
+                    posicio_act = posicio_trobada['location_act']
+                    #final
+                    posicio_final = users.find_one({'user_email': order['patient_email']})
+                    carrer = posicio_final['user_address']
+                
+                elif order['state'] == 'car_sent':
+                    posicio_trobada = camions.find_one({'status_num': order['state_num']})
+                    posicio_act = posicio_trobada['location_act']
+                    #final
+                    posicio_final = users.find_one({'user_email': order['patient_email']})
+                    carrer = posicio_final['user_address']
+                    
+                elif order['state'] == 'delivered':
+                    posicio_final = users.find_one({'user_email': order['patient_email']})
+                    carrer, posicio_act = posicio_final['user_address']
+                
+                else:
+                    posicio_act = 'Encara no esta confirmat/enviat'
+                    posicio_final = 'Encara no esta confirmat/enviat'
+                
+                response = {'result': 'ok', 
+                            'orders': response_list, 
+                            'page': page, 
+                            'orders_per_page': orders_per_page,
+                            'location_act': posicio_act,
+                            'location_end': carrer
+                        }
                 
             else:
                 response = {'result': 'Aquest pacient no té cap ordre'}       
