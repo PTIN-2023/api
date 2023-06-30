@@ -73,7 +73,8 @@ def list_all_orders():
                 
                 else:
                     posicio_act = 'Encara no esta confirmat/enviat'
-                    posicio_final = 'Encara no esta confirmat/enviat'
+                    posicio_final = users.find_one({'user_email': order['patient_email']})
+                    carrer = posicio_final['user_address']
                 
                 response = {'result': 'ok', 
                             'orders': response_list, 
