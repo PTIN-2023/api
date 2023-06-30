@@ -98,53 +98,53 @@ def manager_list_doctors():
     value = checktoken(data['session_token'])
     
     if value['valid'] != 'ok':
-        response = {'result': 'Unvalid token'}
+        return jsonify({'result': 'Unvalid token'})
     
-    else:
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/manager_list_doctors"
-            return requests.post(url, json=data).json()
+    if is_local == 1:
+        data['session_token'] = 'internal'
+        url = cloud_api+"/api/manager_list_doctors"
+        return requests.post(url, json=data).json()
+    
+    if value['type'] != 'internal':
         user_email = value['email']
         es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
-        if role_persona == 'manager' or role_persona == 'doctor':
-            patient_users = users.find({'user_role': 'patient'})
-            patients = []
-            
-            for user in patient_users:
-                
-                prueba_email = user['user_email']
-                print(prueba_email)
-                
-                patient_data = {
-                    'user_full_name': user['user_full_name'],
-                    'user_email': user['user_email'],
-                    'user_phone': user['user_phone'],
-                    'user_city': user['user_city']
-                }
-                
-                patients.append(patient_data)
-            
-            doctor_users = users.find({'user_role': 'doctor'})
-            doctors = []
-            
-            for doctor in doctor_users:
-                doctor_data = {
-                    'user_full_name': doctor['user_full_name'],
-                    'user_email': doctor['user_email'],
-                    'user_phone': doctor['user_phone'],
-                    'user_city': doctor['user_city']
-                }
-                
-                doctors.append(doctor_data)
-            
-            response = {'result': 'ok', 'patients': patients, 'doctors': doctors}
+
+        if (role_persona != 'manager' and role_persona != 'doctor'):
+            return jsonify({'result': 'No ets manager, no pots revisar els ordres'})
         
-        else:
-            response = {'result': 'No ets manager, no pots revisar els ordres'}
         
-    return jsonify(response)
+    patient_users = users.find({'user_role': 'patient'})
+    patients = []
+    
+    for user in patient_users:
+        
+        prueba_email = user['user_email']
+        print(prueba_email)
+        
+        patient_data = {
+            'user_full_name': user['user_full_name'],
+            'user_email': user['user_email'],
+            'user_phone': user['user_phone'],
+            'user_city': user['user_city']
+        }
+        
+        patients.append(patient_data)
+    
+    doctor_users = users.find({'user_role': 'doctor'})
+    doctors = []
+    
+    for doctor in doctor_users:
+        doctor_data = {
+            'user_full_name': doctor['user_full_name'],
+            'user_email': doctor['user_email'],
+            'user_phone': doctor['user_phone'],
+            'user_city': doctor['user_city']
+        }
+        
+        doctors.append(doctor_data)
+    
+    return jsonify({'result': 'ok', 'patients': patients, 'doctors': doctors})
 
 
 def list_assigned_doctors():
@@ -153,45 +153,46 @@ def list_assigned_doctors():
     doctor_email = data['doctor_email']
     
     if value['valid'] != 'ok':
-        response = {'result': 'Unvalid token'}
+        return jsonify({'result': 'Unvalid token'})
     
-    else: 
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/list_assigned_doctors"
-            return requests.post(url, json=data).json()
+    if is_local == 1:
+        data['session_token'] = 'internal'
+        url = cloud_api+"/api/list_assigned_doctors"
+        return requests.post(url, json=data).json()
+    
+    if value['type'] != 'internal':
         user_email = value['email']
         es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
-        if role_persona == 'manager' or role_persona == 'doctor':
-            list_patients = []
-            doctor_list = doctor.find_one({'doctor_email': doctor_email})
-            
-            if doctor_list:
-                patients_email = doctor_list.get('patients_email', [])
-                
-                for patient in patients_email:
-                    try:
-                        patient_user = users.find_one({'user_email': patient})
-        
-                        if patient_user:
-                            patient_data = {
-                                'user_full_name': patient_user.get('user_full_name', ''),
-                                'user_email': patient_user.get('user_email', ''),
-                                'user_phone': patient_user.get('user_phone', ''),
-                                'user_city': patient_user.get('user_city', '')
-                            }
 
-                        list_patients.append(patient_data)
+        if (role_persona != 'manager' and role_persona != 'doctor'):
+            return jsonify({'result': 'No ets manager, no pots revisar els ordres'})
+        
+    list_patients = []
+    doctor_list = doctor.find_one({'doctor_email': doctor_email})
     
-                    except Exception as e:   
-                        print(f"Error occurred while processing patient data: {e}")
-            
-            response = {'result': 'ok', 'patients': list_patients} 
-        else:
-            response = {'result': 'No ets manager, no pots revisar els ordres'}
+    if doctor_list:
+        patients_email = doctor_list.get('patients_email', [])
+        
+        for patient in patients_email:
+            try:
+                patient_user = users.find_one({'user_email': patient})
+
+                if patient_user:
+                    patient_data = {
+                        'user_full_name': patient_user.get('user_full_name', ''),
+                        'user_email': patient_user.get('user_email', ''),
+                        'user_phone': patient_user.get('user_phone', ''),
+                        'user_city': patient_user.get('user_city', '')
+                    }
+
+                list_patients.append(patient_data)
+
+            except Exception as e:   
+                print(f"Error occurred while processing patient data: {e}")
+                return jsonify({'result': f"Error occurred while processing patient data: {e}"})
     
-    return jsonify(response)
+    return jsonify({'result': 'ok', 'patients': list_patients})
 
 def manager_assign_doctors():
     data = request.get_json()
