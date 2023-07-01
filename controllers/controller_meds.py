@@ -4,6 +4,7 @@ from utils.utils import checktoken, check_token_manager, quantity_available_user
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 import json
+import math
 
 def search_farmacs():
     data = request.get_json()
@@ -162,6 +163,10 @@ def num_search_farmacs():
                     query['type_of_administration'] = {'$in': filter_data['type_of_administration']}
              # Executem la query amb els límits especificats
                 results = farmacs.count_documents(query)
+                orders_per_page=1
+                if 'orders_per_page' in data:
+                    orders_per_page = data['orders_per_page']
+                results = math.ceil(results/orders_per_page)
             except Exception as e:
                 results = str(e)
     # Si no es proporciona un filtre, es retornen tots els medicaments
