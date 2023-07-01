@@ -55,8 +55,7 @@ def get_patient_prescription_history():
             'medicine_list': recipe['meds_list'],
             'duration': recipe['duration'], 
             'renewal': recipe['renewal'], 
-            'notes': recipe['notes'], 
-            'uses': recipe['uses'] 
+            'notes': recipe['notes']
         })
     
     return jsonify({'result': 'ok', 'prescriptions': prescriptions_list})
