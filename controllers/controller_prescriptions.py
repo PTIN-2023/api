@@ -52,6 +52,7 @@ def get_patient_prescription_history():
     prescriptions_list = []
     for recipe in recipes_list:
         prescriptions_list.append({
+            'prescription_identifier': recipe['prescription_identifier'],
             'medicine_list': recipe['meds_list'],
             'duration': recipe['duration'], 
             'renewal': recipe['renewal'], 
