@@ -33,31 +33,33 @@ def doctor_create_prescription():
 
 def get_patient_prescription_history():
     data = request.get_json()
+
+    if is_local == 1:
+        url = cloud_api+"/api/get_patient_prescription_history"
+        return requests.post(url, json=data).json()
+
     token = data['session_token']
     check = checktoken(token)
-    if check['valid'] == 'ok':
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/get_patient_prescription_history"
-            return requests.post(url, json=data).json()
-        recipes_list = recipes.find({'patient_identifier': check['email']})
-        if recipes_list:
-            #medicaments
-            prescriptions_list = []
-            for recipe in recipes_list:
-                prescriptions_list.append({
-                    'medicine_list': recipe['meds_list'],
-                    'duration': recipe['duration'], 
-                    'notes': recipe['notes'], 
-                    'uses': recipe['uses'] 
-                })
-            response = {'result': 'ok', 'prescriptions': prescriptions_list}
-        
-        else:
-            response = {'result': 'Aquest pacient no té cap ordre'}
-    else:
-        response = check
-    return jsonify(response)
+
+    if check['valid'] != 'ok':
+        return jsonify(check)
+
+    recipes_list = recipes.find({'patient_identifier': check['email']})
+
+    if not recipes_list:
+        return jsonify({'result': 'Aquest pacient no té cap ordre'})
+
+    prescriptions_list = []
+    for recipe in recipes_list:
+        prescriptions_list.append({
+            'medicine_list': recipe['meds_list'],
+            'duration': recipe['duration'], 
+            'renewal': recipe['renewal'], 
+            'notes': recipe['notes'], 
+            'uses': recipe['uses'] 
+        })
+    
+    return jsonify({'result': 'ok', 'prescriptions': prescriptions_list})
 
 def get_prescription_identifier():
     data = request.get_json()
