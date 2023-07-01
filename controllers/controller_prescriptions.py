@@ -55,6 +55,7 @@ def get_patient_prescription_history():
             'medicine_list': recipe['meds_list'],
             'duration': recipe['duration'], 
             'renewal': recipe['renewal'], 
+            'last_used': recipe['last_used'], 
             'notes': recipe['notes']
         })
     
