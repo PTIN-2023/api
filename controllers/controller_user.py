@@ -305,7 +305,7 @@ def set_user_info():
                         'user_address': user_address        
                     }})
             ]
-        #refer el token si el correu ha canviat
+        #rehacer el token si el correo ha cambiado
         if user_email2!=user_email:
             token = jwt.encode({'username': user_email2}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
             entry = {
@@ -314,7 +314,7 @@ def set_user_info():
                 "user_email": user_email2,
             }
             sessio.insert_one(entry)
-        
+
         users.bulk_write(update_operations)
 
         response = {'result': 'ok'}
