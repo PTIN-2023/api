@@ -21,7 +21,7 @@ def doctor_create_prescription():
             'meds_list': data['medicine_list'],  ####################################Esto igual está mal pero és lo que pone en el apicalls, un poco raro y tal
             'duration': data['duration'], 
             'renewal': data['renewal'],
-            'last_used': data['last_used'], 
+            'last_used': '1970-01-01', 
             'notes': data['notes'] 
         }
         try:
