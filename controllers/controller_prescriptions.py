@@ -58,8 +58,8 @@ def get_patient_prescription_history():
             return jsonify({'result': 'Aquest pacient no té cap ordre'})
 
     if check['type'] == 'doctor':
-        if not 'patient_mail' in data:
-            return jsonify({'result': 'patient_mail missing'})
+        if not 'patient_email' in data:
+            return jsonify({'result': 'patient_email missing'})
 
         recipes_list = recipes.find({'patient_identifier': data['patient_email']})
 
