@@ -48,16 +48,16 @@ def get_patient_prescription_history():
 
     recipes_list = []
 
-    if check['user_role'] == 'manager':
+    if check['type'] == 'manager':
         return jsonify({'result': 'managers cannot check presciption history'})
 
-    if check['user_role'] == 'patient':
+    if check['type'] == 'patient':
         recipes_list = recipes.find({'patient_identifier': check['email']})
 
         if not recipes_list:
             return jsonify({'result': 'Aquest pacient no té cap ordre'})
 
-    if check['user_role'] == 'doctor':
+    if check['type'] == 'doctor':
         if not 'patient_mail' in data:
             return jsonify({'result': 'patient_mail missing'})
 
