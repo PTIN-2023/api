@@ -5,6 +5,7 @@ import jwt
 from models.models import *
 from utils.utils import checktoken, check_token_doctor
 import json
+import uuid
 
 def doctor_create_prescription():
     data = request.get_json()
@@ -90,7 +91,7 @@ def get_prescription_identifier():
                         sort=[("prescription_identifier", -1)],
         )
         if max_recipe:
-            prescription_identifier = str(int(max_recipe["prescription_identifier"])+1)
+            prescription_identifier =str(uuid.uuid4()) #str(int(max_recipe["prescription_identifier"])+1)
         else:
             prescription_identifier = "1"
         response = {'result': 'ok', 'prescription_identifier': prescription_identifier}
