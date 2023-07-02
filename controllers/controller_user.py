@@ -317,7 +317,7 @@ def set_user_info():
 
         users.bulk_write(update_operations)
 
-        response = {'result': 'ok'}
+        response = {'result': 'ok','session_token':token}
 
         return jsonify(response)
     else:
