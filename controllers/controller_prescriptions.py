@@ -20,8 +20,8 @@ def doctor_create_prescription():
             'patient_identifier': users.find_one({'user_full_name': data['user_full_name']})['user_email'],
             'meds_list': data['medicine_list'],  ####################################Esto igual está mal pero és lo que pone en el apicalls, un poco raro y tal
             'duration': data['duration'], 
-            'renewal': data[renewal],
-            'last_used': data[last_used], 
+            'renewal': data['renewal'],
+            'last_used': data['last_used'], 
             'notes': data['notes'] 
         }
         try:
@@ -46,10 +46,22 @@ def get_patient_prescription_history():
     if check['valid'] != 'ok':
         return jsonify(check)
 
-    recipes_list = recipes.find({'patient_identifier': check['email']})
+    recipes_list = []
 
-    if not recipes_list:
-        return jsonify({'result': 'Aquest pacient no té cap ordre'})
+    if check['user_role'] == 'manager':
+        return jsonify({'result': 'managers cannot check presciption history'})
+
+    if check['user_role'] == 'patient':
+        recipes_list = recipes.find({'patient_identifier': check['email']})
+
+        if not recipes_list:
+            return jsonify({'result': 'Aquest pacient no té cap ordre'})
+
+    if check['user_role'] == 'doctor':
+        if not 'patient_mail' in data:
+            return jsonify({'result': 'patient_mail missing'})
+
+        recipes_list = recipes.find({'patient_identifier': data['email']})
 
     prescriptions_list = []
     for recipe in recipes_list:
