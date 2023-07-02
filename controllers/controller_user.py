@@ -34,7 +34,7 @@ def login():
     doc = users.find_one({'user_email': user_email})
     if doc and doc['user_password'] == user_password:
         token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
-        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_picture': "https://picsum.photos/200", 'user_token': token}
+        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_picture': "https://picsum.photos/200", 'user_token': token, 'user_email':user_email}
         entry = {
             "token": token,
             "data": datetime.now().isoformat(),
