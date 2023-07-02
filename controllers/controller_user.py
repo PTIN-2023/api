@@ -274,7 +274,7 @@ def set_user_info():
         user_phone = data['user_phone']
         user_city = data['user_city']
         user_address = data['user_address']
-        
+        #no usan coordenadas 
        #user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
         #if user_coordinates is None:
             #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
@@ -290,7 +290,7 @@ def set_user_info():
                     {'$set': {
                         'user_full_name': user_full_name,
                         'user_given_name': user_given_name,
-                        # 'user_coordinates': {
+                        # 'user_coordinates': {             #si usan coordenadas descomentar
                         #    'longitude': user_longitude,
                         #    'latitude': user_latitude
                         #},
