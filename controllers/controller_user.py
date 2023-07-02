@@ -271,7 +271,7 @@ def set_user_info():
         user_full_name = data['user_full_name']
         user_given_name = data['user_given_name']
         user_email = data['user_email']
-        user_password=data['user_password'],
+        user_password=data['user_password']
         user_phone = data['user_phone']
         user_city = data['user_city']
         user_address = data['user_address']
@@ -291,7 +291,7 @@ def set_user_info():
                     {'$set': {
                         'user_full_name': user_full_name,
                         'user_given_name': user_given_name,
-                       # 'user_coordinates': {
+                        # 'user_coordinates': {
                         #    'longitude': user_longitude,
                         #    'latitude': user_latitude
                         #},
