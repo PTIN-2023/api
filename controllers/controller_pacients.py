@@ -206,8 +206,8 @@ def make_order():
             "approved": approved,
             "reason": "-",
             "date": datetime.datetime.now().strftime("%Y-%m-%d"),
-            "state": "awaiting_confirmation",
-            "state_num": 1,
+            "state": "ordered",
+            "state_num": 2,
             "meds_list": meds_list
         }
                 
