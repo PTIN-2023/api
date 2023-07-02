@@ -270,7 +270,7 @@ def set_user_info():
         user_email = check['email']
         user_full_name = data['user_full_name']
         user_given_name = data['user_given_name']
-        user_email = data['user_email']
+        user_email2 = data['user_email'] #new email
         user_password=data['user_password']
         user_phone = data['user_phone']
         user_city = data['user_city']
@@ -299,7 +299,7 @@ def set_user_info():
                          #   'longitude': beehive_longitude,
                           #  'latitude': beehive_latitude
                         #},
-                        'user_email':user_email,
+                        'user_email':user_email2, #new email
                         'user_phone': user_phone,
                         'user_password':user_password,
                         'user_city': user_city,
