@@ -176,6 +176,7 @@ def list_assigned_doctors():
         
         for patient in patients_email:
             try:
+                print("[list_assigned_doctors]", patient)
                 patient_user = users.find_one({'user_email': patient})
 
                 if patient_user:
@@ -186,7 +187,7 @@ def list_assigned_doctors():
                         'user_city': patient_user.get('user_city', '')
                     }
 
-                list_patients.append(patient_data)
+                    list_patients.append(patient_data)
 
             except Exception as e:   
                 print(f"Error occurred while processing patient data: {e}")
