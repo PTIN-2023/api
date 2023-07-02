@@ -77,6 +77,7 @@ def routes_cotxes(app):
     app.route("/api/send_order_cars", methods=['POST'])(send_order_cars)
     app.route("/api/list_orders_to_send_cars", methods=['POST'])(list_orders_to_send_cars)
     app.route("/api/prova_list_available_cars", methods=['GET','POST'])(prova_list_available_cars)
+    app.route("/api/send_car_hehe", methods=['POST'])(send_anomalias_car)
 
 def routes_drones(app):
     app.route("/api/drones_full_info", methods=['POST'])(drons_full_info)
