@@ -299,6 +299,7 @@ def set_user_info():
                          #   'longitude': beehive_longitude,
                           #  'latitude': beehive_latitude
                         #},
+                        'user_email':user_email,
                         'user_phone': user_phone,
                         'user_password':user_password,
                         'user_city': user_city,
