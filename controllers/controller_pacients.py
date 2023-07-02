@@ -213,7 +213,7 @@ def make_order():
                 
         try:
             id = orders.insert_one(entry).inserted_id
-            response = {'result': 'ok'}
+            response = {'result': 'ok', "order_identifier" : new_identifier}
         except pymongo.errors.DuplicateKeyError as description_error:
             response = {'result': 'error', 'description': str(description_error)}
     else:

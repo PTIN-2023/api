@@ -5,12 +5,6 @@ from models.models import *
 from utils.utils import checktoken
 import os
 
-paypalrestsdk.configure({
-    "mode": "sandbox",
-    "client_id": os.environ.get('PAYPAL_CLIENT_ID'),
-    "client_secret":os.environ.get('PAYPAL_SECRET')
-})
-
 # Crear un pago y obtener la URL de aprobación
 def create_payment():
     data = request.get_json()
@@ -31,8 +25,8 @@ def create_payment():
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": "http://147.83.159.195:24105/api/execute_payment",
-                "cancel_url": "http://147.83.159.195:24105/api/execute_payment"
+                "return_url": os.environ.get('API_URL') + "/api/execute_payment",
+                "cancel_url": os.environ.get('API_URL') + "/api/execute_payment"
             },
             "transactions": [{
                 "amount": {
@@ -59,7 +53,7 @@ def execute_payment():
     payment_id = request.args.get('paymentId')
     if not payment_id:
         print("error")
-        return redirect("http://147.83.159.195:24180/checkout_error", code=302)
+        return redirect(os.environ.get('API_URL') + "/myorders", code=302)
     else:
         payment = paypalrestsdk.Payment.find(payment_id)
 
@@ -92,13 +86,13 @@ def execute_payment():
 
             if payout.create(sync_mode=False):
                 #return transaction_id, payout.batch_header.payout_batch_id
-                return redirect("http://147.83.159.195:24180/myorders", code=302) #checkout_correct
+                return redirect(os.environ.get('API_URL') + "/myorders", code=302) #checkout_correct
             else: 
                 print(payout.error)
-                return redirect("http://147.83.159.195:24180/myorders", code=302) #checkout_error
+                return redirect(os.environ.get('API_URL') + "/myorders", code=302) #checkout_error
         else:
             print(payment.error)
-            return redirect("http://147.83.159.195:24180/myorders", code=302) #checkout_error
+            return redirect(os.environ.get('API_URL') + "/myorders", code=302) #checkout_error
 
 
 
