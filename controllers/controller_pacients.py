@@ -242,33 +242,6 @@ def cancel_order():
     return jsonify(response)
 
 
-def doctor_create_prescription():
-    data = request.get_json()
-    token = data['session_token']
-    check = check_token_doctor(token)
-    if check['valid'] == 'ok':
-        if is_local == 1:
-            data['session_token'] = 'internal'
-            url = cloud_api+"/api/doctor_create_prescription"
-            return requests.post(url, json=data).json()
-        query = {'order_identifier': data['order_identifier'] }
-        order = orders.find_one(query)
-        if order is None:
-            response = {'valid': 'error', 'description': 'Order not found'}
-        else:
-            if order['approved'] == '':
-                update_query = {'$set': {'approved': data['approved'], 'state_num': 2, 'state': 'ordered', 'doctor_identifier': check['email']}}
-                if not data['approved']:
-                    update_query['$set']['reason'] = data['reason']
-                orders.update_one(query, update_query)
-                response = {'result': 'ok'}
-            else:
-                response = {'result': 'error', 'description': 'Order already approved/disapproved'}
-    else:
-        response = check
-    return jsonify(response)
-
-
 def send_car():
     # Crea un objeto cliente MQTT
     client = mqtt.Client()
