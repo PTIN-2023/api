@@ -10,7 +10,6 @@ def list_all_orders():
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/list_all_orders"
             return requests.post(url, json=data).json()
         user_email = value['email']
@@ -101,7 +100,6 @@ def manager_list_doctors():
         return jsonify({'result': 'Unvalid token'})
     
     if is_local == 1:
-        data['session_token'] = 'internal'
         url = cloud_api+"/api/manager_list_doctors"
         return requests.post(url, json=data).json()
     
@@ -156,7 +154,6 @@ def list_assigned_doctors():
         return jsonify({'result': 'Unvalid token'})
     
     if is_local == 1:
-        data['session_token'] = 'internal'
         url = cloud_api+"/api/list_assigned_doctors"
         return requests.post(url, json=data).json()
     
@@ -206,7 +203,6 @@ def manager_assign_doctors():
     
     else: 
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/manager_assign_doctors"
             return requests.post(url, json=data).json()
         user_email = value['email']
@@ -256,7 +252,6 @@ def delete_assignations_doctor():
     
     else: 
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/delete_assignations_doctor"
             return requests.post(url, json=data).json()
         user_email = value['email']
@@ -300,7 +295,6 @@ def get_patient_doctor():
     
     else:
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/manager_list_doctors"
             return requests.post(url, json=data).json()
         
@@ -336,7 +330,6 @@ def add_medicine():
         response = {'result': 'Unvalid token'}
     else: 
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/add_medicine"
             return requests.post(url, json=data).json()
         user_email = value['email']
@@ -411,7 +404,6 @@ def update_medicine():
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/update_medicine"
             return requests.post(url, json=data).json()
     try:
@@ -427,7 +419,6 @@ def delete_medicine():
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/delete_medicine"
             return requests.post(url, json=data).json()
     try:
@@ -446,7 +437,6 @@ def stats():
     
     else: 
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/stats"
             return requests.post(url, json=data).json()
         num_patients = users.count_documents({'user_role': 'patient'})
