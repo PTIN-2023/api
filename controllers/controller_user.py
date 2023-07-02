@@ -179,7 +179,6 @@ def get_user_info():
     if check['valid'] == 'ok':
         
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api + "/api/user_info"
             return requests.post(url, json=data).json()
         
@@ -216,7 +215,6 @@ def get_user_position():
     if value['valid'] == OK:
             
         if is_local == 1:
-            data['session_token'] = INTERNAL
             url = cloud_api + "/api/user_position"
             return requests.post(url, json=data).json()
 
@@ -239,7 +237,6 @@ def info_clients_for_doctor():
     check = check_token_doctor(token)
     if check['valid'] == 'ok':
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/info_clients_for_doctor"
             return requests.post(url, json=data).json()
         doc = users.find_one({'user_full_name': data['user_full_name']})
@@ -262,7 +259,6 @@ def set_user_info():
     check = checktoken(token)
     if check['valid'] == 'ok':
         if is_local == 1:
-            data['session_token'] = 'internal'
             url = cloud_api+"/api/set_user_info"
             return requests.post(url, json=data).json()
         # Obtain values
