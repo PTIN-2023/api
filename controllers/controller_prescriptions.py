@@ -61,7 +61,7 @@ def get_patient_prescription_history():
         if not 'patient_mail' in data:
             return jsonify({'result': 'patient_mail missing'})
 
-        recipes_list = recipes.find({'patient_identifier': data['email']})
+        recipes_list = recipes.find({'patient_identifier': data['patient_email']})
 
     prescriptions_list = []
     for recipe in recipes_list:
