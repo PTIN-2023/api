@@ -233,7 +233,6 @@ def get_user_position():
     return jsonify(response)
 
 
-
 def info_clients_for_doctor():
     data = request.get_json()
     token = data['session_token']
@@ -306,6 +305,16 @@ def set_user_info():
                         'user_address': user_address        
                     }})
             ]
+        #refer el token si el correu ha canviat
+        if user_email2!=user_email:
+            token = jwt.encode({'username': user_email2}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
+            entry = {
+                "token": token,
+                "data": datetime.now().isoformat(),
+                "user_email": user_email2,
+            }
+            sessio.insert_one(entry)
+        
         users.bulk_write(update_operations)
 
         response = {'result': 'ok'}
