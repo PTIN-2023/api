@@ -34,7 +34,7 @@ def login():
     doc = users.find_one({'user_email': user_email})
     if doc and doc['user_password'] == user_password:
         token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
-        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_picture': "No tenim imatge", 'user_token': token}
+        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_picture': "https://picsum.photos/200", 'user_token': token}
         entry = {
             "token": token,
             "data": datetime.now().isoformat(),
@@ -193,7 +193,7 @@ def get_user_info():
             'user_phone'        : doc['user_phone'],
             'user_city'         : doc['user_city'],
             'user_address'      : doc['user_address'],
-            'user_picture'      : "No tenim imatge",
+            'user_picture'      : "https://picsum.photos/200",
             'user_token'        : token
         }
         
@@ -242,7 +242,7 @@ def info_clients_for_doctor():
             url = cloud_api+"/api/info_clients_for_doctor"
             return requests.post(url, json=data).json()
         doc = users.find_one({'user_full_name': data['user_full_name']})
-        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_full_name': doc['user_full_name'], 'user_email': doc['user_email'], 'user_phone': doc['user_phone'], 'user_city': doc['user_city'], 'user_address': doc['user_address'], 'user_picture': "No tenim imatge", 'user_token': token}
+        response = {'result': 'ok', 'user_given_name': doc['user_given_name'], 'user_role': doc['user_role'], 'user_full_name': doc['user_full_name'], 'user_email': doc['user_email'], 'user_phone': doc['user_phone'], 'user_city': doc['user_city'], 'user_address': doc['user_address'], 'user_picture': "https://picsum.photos/200", 'user_token': token}
         return jsonify(response)
     else:
         response = {'result': 'error', 'message': check['valid']}

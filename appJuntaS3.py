@@ -91,7 +91,7 @@ def prueba_login():
     doc = users.find_one({'user_email' : {'$regex': user_email}})
     if doc["user_email"]==user_email and doc["user_password"]==user_password:
         token = jwt.encode({'username': user_email}, 'mi_clave_secreta', algorithm='HS256')
-        response = {'result': 'ok', 'user_given_name': doc["user_given_name"], 'user_role': doc["user_role"], 'user_picture': "No tenim imatge", 'user_token': token}
+        response = {'result': 'ok', 'user_given_name': doc["user_given_name"], 'user_role': doc["user_role"], 'user_picture': "https://picsum.photos/200", 'user_token': token}
 ######################################################Falta imatge
         entry = {
                 "token": token,
