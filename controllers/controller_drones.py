@@ -113,7 +113,7 @@ def send_order_drones():
         )
                 
         if result.modified_count > 0:
-            route = generate_extra_points(coordinates)
+            route = coordinates
             send_dron(id_dron, route)
 
         else:
