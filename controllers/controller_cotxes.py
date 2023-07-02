@@ -169,9 +169,11 @@ def send_order_cars():
     value = checktoken(data['session_token'])
     
     if value['valid'] != OK or value['type'] != INTERNAL:
+        print("[send_order_cars] invalid token")
         return jsonify(FAILED)
     
     for car in data['assignations']:
+        print("[send_order_cars] updating car nº" + car['id_car'] + " with route nº " + car['route']['id_route'])
 
         id_car      = car['id_car']
         id_beehive  = car['id_beehive']
@@ -204,6 +206,7 @@ def send_order_cars():
 
 
 def send_car(id_car, route):
+    print("sending car " + id_car + " a route")
    
     client = mqtt.Client()
     client.connect("mosquitto", 1883, 60)
