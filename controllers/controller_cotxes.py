@@ -173,7 +173,7 @@ def send_order_cars():
         return jsonify(FAILED)
     
     for car in data['assignations']:
-        print("[send_order_cars] updating car nº" + car['id_car'] + " with route nº " + car['route']['id_route'])
+        print("[send_order_cars] updating car nº" + str(car['id_car']) + " with route nº " + str(car['route']['id_route']))
 
         id_car      = car['id_car']
         id_beehive  = car['id_beehive']
@@ -206,7 +206,7 @@ def send_order_cars():
 
 
 def send_car(id_car, route):
-    print("sending car " + id_car + " a route")
+    print("sending car " + str(id_car) + " a route")
    
     client = mqtt.Client()
     client.connect("mosquitto", 1883, 60)
