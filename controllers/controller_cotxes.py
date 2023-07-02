@@ -194,9 +194,8 @@ def send_order_cars():
         )
 
         if result.modified_count > 0:
-            route = generate_extra_points(coordinates['coordinates'])
+            route = coordinates['coordinates']
             send_car(id_car, route)
-
         else:
             logging.info("CARS | El documento no se actualizó. Puede que no se encontrara el id_car especificado.")
             return jsonify(FAILED), 404
