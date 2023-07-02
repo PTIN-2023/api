@@ -20,6 +20,8 @@ def doctor_create_prescription():
             'patient_identifier': users.find_one({'user_full_name': data['user_full_name']})['user_email'],
             'meds_list': data['medicine_list'],  ####################################Esto igual está mal pero és lo que pone en el apicalls, un poco raro y tal
             'duration': data['duration'], 
+            'renewal': data[renewal],
+            'last_used': data[last_used], 
             'notes': data['notes'] 
         }
         try:
