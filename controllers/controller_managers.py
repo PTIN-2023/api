@@ -12,7 +12,11 @@ def list_all_orders():
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
         user_email = value['email']
-        es_manager = users.find_one({'user_email': user_email})
+        if is_local == 1:
+            url = cloud_api+"/api/user_info"
+            es_manager = requests.post(url, json=data).json()
+        else:
+            es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
         if role_persona == 'manager':
             te_orders = orders.find({}) #miro si tiene alguna receta
@@ -52,7 +56,7 @@ def list_all_orders():
                 
                 
                 if is_local == 1:
-                    url = cloud_api+"/api/manager_list_doctors"
+                    url = cloud_api+"/api/user_info"
                     posicio_final = requests.post(url, json=data).json()
                 else:
                     posicio_final = users.find_one({'user_email': order['patient_email']})
