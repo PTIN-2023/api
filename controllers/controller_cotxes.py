@@ -230,7 +230,10 @@ def send_anomalias_car():
         client = mqtt.Client()
         client.connect("mosquitto", 1883, 60)
 
-        msg = data['hehe']
+        msg = {
+            "hehe" : data['hehe'],
+            "id_dron" : data['id_dron']
+        }
         mensaje_json = json.dumps(msg)
 
         client.publish("PTIN2023/CAR/ANOMALIA", mensaje_json)

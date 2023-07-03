@@ -97,7 +97,6 @@ def send_order_drones():
         return jsonify(FAILED)
     
     for dron in data['assignations']:
-
         id_dron             = dron['id_dron']
         id_route            = dron['route']['id_route']
         order_identifier    = dron['order']['order_identifier']
@@ -238,7 +237,10 @@ def send_anomalias_dron():
         client = mqtt.Client()
         client.connect("mosquitto", 1883, 60)
 
-        msg = data['hehe']
+        msg = {
+            "hehe" : data['hehe'],
+            "id_dron" : data['id_dron']
+        }
         mensaje_json = json.dumps(msg)
 
         client.publish("PTIN2023/"+topic_city+"/DRON/ANOMALIA", mensaje_json)
