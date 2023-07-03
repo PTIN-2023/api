@@ -68,6 +68,22 @@ def search_farmacs():
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
         return jsonify(response)
     
+def get_med():
+    data = request.get_json()
+    token = data['session_token']
+    check = check_token_manager(token)
+    if check['valid'] == 'ok':
+        if is_local == 1:
+            data['session_token'] = 'internal'
+            url = cloud_api+"/api/get_med"
+            return requests.post(url, json=data).json()
+        med_query = {'national_code': data['national_code']}
+        med_result = farmacs.find_one(med_query)
+        return jsonify({"result":"ok","med_result": med_result})
+    else:
+        response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
+        return jsonify(response)
+
 def search_client_farmacs():
     data = request.get_json()
     token = data['session_token']

@@ -29,6 +29,7 @@ def routes_meds(app):
     app.route("/api/list_available_medicines_num", methods=['POST'])(num_search_client_farmacs)
     app.route("/api/list_inventory_meds_num", methods=['POST'])(num_search_farmacs)
     app.route("/api/get_meds_prescription", methods=['POST'])(get_meds_prescription)
+    app.route("/api/get_med", methods=['POST'])(get_med)
     
 def routes_pacients(app):
     app.route("/api/has_prescription", methods=['POST'])(has_prescription)

@@ -27,8 +27,14 @@ def list_all_orders():
                     meds_list = order['meds_list']
                     meds_details = []
                     for med_code in meds_list: #para cada medicamento de med_list
-                        med_query = {'national_code': str(med_code[0])}
-                        med_result = farmacs.find_one(med_query) #lo busco en farmacs
+                        if is_local == 1:
+                            url = cloud_api+"/api/get_med"
+                            data['session_token'] = 'internal'
+                            data['national_code'] = str(med_code[0])
+                            med_result = requests.post(url, json=data).json()['med_result']
+                        else:
+                            med_query = {'national_code': str(med_code[0])}
+                            med_result = farmacs.find_one(med_query) #lo busco en farmacs
 
                         if med_result:  #guardo todo y lo meto en la array que se devolverá al final
                             med_result = [{
