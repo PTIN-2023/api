@@ -80,7 +80,6 @@ def register():
         return response
     user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
     if user_coordinates is None:
-        #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
         response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
         return jsonify(response)
     else:
@@ -186,7 +185,6 @@ def get_user_info():
         response = {
             'result'            : 'ok', 
             'user_given_name'   : doc['user_given_name'], 
-            #edad?
             'user_role'         : doc['user_role'], 
             'user_full_name'    : doc['user_full_name'],
             'user_email'        : doc['user_email'],
@@ -222,7 +220,6 @@ def get_user_info_internal():
         response = {
             'result'            : 'ok', 
             'user_given_name'   : doc['user_given_name'], 
-            #edad?
             'user_role'         : doc['user_role'], 
             'user_full_name'    : doc['user_full_name'],
             'user_email'        : doc['user_email'],
@@ -306,30 +303,28 @@ def set_user_info():
         user_phone = data['user_phone']
         user_city = data['user_city']
         user_address = data['user_address']
-        #no usan coordenadas 
-       #user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
-        #if user_coordinates is None:
-            #Parlar amb A3 sobre qué fer. direcció no vàlida. result != ok i mostrar error?
-         #   response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
-          #  return jsonify(response)
-        #else:
-        #    user_latitude, user_longitude = user_coordinates
-         #   city_lowercase_no_accents = unidecode(data['user_city']).lower()
-          #  beehive_latitude, beehive_longitude = get_closest_beehive(city_lowercase_no_accents,user_latitude,user_longitude)   
+        user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
+        if user_coordinates is None:
+            response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
+            return jsonify(response)
+        else:
+            user_latitude, user_longitude = user_coordinates
+            city_lowercase_no_accents = unidecode(data['user_city']).lower()
+            beehive_latitude, beehive_longitude = get_closest_beehive(city_lowercase_no_accents,user_latitude,user_longitude)   
             # Update values
         update_operations = [
             UpdateOne({'user_email': user_email},
                     {'$set': {
                         'user_full_name': user_full_name,
                         'user_given_name': user_given_name,
-                        # 'user_coordinates': {             #si usan coordenadas descomentar
-                        #    'longitude': user_longitude,
-                        #    'latitude': user_latitude
-                        #},
-                        #'beehive_coordinates': {
-                         #   'longitude': beehive_longitude,
-                          #  'latitude': beehive_latitude
-                        #},
+                         'user_coordinates': {             
+                            'longitude': user_longitude,
+                            'latitude': user_latitude
+                        },
+                        'beehive_coordinates': {
+                           'longitude': beehive_longitude,
+                          'latitude': beehive_latitude
+                        },
                         'user_email':user_email2, #new email
                         'user_phone': user_phone,
                         'user_password':user_password,
