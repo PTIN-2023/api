@@ -81,7 +81,7 @@ def get_med():
         doc = farmacs.find_one(med_query)
         res={
             'medicine_identifier':  doc['national_code'],
-            'medicine_name': doc['med_name'],
+            'med_name': doc['med_name'],
             'national_code': doc['national_code'],
             'use_type': str(doc['use_type']) + '€',
             'type_of_administration': doc['type_of_administration'],
