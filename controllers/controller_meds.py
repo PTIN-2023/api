@@ -91,7 +91,6 @@ def get_med():
             'excipients': doc['excipients'],
             'form': doc['form'],
             'medicine_image_url': doc['medicine_image_url'],
-            'quantity_available': quantity_available_user(doc['national_code'], check['email']),
             'amount_sold': doc['amount_sold']
         }
         response = {"result":"ok","med_result": res}
