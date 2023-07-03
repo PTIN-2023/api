@@ -85,12 +85,13 @@ def list_patient_orders():
                             'amount_sold': med_result['amount_sold'],
                         }, med_code[1]]
                         meds_details.append(med_result)
-                        
+                
+                data0 = users.find_one({'user_email': patient_email})   
                 responses = {'order_identifier': order['order_identifier'], 
                             'medicine_list': meds_details,
                             'date': order['date'],
                             'state': order['state'],
-                            'location_end': data['user_address'] + " , " + data['user_city']
+                            'location_end': data0['user_address'] + " , " + data0['user_city']
                             }
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
