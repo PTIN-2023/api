@@ -54,107 +54,98 @@ def list_patient_orders():
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
         user_email = value['email']
-        if is_local == 1:
-            url = cloud_api+"/api/user_info"
-            es_manager = requests.post(url, json=data).json()
-        else:
-            es_manager = users.find_one({'user_email': user_email})
-        role_persona = es_manager['user_role']
-        if role_persona == 'manager':
-            te_orders = orders.find({'patient_email': user_email}) #miro si tiene alguna receta
-            te_orders_list = list(te_orders)
-            response_list = []
-            if len(te_orders_list) > 0:
-                for order in te_orders_list:  # Para cada orden encontrada
-                    meds_list = order['meds_list']
-                    meds_details = []
-                    for med_code in meds_list: #para cada medicamento de med_list
-                        if is_local == 1:
-                            url = cloud_api+"/api/get_med"
-                            data['session_token'] = 'internal'
-                            data['national_code'] = str(med_code[0])
-                            med_result = requests.post(url, json=data).json()['med_result']
-                        else:
-                            med_query = {'national_code': str(med_code[0])}
-                            med_result = farmacs.find_one(med_query) #lo busco en farmacs
+        te_orders = orders.find({'patient_email': user_email}) #miro si tiene alguna receta
+        te_orders_list = list(te_orders)
+        response_list = []
+        if len(te_orders_list) > 0:
+            for order in te_orders_list:  # Para cada orden encontrada
+                meds_list = order['meds_list']
+                meds_details = []
+                for med_code in meds_list: #para cada medicamento de med_list
+                    if is_local == 1:
+                        url = cloud_api+"/api/get_med"
+                        data['session_token'] = 'internal'
+                        data['national_code'] = str(med_code[0])
+                        med_result = requests.post(url, json=data).json()['med_result']
+                    else:
+                        med_query = {'national_code': str(med_code[0])}
+                        med_result = farmacs.find_one(med_query) #lo busco en farmacs
 
-                        if med_result:  #guardo todo y lo meto en la array que se devolverá al final
-                            med_result = [{
-                                'medicine_identifier':  med_result['national_code'],
-                                'medicine_name': med_result['med_name'],
-                                'national_code': med_result['national_code'],
-                                'use_type': str(med_result['use_type']) + '€',
-                                'type_of_administration': med_result['type_of_administration'],
-                                'prescription_needed': med_result['prescription_needed'],
-                                'pvp': med_result['pvp'],
-                                'form': med_result['form'],
-                                'excipients': med_result['excipients'],
-                                'form': med_result['form'],
-                                'medicine_image_url': med_result['medicine_image_url'],
-                                'amount_sold': med_result['amount_sold'],
-                            }, med_code[1]]
-                            meds_details.append(med_result)
-                            
-                    responses = {'order_identifier': order['order_identifier'], 
-                                'medicine_list': meds_details,
-                                'date': order['date'],
-                                'state': order['state']
-                                }
-                    response_list.append(responses)
-                
-                
-                if is_local == 1:
-                    url = cloud_api+"/api/user_info_internal"
-                    data['email'] = order['patient_email']
-                    posicio_final = requests.post(url, json=data).json()
-                else:
-                    posicio_final = users.find_one({'user_email': order['patient_email']})
-                if order['state'] == 'dron_sent':
-                    if is_local == 1:#actual
-                        posicio_trobada = drons.find_one({'order_identifier': order['order_identifier']})
-                        if posicio_trobada:
-                            posicio_act = posicio_trobada['location_act']
-                        else:
-                            posicio_act = 'Pendent dassignar a un dron'
-                        #final
-                        carrer = posicio_final['user_address']
+                    if med_result:  #guardo todo y lo meto en la array que se devolverá al final
+                        med_result = [{
+                            'medicine_identifier':  med_result['national_code'],
+                            'medicine_name': med_result['med_name'],
+                            'national_code': med_result['national_code'],
+                            'use_type': str(med_result['use_type']) + '€',
+                            'type_of_administration': med_result['type_of_administration'],
+                            'prescription_needed': med_result['prescription_needed'],
+                            'pvp': med_result['pvp'],
+                            'form': med_result['form'],
+                            'excipients': med_result['excipients'],
+                            'form': med_result['form'],
+                            'medicine_image_url': med_result['medicine_image_url'],
+                            'amount_sold': med_result['amount_sold'],
+                        }, med_code[1]]
+                        meds_details.append(med_result)
+                        
+                responses = {'order_identifier': order['order_identifier'], 
+                            'medicine_list': meds_details,
+                            'date': order['date'],
+                            'state': order['state']
+                            }
+                response_list.append(responses)
+            
+            
+            if is_local == 1:
+                url = cloud_api+"/api/user_info_internal"
+                data['email'] = order['patient_email']
+                posicio_final = requests.post(url, json=data).json()
+            else:
+                posicio_final = users.find_one({'user_email': order['patient_email']})
+            if order['state'] == 'dron_sent':
+                if is_local == 1:#actual
+                    posicio_trobada = drons.find_one({'order_identifier': order['order_identifier']})
+                    if posicio_trobada:
+                        posicio_act = posicio_trobada['location_act']
                     else:
-                        posicio_act = 'Està sent repartit pels drons'
-                        carrer = posicio_final['user_address']
-                
-                elif order['state'] == 'car_sent':
-                    if is_local == 0:#actual
-                        logging.info(order['order_identifier'])
-                        posicio_trobada = camions.find_one({'packages.order_identifier': order['order_identifier']})
-                        if posicio_trobada:
-                            posicio_act = posicio_trobada['location_act']
-                        else:
-                            posicio_act = 'Pendent dassignar a un dron'
-                        #final
-                        carrer = posicio_final['user_address']
-                    else:
-                        posicio_act = 'Està sent repartit pels cotxes'
-                        carrer = posicio_final['user_address']
-                    
-                elif order['state'] == 'delivered':
-                    carrer, posicio_act = posicio_final['user_address']
-                
+                        posicio_act = 'Pendent dassignar a un dron'
+                    #final
+                    carrer = posicio_final['user_address']
                 else:
-                    posicio_act = 'Encara no esta confirmat/enviat'
+                    posicio_act = 'Està sent repartit pels drons'
+                    carrer = posicio_final['user_address']
+            
+            elif order['state'] == 'car_sent':
+                if is_local == 0:#actual
+                    logging.info(order['order_identifier'])
+                    posicio_trobada = camions.find_one({'packages.order_identifier': order['order_identifier']})
+                    if posicio_trobada:
+                        posicio_act = posicio_trobada['location_act']
+                    else:
+                        posicio_act = 'Pendent dassignar a un dron'
+                    #final
+                    carrer = posicio_final['user_address']
+                else:
+                    posicio_act = 'Està sent repartit pels cotxes'
                     carrer = posicio_final['user_address']
                 
-                response = {'result': 'ok', 
-                            'orders': response_list, 
-                            'page': page, 
-                            'orders_per_page': orders_per_page,
-                            'location_act': posicio_act,
-                            'location_end': carrer
-                        }
-                
+            elif order['state'] == 'delivered':
+                carrer, posicio_act = posicio_final['user_address']
+            
             else:
-                response = {'result': 'Aquest pacient no té cap ordre'}       
+                posicio_act = 'Encara no esta confirmat/enviat'
+                carrer = posicio_final['user_address']
+            
+            response = {'result': 'ok', 
+                        'orders': response_list, 
+                        'page': page, 
+                        'orders_per_page': orders_per_page,
+                        'location_act': posicio_act,
+                        'location_end': carrer
+                    }
+            
         else:
-             response = {'result': 'No ets manager, no pots revisar els ordres', 'rol': role_persona}    
+            response = {'result': 'Aquest pacient no té cap ordre'}       
     else:
         response = {'result': 'No tienes token para poder comprobar esto, espabila'}
         
