@@ -189,7 +189,7 @@ def check_order(): #mirar a través del qr
             response={'result':'Order not found'}
         else:
             if order['patient_email'] == value['email']: #verificar el pedido es con el paciente 
-                update_query = {'$set': {'state_num': 5}} #estado 5- es estado final de un pedido ENTREGADO
+                update_query = {'$set': {'state_num': 5, 'state': 'delivered'}} #estado 5- es estado final de un pedido ENTREGADO
                 orders.update_one(query, update_query)
                 response = {'result': 'ok'}
             else:

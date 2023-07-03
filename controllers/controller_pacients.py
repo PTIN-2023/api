@@ -85,16 +85,18 @@ def list_patient_orders():
                             'amount_sold': med_result['amount_sold'],
                         }, med_code[1]]
                         meds_details.append(med_result)
-                        
+                
+                data0 = users.find_one({'user_email': patient_email})   
                 responses = {'order_identifier': order['order_identifier'], 
                             'medicine_list': meds_details,
                             'date': order['date'],
-                            'state': order['state']
+                            'state': order['state'],
+                            'location_end': data0['user_address'] + " , " + data0['user_city']
                             }
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
             data = users.find_one({'user_email': patient_email})
-            response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': data['user_address'] + " , " + data['user_city']}
+            response = {'result': 'ok', 'orders': response, 'page': page, 'location_end': data['user_address'] + " , " + data['user_city']}
         
         else:
             response = {'result': 'Aquest pacient no te cap ordre'}
@@ -190,15 +192,16 @@ def make_order():
         else:
             approved = "yes"
             restar_meds(meds_list)
-        max_order = orders.find_one({}, sort=[("order_identifier", -1)])
-
+        # max_order = orders.find_one({}, sort=[("order_identifier", -1)])
+        max_order = orders.find_one({},sort=[("_id", -1)])
         #    
         logging.info(max_order)
-        if max_order:
+        if max_order and len(max_order)>0:
             new_identifier = str(int(max_order["order_identifier"]) + 1)
         else:
             new_identifier = "0"
-        
+        print("este max order",max_order)
+        print("new id",new_identifier)
         
         entry = {
             "order_identifier": new_identifier,

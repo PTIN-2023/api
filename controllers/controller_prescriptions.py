@@ -74,8 +74,9 @@ def get_patient_prescription_history():
             'last_used': recipe['last_used'], 
             'notes': recipe['notes']
         })
-    
-    return jsonify({'result': 'ok', 'prescriptions': prescriptions_list})
+    doc = users.find_one({'user_email' : check['email']})
+
+    return jsonify({'result': 'ok', 'prescriptions': prescriptions_list,'user_name':doc['user_given_name']})
 
 def get_prescription_identifier():
     data = request.get_json()

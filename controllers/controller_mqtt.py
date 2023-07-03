@@ -7,6 +7,7 @@ from utils.utils import get_url_edge
 # Models
 from models.models import orders
 from models.models import camions
+from models.models import colmenas
 from models.models import drons
 from models.models import is_local, cloud_api
 
@@ -234,6 +235,17 @@ def update_status():
                     return jsonify(FAILED), 404
                 
             if data['status_num'] == DRON_DELIVERED:
+
+                beehive = drons.find_one({ 'id_dron' : data['id_dron']})['beehive']
+                colmena = colmenas.find_one({ 'id_beehive' : beehive })
+
+                colmenas.update_one(
+                    { 'id_beehive' : beehive }, 
+                    { '$pull' : {
+                        'packages' : { 'order_identifier' : order_identifier }
+                    }
+                })
+
                 res = update_status_cloud_edge(DELIVERED, ORDER_DELIVERED, order_identifier)
                 
                 if res == 'ok':
