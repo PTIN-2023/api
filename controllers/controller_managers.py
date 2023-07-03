@@ -9,9 +9,6 @@ def list_all_orders():
     page = data['page']
     value = checktoken(data['session_token']) #checkeo si el usuario de la sesion tiene token
     if value['valid'] == 'ok': #si tiene token
-        if is_local == 1:
-            url = cloud_api+"/api/list_all_orders"
-            return requests.post(url, json=data).json()
         user_email = value['email']
         es_manager = users.find_one({'user_email': user_email})
         role_persona = es_manager['user_role']
@@ -52,19 +49,28 @@ def list_all_orders():
                     response_list.append(responses)
                 
                 if order['state'] == 'dron_sent':
-                    #actual
-                    posicio_trobada = drons.find_one({'status_num': order['state_num']})
-                    posicio_act = posicio_trobada['location_act']
-                    #final
-                    posicio_final = users.find_one({'user_email': order['patient_email']})
-                    carrer = posicio_final['user_address']
+                    if is_local == 1:#actual
+                        posicio_trobada = drons.find_one({'status_num': order['state_num']})
+                        posicio_act = posicio_trobada['location_act']
+                        #final
+                        posicio_final = users.find_one({'user_email': order['patient_email']})
+                        carrer = posicio_final['user_address']
+                    else:
+                        posicio_act = 'Està sent repartit pels drons'
+                        posicio_final = users.find_one({'user_email': order['patient_email']})
+                        carrer = posicio_final['user_address']
                 
                 elif order['state'] == 'car_sent':
-                    posicio_trobada = camions.find_one({'status_num': order['state_num']})
-                    posicio_act = posicio_trobada['location_act']
-                    #final
-                    posicio_final = users.find_one({'user_email': order['patient_email']})
-                    carrer = posicio_final['user_address']
+                    if is_local == 0:#actual
+                        posicio_trobada = camions.find_one({'status_num': order['state_num']})
+                        posicio_act = posicio_trobada['location_act']
+                        #final
+                        posicio_final = users.find_one({'user_email': order['patient_email']})
+                        carrer = posicio_final['user_address']
+                    else:
+                        posicio_act = 'Està sent repartit pels cotxes'
+                        posicio_final = users.find_one({'user_email': order['patient_email']})
+                        carrer = posicio_final['user_address']
                     
                 elif order['state'] == 'delivered':
                     posicio_final = users.find_one({'user_email': order['patient_email']})
