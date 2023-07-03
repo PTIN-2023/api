@@ -200,6 +200,8 @@ def make_order():
             new_identifier = str(int(max_order[0]["order_identifier"]) + 1)
         else:
             new_identifier = "0"
+        print("este max order",max_order)
+        print("new id",new_identifier)
         
         
         entry = {
