@@ -242,7 +242,7 @@ def update_status_order():
 
     if value['valid'] == 'ok':
         
-        if is_local == 1:
+        if is_local == 1 and data['session_token'] != 'internal':
             return jsonify(NOT_AVAILABLE_AT_EDGE)
 
         order_identifier    = data['order_identifier']
@@ -257,9 +257,19 @@ def update_status_order():
             { 'order_identifier' : order_identifier }, 
             { '$set'             : update_fields } 
         )
+        if is_local == 0:
+            data['session_token'] = 'internal'
+            url = edge0_api+"/api/cancel_patient_order"
+            response0 = requests.post(url, json=data).json()
+            url = edge1_api+"/api/cancel_patient_order"
+            response1 = requests.post(url, json=data).json()
+            url = edge2_api+"/api/cancel_patient_order"
+            response2 =  requests.post(url, json=data).json()
+        
+         
 
         if result.modified_count > 0:
-            response['result'] = 'ok'
+            response = {'result': 'ok', 'respnse0': response0, 'respnse1': response1, 'respnse2': response2
      
         else:
             response['result'] = 'failed'
