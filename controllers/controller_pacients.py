@@ -89,7 +89,8 @@ def list_patient_orders():
                 responses = {'order_identifier': order['order_identifier'], 
                             'medicine_list': meds_details,
                             'date': order['date'],
-                            'state': order['state']
+                            'state': order['state'],
+                            'location_end': data['user_address'] + " , " + data['user_city']
                             }
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
