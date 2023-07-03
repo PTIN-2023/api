@@ -62,7 +62,8 @@ def list_all_orders():
                 
                 
                 if is_local == 1:
-                    url = cloud_api+"/api/user_info"
+                    url = cloud_api+"/api/user_info_internal"
+                    data['email'] = order['patient_email']
                     posicio_final = requests.post(url, json=data).json()
                 else:
                     posicio_final = users.find_one({'user_email': order['patient_email']})

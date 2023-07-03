@@ -19,6 +19,7 @@ def routes_user(app):
     app.route("/api/manager_create_account", methods=['POST'])(register_premium)
     app.route("/api/checktoken", methods=['POST'])(check_token)
     app.route("/api/user_info", methods=['POST'])(get_user_info)
+    app.route("/api/user_info_internal", methods=['POST'])(get_user_info_internal)
     app.route("/api/logout", methods=['POST'])(logout)
     app.route("/api/set_user_info", methods=['POST'])(set_user_info)
     app.route("/api/user_position", methods=['POST'])(get_user_position)

@@ -206,6 +206,42 @@ def get_user_info():
     return jsonify(response)
 
 
+def get_user_info_internal():
+    
+    data    = request.get_json()
+    token   = data['session_token']
+    check   = checktoken(token)
+    
+    if check['valid'] == 'ok':
+        
+        if is_local == 1:
+            url = cloud_api + "/api/user_info"
+            return requests.post(url, json=data).json()
+        
+        doc = users.find_one({'user_email' : data['email']})
+        response = {
+            'result'            : 'ok', 
+            'user_given_name'   : doc['user_given_name'], 
+            #edad?
+            'user_role'         : doc['user_role'], 
+            'user_full_name'    : doc['user_full_name'],
+            'user_email'        : doc['user_email'],
+            'user_password'     : doc['user_password'],
+            'user_phone'        : doc['user_phone'],
+            'user_city'         : doc['user_city'],
+            'user_address'      : doc['user_address'],
+            'user_picture'      : "https://picsum.photos/200",
+            'user_token'        : token
+        }
+        
+        return jsonify(response)
+    
+    else:
+        response = {'result': 'error', 'message': check['valid']}
+    
+    return jsonify(response)
+
+
 def get_user_position():
 
     data = request.get_json()
