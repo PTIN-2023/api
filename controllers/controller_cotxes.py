@@ -232,7 +232,7 @@ def send_anomalias_car():
 
         msg = {
             "hehe" : data['hehe'],
-            "id_dron" : data['id_dron']
+            "id_car" : data['id_car']
         }
         mensaje_json = json.dumps(msg)
 

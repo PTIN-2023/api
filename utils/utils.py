@@ -10,8 +10,6 @@ distance_between_points = int(os.environ.get('DISTANCE_BETWEEN_POINTS'))
 def checktoken(token):
     
     if is_local == 0:
-        if(token==""):
-            token=request.get_json()['token']
         if(token=="internal"):
             return {'valid':'ok', 'type':'internal'}
         user_data = sessio.find_one({'token': token})
@@ -35,6 +33,8 @@ def checktoken(token):
         return requests.post(url, json=data).json()
 
 def check_token_doctor(token):
+    if(token=="internal"):
+        return {'valid':'ok', 'type':'internal'}
     user_data = sessio.find_one({'token': token})
     if user_data is None:
         response = {'valid': 'None1'}
@@ -53,6 +53,8 @@ def check_token_doctor(token):
     return response
 
 def check_token_manager(token):
+    if(token=="internal"):
+        return {'valid':'ok', 'type':'internal'}
     user_data = sessio.find_one({'token': token})
     if user_data is None:
         response = {'valid': 'None1'}
