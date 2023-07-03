@@ -50,6 +50,12 @@ def list_all_orders():
                                 }
                     response_list.append(responses)
                 
+                
+                if is_local == 1:
+                    url = cloud_api+"/api/manager_list_doctors"
+                    posicio_final = requests.post(url, json=data).json()
+                else:
+                    posicio_final = users.find_one({'user_email': order['patient_email']})
                 if order['state'] == 'dron_sent':
                     if is_local == 1:#actual
                         posicio_trobada = drons.find_one({'order_identifier': order['order_identifier']})
@@ -58,11 +64,9 @@ def list_all_orders():
                         else:
                             posicio_act = 'Pendent dassignar a un dron'
                         #final
-                        posicio_final = users.find_one({'user_email': order['patient_email']})
                         carrer = posicio_final['user_address']
                     else:
                         posicio_act = 'Està sent repartit pels drons'
-                        posicio_final = users.find_one({'user_email': order['patient_email']})
                         carrer = posicio_final['user_address']
                 
                 elif order['state'] == 'car_sent':
@@ -74,20 +78,16 @@ def list_all_orders():
                         else:
                             posicio_act = 'Pendent dassignar a un dron'
                         #final
-                        posicio_final = users.find_one({'user_email': order['patient_email']})
                         carrer = posicio_final['user_address']
                     else:
                         posicio_act = 'Està sent repartit pels cotxes'
-                        posicio_final = users.find_one({'user_email': order['patient_email']})
                         carrer = posicio_final['user_address']
                     
                 elif order['state'] == 'delivered':
-                    posicio_final = users.find_one({'user_email': order['patient_email']})
                     carrer, posicio_act = posicio_final['user_address']
                 
                 else:
                     posicio_act = 'Encara no esta confirmat/enviat'
-                    posicio_final = users.find_one({'user_email': order['patient_email']})
                     carrer = posicio_final['user_address']
                 
                 response = {'result': 'ok', 
