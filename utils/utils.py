@@ -10,7 +10,6 @@ distance_between_points = int(os.environ.get('DISTANCE_BETWEEN_POINTS'))
 def checktoken(token):
     
     if is_local == 0:
-
         if(token==""):
             token=request.get_json()['token']
         if(token=="internal"):
