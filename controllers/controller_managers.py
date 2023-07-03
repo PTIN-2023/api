@@ -2,6 +2,8 @@ from flask import jsonify, request
 from models.models import *
 from utils.utils import checktoken
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def list_all_orders():
     data = request.get_json()
@@ -62,6 +64,7 @@ def list_all_orders():
                 
                 elif order['state'] == 'car_sent':
                     if is_local == 0:#actual
+                        logging.info(order['order_identifier'])
                         posicio_trobada = camions.find_one({'packages.order_identifier': order['order_identifier']})
                         posicio_act = posicio_trobada['location_act']
                         #final
