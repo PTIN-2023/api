@@ -197,12 +197,11 @@ def make_order():
         #    
         logging.info(max_order)
         if max_order and len(max_order)>0:
-            new_identifier = str(int(max_order[0]["order_identifier"]) + 1)
+            new_identifier = str(int(max_order["order_identifier"]) + 1)
         else:
             new_identifier = "0"
         print("este max order",max_order)
         print("new id",new_identifier)
-        
         
         entry = {
             "order_identifier": new_identifier,
