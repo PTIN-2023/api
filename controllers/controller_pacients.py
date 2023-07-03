@@ -94,7 +94,7 @@ def list_patient_orders():
                 response.append(responses)
                 # Encapsulate the list in a JSONObject and add other properties if needed
             data = users.find_one({'user_email': patient_email})
-            response = {'result': 'ok', 'orders': response, 'page': page, 'orders_per_page': data['user_address'] + " , " + data['user_city']}
+            response = {'result': 'ok', 'orders': response, 'page': page, 'location_end': data['user_address'] + " , " + data['user_city']}
         
         else:
             response = {'result': 'Aquest pacient no te cap ordre'}
