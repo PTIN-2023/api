@@ -95,7 +95,7 @@ def list_all_orders():
                         carrer = posicio_final['user_address']
                     
                 elif order['state'] == 'delivered':
-                    carrer, posicio_act = posicio_final['user_address']
+                    carrer = posicio_final['user_address']
                 
                 else:
                     posicio_act = 'Encara no esta confirmat/enviat'
