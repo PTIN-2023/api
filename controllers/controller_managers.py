@@ -50,7 +50,7 @@ def list_all_orders():
                 
                 if order['state'] == 'dron_sent':
                     if is_local == 1:#actual
-                        posicio_trobada = drons.find_one({'status_num': order['state_num']})
+                        posicio_trobada = drons.find_one({'order_identifier': order['order_identifier']})
                         posicio_act = posicio_trobada['location_act']
                         #final
                         posicio_final = users.find_one({'user_email': order['patient_email']})
@@ -62,7 +62,7 @@ def list_all_orders():
                 
                 elif order['state'] == 'car_sent':
                     if is_local == 0:#actual
-                        posicio_trobada = camions.find_one({'status_num': order['state_num']})
+                        posicio_trobada = camions.find_one({'packages.order_identifier': order['order_identifier']})
                         posicio_act = posicio_trobada['location_act']
                         #final
                         posicio_final = users.find_one({'user_email': order['patient_email']})
