@@ -236,7 +236,7 @@ def update_status():
                 
             if data['status_num'] == DRON_DELIVERED:
 
-                beehive = drons.find_one({ 'id_dron' : data['id_drone']})['beehive']
+                beehive = drons.find_one({ 'id_dron' : data['id_dron']})['beehive']
                 colmena = colmenas.find_one({ 'id_beehive' : beehive })
 
                 colmena.update_many({}, {
