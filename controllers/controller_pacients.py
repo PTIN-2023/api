@@ -196,7 +196,7 @@ def make_order():
         max_order = orders.find_one({},sort=[("_id", -1)])
         #    
         logging.info(max_order)
-        if max_order:
+        if max_order and len(max_order)>0:
             new_identifier = str(int(max_order[0]["order_identifier"]) + 1)
         else:
             new_identifier = "0"
