@@ -78,8 +78,24 @@ def get_med():
             url = cloud_api+"/api/get_med"
             return requests.post(url, json=data).json()
         med_query = {'national_code': data['national_code']}
-        med_result = farmacs.find_one(med_query)
-        return jsonify({"result":"ok","med_result": med_result})
+        doc = farmacs.find_one(med_query)
+        res={
+            'medicine_identifier':  doc['national_code'],
+            'medicine_name': doc['med_name'],
+            'national_code': doc['national_code'],
+            'use_type': str(doc['use_type']) + '€',
+            'type_of_administration': doc['type_of_administration'],
+            'prescription_needed': doc['prescription_needed'],
+            'pvp': doc['pvp'],
+            'form': doc['form'],
+            'excipients': doc['excipients'],
+            'form': doc['form'],
+            'medicine_image_url': doc['medicine_image_url'],
+            'quantity_available': quantity_available_user(doc['national_code'], check['email']),
+            'amount_sold': doc['amount_sold']
+        }
+        response = {"result":"ok","med_result": res}
+        return jsonify(response)
     else:
         response = {'result': 'error', 'message': check['valid']}    #VALIDA EL CHECK
         return jsonify(response)
