@@ -193,7 +193,7 @@ def make_order():
             approved = "yes"
             restar_meds(meds_list)
         # max_order = orders.find_one({}, sort=[("order_identifier", -1)])
-        max_order = orders.find().sort([("_id", -1)]).limit(1)
+        max_order = orders.find({},sort=[("_id", -1)]).limit(1)
         #    
         logging.info(max_order)
         if max_order:
