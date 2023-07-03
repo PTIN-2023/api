@@ -239,8 +239,9 @@ def update_status():
                 beehive = drons.find_one({ 'id_dron' : data['id_dron']})['beehive']
                 colmena = colmenas.find_one({ 'id_beehive' : beehive })
 
-                colmena.update_one({}, {
-                    '$pull' : {
+                colmenas.update_one(
+                    { 'id_beehive' : beehive }, 
+                    { '$pull' : {
                         'packages' : { 'order_identifier' : order_identifier }
                     }
                 })
