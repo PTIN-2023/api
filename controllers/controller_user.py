@@ -142,7 +142,15 @@ def register_premium():
         }
         sessio.insert_one(entry)
         return response
-    entry = {
+    user_coordinates = get_coordinates(data['user_address'] + " , " + data['user_city'])
+    if user_coordinates is None:
+        response = {'result': 'error', 'description': "No es poden trobar les coordenades de la direcció"}
+        return jsonify(response)
+    else:
+        user_latitude, user_longitude = user_coordinates
+        city_lowercase_no_accents = unidecode(data['user_city']).lower()
+        beehive_latitude, beehive_longitude = get_closest_beehive(city_lowercase_no_accents,user_latitude,user_longitude)
+        entry = {
         "user_full_name": data['user_full_name'],
         "user_given_name": data['user_given_name'],
         "user_role": "patient",
@@ -153,6 +161,14 @@ def register_premium():
         "user_password": data['user_password'],
         "user_role": data['user_role'],
         "when": datetime.now(),
+        "user_coordinates": {
+                "latitude": user_latitude,
+                "longitude": user_longitude
+            },
+            "beehive_coordinates": {
+                "latitude": beehive_latitude,
+                "longitude": beehive_longitude
+            }
     }
     try:
         id = users.insert_one(entry).inserted_id
